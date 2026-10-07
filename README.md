@@ -93,6 +93,10 @@ python -m modrelease_studio --help
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 
+## ☕ Support / Pro Version
+
+ModRelease Studio is free and open source. There is no paid Pro edition yet. If the tool is useful, you can support its development on [Buy Me a Coffee](https://buymeacoffee.com/azizazimov8) or [Boosty](https://boosty.to/azizazimov). GitHub Sponsors is also enabled where available.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

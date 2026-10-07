@@ -58,7 +58,10 @@ class DirectorySource(Source):
         for record in sorted(self.records, key=lambda item: item.path.casefold()):
             hasher.update(record.path.encode("utf-8", "surrogatepass"))
             hasher.update(b"\0")
-            hasher.update(self.read(record.path, MAX_TOTAL_UNCOMPRESSED) or b"")
+            file_path = self.target.joinpath(*PurePosixPath(record.path).parts)
+            with file_path.open("rb") as stream:
+                while chunk := stream.read(1024 * 1024):
+                    hasher.update(chunk)
             hasher.update(b"\0")
         return hasher.hexdigest()
 
