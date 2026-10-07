@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modrelease-studio"
+version = "0.1.0"
+description = "Local-first release preflight for game mods and mod packs"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+authors = [{name = "GhosTnever"}]
+keywords = ["modding", "game-mods", "release", "quality-assurance", "paradox"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/GhosTnever-lkm/modrelease-studio"
+Issues = "https://github.com/GhosTnever-lkm/modrelease-studio/issues"
+
+[project.scripts]
+modrelease = "modrelease_studio.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["modrelease_studio*"]

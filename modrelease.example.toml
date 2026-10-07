@@ -1,0 +1,3 @@
+[scan]
+required_files = ["README.md", "CHANGELOG.md", "LICENSE"]
+max_file_bytes = 2000000
