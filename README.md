@@ -95,7 +95,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGEL
 
 ## ☕ Support / Pro Version
 
-ModRelease Studio is free and open source. There is no paid Pro edition yet. If the tool is useful, you can support its development on [Buy Me a Coffee](https://buymeacoffee.com/azizazimov8) or [Boosty](https://boosty.to/azizazimov). GitHub Sponsors is also enabled where available.
+ModRelease Studio is free and open source. There is no paid Pro edition yet. If the tool is useful, you can support its development on [Buy Me a Coffee](https://buymeacoffee.com/azizazimov8), [Boosty](https://boosty.to/azizazimov), or [GitHub Sponsors](https://github.com/sponsors/GhosTnever-lkm).
+
+You can also send a supported asset to one of these public receive addresses:
+
+| Network | Asset standard | Address |
+|---|---|---|
+| Bitcoin | BTC | `bc1qn75pj4n7gyl2k5kf2f97elvyenz52q6nn2g30u` |
+| Tron | TRC-20 | `TCBSy38X57hA6w2onJcxom24x1febc1mP1` |
+| BNB Smart Chain | BEP-20 | `0xD431a917961E0b086B96D9F72b5C8fF19b19068a` |
+
+**Send funds only on the matching network.** Do not send a different network's asset to these addresses.
 
 ## License
 
