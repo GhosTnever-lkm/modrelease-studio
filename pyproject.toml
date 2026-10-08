@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modrelease-studio"
-version = "0.1.0"
+version = "0.2.0"
 description = "Local-first release preflight for game mods and mod packs"
 readme = "README.md"
 requires-python = ">=3.11"

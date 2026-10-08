@@ -39,8 +39,8 @@ def _scan(args: argparse.Namespace) -> int:
 def _compare(args: argparse.Namespace) -> int:
     before = scan_path(args.before, config=_config(args.config))
     after = scan_path(args.after, config=_config(args.config))
-    left = {f"{f.severity} {f.rule_id} {f.path or ''}: {f.message}" for f in before.findings}
-    right = {f"{f.severity} {f.rule_id} {f.path or ''}: {f.message}" for f in after.findings}
+    left = {f"{f.severity} {f.code} {f.path or ''}: {f.message}" for f in before.findings}
+    right = {f"{f.severity} {f.code} {f.path or ''}: {f.message}" for f in after.findings}
     print("\n".join(difflib.unified_diff(sorted(left), sorted(right), fromfile=args.before, tofile=args.after, lineterm="")) or "No finding changes.")
     return 1 if after.errors else 0
 

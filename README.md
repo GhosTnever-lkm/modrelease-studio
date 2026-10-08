@@ -2,12 +2,14 @@
 
 **Release preflight for game mods and mod packs.** Scan a folder or ZIP, catch common packaging and metadata problems, and publish a readable report before players download the build.
 
+Current unreleased changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. It uses only the Python standard library.
 
 ## What it checks
 
 - Folder and ZIP contents, unsafe archive paths, duplicate paths, and case-only collisions.
-- Accidental secrets in common text/config files (private-key blocks, GitHub tokens, and likely hard-coded API keys).
+- Accidental secrets in common text/config files (private keys, AWS access-key IDs, GitHub and Slack tokens, Discord webhooks, and likely hard-coded API keys).
 - Paradox Clausewitz `descriptor.mod` metadata and localization YAML issues.
 - Missing release notes, OS-specific junk, and unexpectedly large files.
 - Stable SHA-256 fingerprint of the build, JSON/Markdown reports, and finding changes between two builds.
@@ -67,7 +69,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install .
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.2.0"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -79,7 +81,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` runs the tool against this repository as a usage example.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against this repository. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.2.0`.
 
 ## Current scope
 
@@ -89,6 +91,7 @@ This is an early, intentionally conservative release checker. It does not fully 
 
 ```console
 python -m modrelease_studio --help
+python -m unittest discover -s tests -v
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
