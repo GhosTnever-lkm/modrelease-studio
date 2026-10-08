@@ -8,6 +8,7 @@ import sys
 import tomllib
 from pathlib import Path
 
+from . import __version__
 from .reports import markdown, to_dict, write_json, write_markdown
 from .scanner import scan_path
 
@@ -47,6 +48,7 @@ def _compare(args: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="modrelease", description="Preflight game-mod releases from folders or ZIP archives.")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
     scan = sub.add_parser("scan", help="scan a mod folder or .zip archive")
     scan.add_argument("path", help="folder or .zip file")

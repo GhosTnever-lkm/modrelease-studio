@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 - 2026-10-08
+
+- Synchronize the importable package version with the published package version.
+- Add `modrelease --version` so users can confirm the installed release.
+- Add a regression test to prevent package-version metadata from drifting again.
+
 ## 0.2.1 - 2026-10-08
 
 - Run regression tests in CI and scan only the clean example mod fixture, keeping synthetic secret fixtures out of the self-scan.

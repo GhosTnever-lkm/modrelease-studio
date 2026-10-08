@@ -3,11 +3,12 @@ from __future__ import annotations
 import contextlib
 import io
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from modrelease_studio import cli
+from modrelease_studio import __version__, cli
 from modrelease_studio.models import Finding, ScanReport
 from modrelease_studio.scanner import scan_path
 from modrelease_studio.scanner import SECRET_PATTERNS
@@ -70,6 +71,20 @@ class CompareTests(unittest.TestCase):
             with contextlib.redirect_stdout(io.StringIO()):
                 result = cli._compare(args)
         self.assertEqual(result, 1)
+
+
+class VersionTests(unittest.TestCase):
+    def test_imported_version_matches_package_metadata(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        metadata = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
+        self.assertEqual(__version__, metadata["project"]["version"])
+
+    def test_cli_prints_installed_version(self) -> None:
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            with self.assertRaises(SystemExit) as raised:
+                cli.main(["--version"])
+        self.assertEqual(raised.exception.code, 0)
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.2.2")
 
 if __name__ == "__main__":
     unittest.main()
