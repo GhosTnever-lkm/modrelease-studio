@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 - 2026-10-08
+
+- Run regression tests in CI and scan only the clean example mod fixture, keeping synthetic secret fixtures out of the self-scan.
+
 ## 0.2.0 - 2026-10-08
 
 - Fix build comparison when findings are present and preserve release-blocking exit behavior.
