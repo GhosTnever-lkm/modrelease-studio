@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.3 - 2026-10-10
+
+- Preserve duplicate finding counts when comparing builds, so repeated findings are reported as added or resolved counts instead of disappearing in set-based comparison.
+- Add regression tests for increases and decreases in duplicate findings.
+
 ## 0.2.2 - 2026-10-08
 
 - Synchronize the importable package version with the published package version.

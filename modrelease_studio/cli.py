@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 import argparse
-import difflib
 import json
 import sys
 import tomllib
+from collections import Counter
 from pathlib import Path
 
 from . import __version__
+from .models import Finding
 from .reports import markdown, to_dict, write_json, write_markdown
 from .scanner import scan_path
 
@@ -40,9 +41,24 @@ def _scan(args: argparse.Namespace) -> int:
 def _compare(args: argparse.Namespace) -> int:
     before = scan_path(args.before, config=_config(args.config))
     after = scan_path(args.after, config=_config(args.config))
-    left = {f"{f.severity} {f.code} {f.path or ''}: {f.message}" for f in before.findings}
-    right = {f"{f.severity} {f.code} {f.path or ''}: {f.message}" for f in after.findings}
-    print("\n".join(difflib.unified_diff(sorted(left), sorted(right), fromfile=args.before, tofile=args.after, lineterm="")) or "No finding changes.")
+    def finding_key(item: Finding) -> tuple[str, str, str, str]:
+        return (item.severity, item.code, item.path or "", item.message)
+
+    left = Counter(finding_key(item) for item in before.findings)
+    right = Counter(finding_key(item) for item in after.findings)
+
+    def render(counter: Counter, sign: str) -> list[str]:
+        rendered = []
+        for severity, code, path, message in sorted(counter):
+            count = counter[(severity, code, path, message)]
+            suffix = f" (x{count})" if count > 1 else ""
+            rendered.append(f"{sign} [{severity}] {code} {path or '—'}: {message}{suffix}")
+        return rendered
+
+    removed = left - right
+    added = right - left
+    lines = [*render(removed, "-"), *render(added, "+")]
+    print("\n".join(lines) if lines else "No finding changes.")
     return 1 if after.errors else 0
 
 

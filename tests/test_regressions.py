@@ -72,6 +72,28 @@ class CompareTests(unittest.TestCase):
                 result = cli._compare(args)
         self.assertEqual(result, 1)
 
+    def test_compare_reports_duplicate_finding_count_increases(self) -> None:
+        finding = Finding("MISSING_FILE", "WARNING", "README.md", "Recommended release file is missing.")
+        before = ScanReport("before", "default", findings=[finding])
+        after = ScanReport("after", "default", findings=[finding, finding, finding])
+        args = type("Args", (), {"before": "before", "after": "after", "config": None})()
+        output = io.StringIO()
+        with patch.object(cli, "scan_path", side_effect=[before, after]), contextlib.redirect_stdout(output):
+            result = cli._compare(args)
+        self.assertEqual(result, 0)
+        self.assertIn("+ [WARNING] MISSING_FILE README.md: Recommended release file is missing. (x2)", output.getvalue())
+
+    def test_compare_reports_duplicate_finding_count_decreases(self) -> None:
+        finding = Finding("DUPLICATE", "ERROR", "common/example.txt", "Duplicate path.")
+        before = ScanReport("before", "default", findings=[finding, finding, finding])
+        after = ScanReport("after", "default", findings=[finding])
+        args = type("Args", (), {"before": "before", "after": "after", "config": None})()
+        output = io.StringIO()
+        with patch.object(cli, "scan_path", side_effect=[before, after]), contextlib.redirect_stdout(output):
+            result = cli._compare(args)
+        self.assertEqual(result, 1)
+        self.assertIn("- [ERROR] DUPLICATE common/example.txt: Duplicate path. (x2)", output.getvalue())
+
 
 class VersionTests(unittest.TestCase):
     def test_imported_version_matches_package_metadata(self) -> None:
@@ -84,7 +106,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.2.2")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.2.3")
 
 if __name__ == "__main__":
     unittest.main()
