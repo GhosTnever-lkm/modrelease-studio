@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 - 2026-10-11
+
+- Remove the unconfigured Telegram placeholder from the README and landing page; GitHub and email remain the working contact options.
+- Bump package and CLI version to 0.3.1.
+
 ## 0.3.0 - 2026-10-10
 
 - Add product README: value statement, audience, the problem solved, three real scenarios, terminal demo screenshot, badges (CI, version, tests), pricing and contact sections.
