@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.3 - 2026-10-11
+
+- Run the checked-in Paradox required-path policy against the clean example project in CI.
+- Bump package and CLI version to 0.3.3.
+
 ## 0.3.2 - 2026-10-11
 
 - Add configurable required-path glob checks with selectable ERROR/WARNING/INFO severity for project-specific release policies.
