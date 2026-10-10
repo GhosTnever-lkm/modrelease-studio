@@ -143,7 +143,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.4")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.5")
 
 if __name__ == "__main__":
     unittest.main()

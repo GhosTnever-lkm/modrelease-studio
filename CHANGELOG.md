@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.5 - 2026-10-11
+
+- Refresh the README installation and CI pin to the current released scanner.
+- Bump package and CLI version to 0.3.5.
+
 ## 0.3.4 - 2026-10-11
 
 - Add a checked-in, generated example report demonstrating the Paradox required-path policy.
