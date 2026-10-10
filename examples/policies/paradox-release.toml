@@ -1,0 +1,6 @@
+# Copy this file to modrelease.toml in the mod project root.
+[scan]
+# Require the root-level descriptor and a release README.
+required_paths = ["descriptor.mod", "README.md"]
+# Use ERROR to fail CI when any configured path is absent.
+required_paths_severity = "ERROR"

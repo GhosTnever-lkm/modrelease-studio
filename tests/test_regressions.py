@@ -51,6 +51,43 @@ class SecretPatternTests(unittest.TestCase):
         self.assertNotIn(secret.decode(), repr(report.to_dict()))
 
 
+class RequiredPathPolicyTests(unittest.TestCase):
+    def test_configured_required_path_glob_warns_when_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / "README.md").write_text("readme", encoding="utf-8")
+            report = scan_path(directory, config={"required_paths": ["descriptor.mod"]})
+        findings = [item for item in report.findings if item.code == "REQUIRED_PATH_MISSING"]
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].severity, "WARNING")
+        self.assertEqual(findings[0].path, "descriptor.mod")
+
+    def test_required_path_glob_is_case_insensitive(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            (Path(directory) / "Common").mkdir()
+            (Path(directory) / "Common" / "Events.TXT").write_text("ok", encoding="utf-8")
+            report = scan_path(directory, config={
+                "required_paths": ["common/*.txt"],
+                "required_paths_severity": "error",
+            })
+        self.assertNotIn("REQUIRED_PATH_MISSING", {item.code for item in report.findings})
+        self.assertEqual(report.errors, 0)
+
+    def test_error_severity_blocks_when_required_path_is_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            report = scan_path(directory, config={
+                "required_paths": ["descriptor.mod"],
+                "required_paths_severity": "ERROR",
+            })
+        self.assertEqual(report.errors, 1)
+        finding = next(item for item in report.findings if item.code == "REQUIRED_PATH_MISSING")
+        self.assertEqual(finding.severity, "ERROR")
+
+    def test_invalid_required_path_policy_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, "required_paths_severity"):
+                scan_path(directory, config={"required_paths_severity": "CRITICAL"})
+
+
 class CompareTests(unittest.TestCase):
     def test_compare_uses_finding_code_and_differences_do_not_block(self) -> None:
         before = ScanReport("before", "default", findings=[])
@@ -106,7 +143,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.1")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.2")
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,20 +2,20 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.1 (contact cleanup)
+## Current iteration — v0.3.2 (project-specific required-path policies)
 
-- Added product README: value statement, "who is it for", the problem solved, three real scenarios, terminal demo screenshot (`docs/demo.png` — rendered from a real scan that catches a token, a bad localization header, and a missing supported_version), badges (live CI, live version, 9/9 tests, MIT).
-- Removed the unconfigured Telegram placeholder from README and landing; GitHub and email contact links remain functional.
-- Added GitHub Pages landing page (`docs/index.html`) with Download / Buy me a coffee / Contact buttons; Pages enabled on `/docs` at https://ghostnever-lkm.github.io/modrelease-studio/.
-- Version bumped to 0.3.1 (package + CLI + pinned examples + test).
-- Local checks: 9/9 tests pass; `compileall`, `modrelease --version`, `git diff --check` pass.
+- Added case-insensitive `required_paths` glob checks with configurable ERROR/WARNING/INFO severity; ERROR findings now reliably block CI through the existing exit-code behavior.
+- Added a Paradox policy example, README configuration guidance, and included the example policy in release archives.
+- Removed the unverified Boosty link from support copy; kept Buy Me a Coffee and GitHub Sponsors.
+- Version synchronized across package metadata, CLI, pinned README install, and regression test; changelog updated.
+- Local validation: 13/13 tests pass, policy example scan is READY, release workflow YAML parses, diff check passes. A local wheel build could not run because setuptools is absent in this environment with `--no-build-isolation`; tag CI remains the authoritative packaging check.
 
 ## Published baseline
 
-- Latest verified published release before this iteration: v0.3.0.
+- Latest verified published release before this iteration: v0.3.1.
 
 ## Next
 
-1. Publish v0.3.1 and verify CI + Pages.
+1. Publish v0.3.2 and verify release workflow, CI, and Pages.
 2. Add Telegram only if the owner supplies a real handle; GitHub/email remain available meanwhile.
 3. Continue improving the mod-QA ecosystem and verified monetization links.

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 - 2026-10-11
+
+- Add configurable required-path glob checks with selectable ERROR/WARNING/INFO severity for project-specific release policies.
+- Remove the unverified Boosty link from the support section.
+- Bump package and CLI version to 0.3.2.
+
 ## 0.3.1 - 2026-10-11
 
 - Remove the unconfigured Telegram placeholder from the README and landing page; GitHub and email remain the working contact options.

@@ -1,6 +1,7 @@
 """High-level release checks for common game mod formats."""
 from __future__ import annotations
 
+import fnmatch
 import re
 from pathlib import PurePosixPath
 
@@ -36,6 +37,21 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
     for name in sorted(required_files - file_names):
         report.findings.append(Finding("MISSING_RELEASE_FILE", "WARNING", name,
                                        f"Recommended release file is missing: {name}"))
+
+    required_paths = config.get("required_paths", [])
+    if not isinstance(required_paths, list) or any(not isinstance(pattern, str) or not pattern.strip() for pattern in required_paths):
+        raise ValueError("scan.required_paths must be a list of non-empty path patterns")
+    required_paths_severity = str(config.get("required_paths_severity", "WARNING")).upper()
+    if required_paths_severity not in {"ERROR", "WARNING", "INFO"}:
+        raise ValueError("scan.required_paths_severity must be ERROR, WARNING, or INFO")
+    normalized_paths = [record.path.casefold() for record in source.records]
+    for pattern in required_paths:
+        normalized_pattern = pattern.replace("\\", "/").casefold()
+        if not any(fnmatch.fnmatchcase(path, normalized_pattern) for path in normalized_paths):
+            report.findings.append(Finding(
+                "REQUIRED_PATH_MISSING", required_paths_severity, pattern,
+                f"Configured release path is missing: {pattern}",
+            ))
 
     localization_found = False
     for record in source.records:

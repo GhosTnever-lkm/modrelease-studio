@@ -108,7 +108,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.1"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.2"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -120,7 +120,17 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.1`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.2`.
+
+## Project-specific release policy
+
+Set `required_paths` in `modrelease.toml` to enforce exact paths or glob patterns (case-insensitive). Use `required_paths_severity = "ERROR"` to make missing policy paths fail the scan and CI; the default is `WARNING`. For example, `examples/policies/paradox-release.toml` requires a root `descriptor.mod`, README, and changelog. Existing `required_files` remains useful when only the filename matters, regardless of its directory.
+
+```toml
+[scan]
+required_paths = ["descriptor.mod", "localisation/*.yml"]
+required_paths_severity = "ERROR"
+```
 
 ## Current scope
 
@@ -137,7 +147,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGEL
 
 ## ☕ Support / Pro Version
 
-ModRelease Studio is free and open source. There is no paid Pro edition yet. If the tool is useful, you can support its development on [Buy Me a Coffee](https://buymeacoffee.com/azizazimov8), [Boosty](https://boosty.to/azizazimov), or [GitHub Sponsors](https://github.com/sponsors/GhosTnever-lkm).
+ModRelease Studio is free and open source. There is no paid Pro edition yet. If the tool is useful, you can support its development on [Buy Me a Coffee](https://buymeacoffee.com/azizazimov8) or [GitHub Sponsors](https://github.com/sponsors/GhosTnever-lkm).
 
 You can also send a supported asset to one of these public receive addresses:
 
