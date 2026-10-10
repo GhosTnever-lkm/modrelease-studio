@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.6 - 2026-10-11
+
+- Add regression coverage for malformed required-path policy values and Windows-style glob separators.
+- Bump package and CLI version to 0.3.6.
+
 ## 0.3.5 - 2026-10-11
 
 - Refresh the README installation and CI pin to the current released scanner.

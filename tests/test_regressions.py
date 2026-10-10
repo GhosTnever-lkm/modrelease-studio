@@ -72,6 +72,25 @@ class RequiredPathPolicyTests(unittest.TestCase):
         self.assertNotIn("REQUIRED_PATH_MISSING", {item.code for item in report.findings})
         self.assertEqual(report.errors, 0)
 
+    def test_required_path_patterns_normalize_windows_separators_and_case(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "Localization"
+            target.mkdir()
+            (target / "English.yml").write_text("l_english:\n", encoding="utf-8")
+            report = scan_path(directory, config={
+                "required_paths": [r"localization\*.yml"],
+                "required_paths_severity": "ERROR",
+            })
+        self.assertNotIn("REQUIRED_PATH_MISSING", {item.code for item in report.findings})
+        self.assertEqual(report.errors, 0)
+
+    def test_malformed_required_paths_are_rejected(self) -> None:
+        malformed = ["descriptor.mod", [""], ["   "], ["README.md", 7]]
+        for value in malformed:
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as directory:
+                with self.assertRaisesRegex(ValueError, "required_paths"):
+                    scan_path(directory, config={"required_paths": value})
+
     def test_error_severity_blocks_when_required_path_is_missing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             report = scan_path(directory, config={
@@ -143,7 +162,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.5")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.6")
 
 if __name__ == "__main__":
     unittest.main()
