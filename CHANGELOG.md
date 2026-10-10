@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 - 2026-10-10
+
+- Add product README: value statement, audience, the problem solved, three real scenarios, terminal demo screenshot, badges (CI, version, tests), pricing and contact sections.
+- Add GitHub Pages landing page under `docs/` with Download / Buy / Contact actions and how-it-works demo.
+- Bump package and CLI version to 0.3.0.
+
 ## 0.2.3 - 2026-10-10
 
 - Preserve duplicate finding counts when comparing builds, so repeated findings are reported as added or resolved counts instead of disappearing in set-based comparison.

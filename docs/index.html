@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ModRelease Studio — release preflight for game mods and mod packs</title>
+<meta name="description" content="Scan folders and ZIP archives for packaging risks, secrets, and missing metadata before you publish a game mod or mod pack. Local-first, Python standard library only.">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0f1117; color: #e6e8ee; line-height: 1.6; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 28px 0; border-bottom: 1px solid #232836; }
+  .brand { font-weight: 700; font-size: 18px; letter-spacing: .2px; color: #fff; }
+  .brand span { color: #58a6ff; }
+  nav { margin-left: auto; display: flex; gap: 20px; align-items: center; }
+  header .wrap { display: flex; align-items: center; gap: 24px; }
+  nav a { color: #9aa4b2; text-decoration: none; font-size: 14px; }
+  nav a:hover { color: #fff; }
+  .hero { padding: 72px 0 48px; text-align: center; }
+  h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.15; color: #fff; margin-bottom: 16px; }
+  h1 em { font-style: normal; color: #58a6ff; }
+  .sub { font-size: 18px; color: #9aa4b2; max-width: 640px; margin: 0 auto 28px; }
+  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 13px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 15px; border: 1px solid transparent; }
+  .btn-primary { background: #238636; color: #fff; }
+  .btn-primary:hover { background: #2ea043; }
+  .btn-ghost { background: #161b26; color: #e6e8ee; border-color: #30363d; }
+  .btn-ghost:hover { background: #1c2333; }
+  .btn-warn { background: #bf8700; color: #fff; }
+  .btn-warn:hover { background: #d29922; }
+  section { padding: 56px 0; border-top: 1px solid #1b2029; }
+  .section-title { font-size: 22px; color: #fff; margin-bottom: 8px; }
+  .section-sub { color: #9aa4b2; margin-bottom: 24px; }
+  .shot { width: 100%; max-width: 720px; border: 1px solid #30363d; border-radius: 12px; margin: 0 auto; display: block; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 8px; }
+  .card { background: #161b26; border: 1px solid #232836; border-radius: 12px; padding: 22px; }
+  .card h3 { color: #fff; font-size: 17px; margin-bottom: 8px; }
+  .card p { color: #9aa4b2; font-size: 14.5px; }
+  pre { background: #0b0e14; border: 1px solid #232836; border-radius: 10px; padding: 18px; overflow-x: auto; margin-top: 20px; }
+  pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; color: #d2d8e0; }
+  .price { text-align: center; }
+  .price .free { color: #3fb950; font-weight: 700; }
+  .price .soon { color: #d29922; font-weight: 700; }
+  .price .serv { color: #58a6ff; font-weight: 700; }
+  ul.check { list-style: none; margin-top: 8px; }
+  ul.check li { color: #9aa4b2; font-size: 14.5px; padding: 5px 0 5px 26px; position: relative; }
+  ul.check li::before { content: "✓"; position: absolute; left: 0; color: #3fb950; font-weight: 700; }
+  footer { border-top: 1px solid #1b2029; padding: 28px 0 48px; color: #6e7681; font-size: 13.5px; }
+  footer .wrap { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+  footer a { color: #9aa4b2; text-decoration: none; }
+  footer a:hover { color: #fff; }
+  .badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+  .badges img { height: 22px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">ModRelease <span>Studio</span></div>
+    <nav>
+      <a href="#what">What it checks</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Release preflight for <em>game mods &amp; mod packs</em></h1>
+    <p class="sub">Scan a folder or ZIP before you publish. Catch packaging risks, leaked secrets, and missing metadata — and share a clean report with your players.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases" target="_blank" rel="noopener">⬇ Download</a>
+      <a class="btn btn-warn" href="https://www.buymeacoffee.com/azizazimov8" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+      <a class="btn btn-ghost" href="#contact">Contact</a>
+    </div>
+    <div class="badges">
+      <img src="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg" alt="CI status">
+      <img src="https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver" alt="Latest release">
+      <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license">
+    </div>
+  </div>
+</section>
+
+<section id="what">
+  <div class="wrap">
+    <div class="section-title">What it checks</div>
+    <div class="section-sub">One command, repeatable checks, a readable report.</div>
+    <div class="grid">
+      <div class="card">
+        <h3>Packaging risks</h3>
+        <ul class="check">
+          <li>Unsafe archive paths &amp; path collisions</li>
+          <li>Case-only collisions</li>
+          <li>Unexpectedly large or junk files</li>
+          <li>Missing required files (README, LICENSE…)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Secrets &amp; safety</h3>
+        <ul class="check">
+          <li>Private keys, API keys, tokens</li>
+          <li>GitHub / Slack / Discord tokens</li>
+          <li>AWS access-key IDs</li>
+          <li>Best-effort scan — review findings yourself</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Mod metadata</h3>
+        <ul class="check">
+          <li>Paradox <code>descriptor.mod</code> checks</li>
+          <li>Localization YAML headers &amp; keys</li>
+          <li>Missing <code>supported_version</code></li>
+          <li>SHA-256 fingerprint of each build</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-title">How it works</div>
+    <div class="section-sub">Local-first: your mods never leave your machine unless you upload the report.</div>
+    <img class="shot" src="demo.png" alt="modrelease scan output catching a leaked token, a bad localization header, and a missing supported_version">
+    <pre><code># Before your first release
+modrelease scan ./my-mod --md-out release-report.md
+
+# Compare two builds
+modrelease compare ./previous-build ./candidate-build
+
+# Or gate releases in CI with the GitHub Action
+- uses: GhosTnever-lkm/modrelease-studio-action@v1</code></pre>
+    <p class="section-sub" style="margin-top:16px">Exits with code <code>0</code> (ready), <code>1</code> (release-blocking findings), or <code>2</code> (invalid input). Requires Python 3.11+, standard library only.</p>
+  </div>
+</section>
+
+<section id="pricing" class="price">
+  <div class="wrap">
+    <div class="section-title">Pricing</div>
+    <div class="grid">
+      <div class="card">
+        <h3 class="free">Core — Free</h3>
+        <p>MIT-licensed CLI. Scan, compare, JSON/Markdown reports. Run locally or in CI.</p>
+      </div>
+      <div class="card">
+        <h3 class="soon">Pro — Coming soon</h3>
+        <p>Custom rule packs, team reporting, release dashboards. Join the waitlist via contact.</p>
+      </div>
+      <div class="card">
+        <h3 class="serv">Services</h3>
+        <p>Custom checks, release audits, and gate setup for your mod distribution.</p>
+      </div>
+    </div>
+    <div class="cta" style="margin-top:26px">
+      <a class="btn btn-primary" href="https://github.com/GhosTnever-lkm/modrelease-studio" target="_blank" rel="noopener">View on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap" style="text-align:center">
+    <div class="section-title">Contact</div>
+    <p class="section-sub">Questions, custom checks, or a release audit? Reach out.</p>
+    <div class="cta">
+      <a class="btn btn-ghost" href="https://github.com/GhosTnever-lkm" target="_blank" rel="noopener">GitHub profile</a>
+      <a class="btn btn-ghost" href="https://github.com/GhosTnever-lkm/modrelease-studio/issues" target="_blank" rel="noopener">Open an issue</a>
+      <a class="btn btn-ghost" href="mailto:azizazimov038l@gmail.com">Email</a>
+      <a class="btn btn-ghost" href="https://t.me/TELEGRAM_HANDLE_PLACEHOLDER" target="_blank" rel="noopener">Telegram</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 GhosTnever — ModRelease Studio is MIT-licensed.</span>
+    <a href="https://github.com/GhosTnever-lkm/modrelease-studio" target="_blank" rel="noopener">Source</a>
+    <a href="https://github.com/GhosTnever-lkm/modrelease-studio/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a>
+  </div>
+</footer>
+</body>
+</html>

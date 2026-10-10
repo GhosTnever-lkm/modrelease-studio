@@ -2,9 +2,24 @@
 
 **Release preflight for game mods and mod packs.** Scan a folder or ZIP, catch common packaging and metadata problems, and publish a readable report before players download the build.
 
-Current unreleased changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+[![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
+[![Tests](https://img.shields.io/badge/tests-9%2F9%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. It uses only the Python standard library.
+
+## Who is it for
+
+- **Mod authors** shipping their first release and wanting to avoid "my mod is broken / doesn't install" reports.
+- **Modpack and collection maintainers** who review many ZIPs and need one consistent preflight check.
+- **Game teams and CI** that want a release gate before a build reaches players.
+
+Current unreleased changes are tracked in [CHANGELOG.md](CHANGELOG.md).
+
+## The problem it solves
+
+Every mod release is judged in the first minutes after upload: does it install, does it look finished, and is anything broken or embarrassing in the files? Catching packaging mistakes, accidental secrets, and missing metadata by hand is slow and inconsistent. ModRelease Studio turns that into one repeatable command and a clean report.
 
 ## What it checks
 
@@ -13,6 +28,29 @@ ModRelease Studio is local-first: your mod files stay on your machine unless you
 - Paradox Clausewitz `descriptor.mod` metadata and localization YAML issues.
 - Missing release notes, OS-specific junk, and unexpectedly large files.
 - Stable SHA-256 fingerprint of the build, JSON/Markdown reports, and finding changes between two builds.
+
+![modrelease scan demo — a real scan catches a leaked token, a bad localization header, and a missing supported_version](docs/demo.png)
+
+## Three real scenarios
+
+**1. A mod author before the first release.** You built a Paradox mod, added the `descriptor.mod`, wrote some localization, and want to publish. Run one command before uploading:
+
+```console
+modrelease scan ./my-mod --md-out release-report.md
+```
+
+A clean report (`Status: READY`) means you are safe to publish; a `FAIL` report lists exactly which files block the release.
+
+**2. A modpack maintainer screening many ZIPs.** You collect mods from many authors and cannot open every archive. Scan them all with the same command, read one report per ZIP, and only forward the ones that pass:
+
+```console
+modrelease scan ./modpack/part1.zip --json-out check.json
+modrelease scan ./modpack/part2.zip --json-out check.json
+```
+
+The JSON report (with SHA-256 + findings) also makes an audit trail for your collection.
+
+**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action](https://github.com/GhosTnever-lkm/modrelease-studio-action) to your mod repository so every pull request runs the preflight and blocks merge on release-blocking findings. Mod authors get feedback in the PR, and no broken build reaches the workshop.
 
 ## Quick start
 
@@ -70,7 +108,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.2.3"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.0"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -82,7 +120,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.2.3`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.0`.
 
 ## Current scope
 
@@ -110,6 +148,19 @@ You can also send a supported asset to one of these public receive addresses:
 | BNB Smart Chain | BEP-20 | `0xD431a917961E0b086B96D9F72b5C8fF19b19068a` |
 
 **Send funds only on the matching network.** Do not send a different network's asset to these addresses.
+
+### Pricing
+
+- **Core (this repo)** — free, MIT-licensed, run anywhere: `modrelease scan` / `compare`.
+- **ModRelease Gate (GitHub Action)** — free to use in CI: [modrelease-studio-action](https://github.com/GhosTnever-lkm/modrelease-studio-action).
+- **Pro** — planned: custom rule packs, team reporting, and release dashboards. Details will be announced in the repo and on the [landing page](https://ghostnever-lkm.github.io/modrelease-studio/).
+- **Services** — custom checks, release-audit consulting, and setup as a release gate for your mod distribution. Contact us with your case.
+
+### Contact
+
+- GitHub: [GhosTnever-lkm](https://github.com/GhosTnever-lkm)
+- Email: <azizazimov038l@gmail.com>
+- Telegram: <TELEGRAM_HANDLE_PLACEHOLDER>
 
 ## License
 
