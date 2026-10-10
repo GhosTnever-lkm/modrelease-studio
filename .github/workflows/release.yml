@@ -21,7 +21,7 @@ jobs:
         run: |
           version="${GITHUB_REF_NAME#v}"
           archive="ModRelease-Studio-v${version}.zip"
-          zip -r "dist-${archive}" modrelease_studio tests README.md CHANGELOG.md CONTRIBUTING.md LICENSE SECURITY.md pyproject.toml modrelease.example.toml examples/policies/paradox-release.toml
+          zip -r "dist-${archive}" modrelease_studio tests README.md CHANGELOG.md CONTRIBUTING.md LICENSE SECURITY.md pyproject.toml modrelease.example.toml examples/policies/paradox-release.toml examples/policies/paradox-release-report.md
           mv "dist-${archive}" "${archive}"
           sha256sum "${archive}" > "${archive}.sha256"
       - name: Publish GitHub release

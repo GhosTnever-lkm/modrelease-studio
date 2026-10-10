@@ -6,3 +6,5 @@ dist/
 *.egg-info/
 *-report.json
 *-report.md
+
+!examples/policies/paradox-release-report.md

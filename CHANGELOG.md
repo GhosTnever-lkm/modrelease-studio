@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.4 - 2026-10-11
+
+- Add a checked-in, generated example report demonstrating the Paradox required-path policy.
+- Bump package and CLI version to 0.3.4.
+
 ## 0.3.3 - 2026-10-11
 
 - Run the checked-in Paradox required-path policy against the clean example project in CI.

@@ -124,7 +124,7 @@ The included `.github/workflows/preflight.yml` installs this repository's local 
 
 ## Project-specific release policy
 
-Set `required_paths` in `modrelease.toml` to enforce exact paths or glob patterns (case-insensitive). Use `required_paths_severity = "ERROR"` to make missing policy paths fail the scan and CI; the default is `WARNING`. For example, `examples/policies/paradox-release.toml` requires a root `descriptor.mod`, README, and changelog. Existing `required_files` remains useful when only the filename matters, regardless of its directory. The checked-in policy is exercised against the example mod in CI.
+Set `required_paths` in `modrelease.toml` to enforce exact paths or glob patterns (case-insensitive). Use `required_paths_severity = "ERROR"` to make missing policy paths fail the scan and CI; the default is `WARNING`. For example, `examples/policies/paradox-release.toml` requires a root `descriptor.mod` and README. See the [sample policy report](examples/policies/paradox-release-report.md). Existing `required_files` remains useful when only the filename matters, regardless of its directory. The checked-in policy is exercised against the example mod in CI.
 
 ```toml
 [scan]
