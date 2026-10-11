@@ -9,6 +9,7 @@ Updated: 2026-10-11
 - Published v0.3.35; archive is 87,432 bytes. Downloaded SHA-256 and ZIP integrity verified. There are 40 releases; preflight is 50/51 successful (98.0%).
 - Profile v1.2.96 and portfolio v1.3.74 updated; release workflows and Pages succeeded; live pages verified.
 - Six core QA issue queues have zero open issues; seven key URLs return HTTP 200.
+- Manual smoke tests of public v0.3.35 Git tag and downloadable ZIP in separate clean venvs both reported version 0.3.35, scanned the sample READY (3 files), and matched the 57/57 README badge.
 - Consumer integrations ModRelease Gate v1.0.30 and Paradox Mod Quality Gate v1.0.24 intentionally remain on runtime scanner v0.3.25; both assert exact installed versions in CI.
 
 ## Previous iteration — v0.3.34 (badge correction)
@@ -22,6 +23,6 @@ Updated: 2026-10-11
 
 ## Next
 
-1. Smoke-test public v0.3.35 tag and downloadable ZIP in clean environments; compare installed version, README badge, and sample output.
+1. Add a regression ensuring the README test badge matches the discovered unittest count, preventing stale metrics after future test additions.
 2. Keep consumer pins at v0.3.25 unless a runtime change justifies updating them.
 3. Continue only concrete, tested product improvements.
