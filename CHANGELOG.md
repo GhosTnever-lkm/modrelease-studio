@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.45 - 2026-10-11
+
+- Refresh the external GitHub Actions install example to scanner v0.3.44.
+
+
 ## 0.3.44 - 2026-10-11
 
 - Render Unicode LINE SEPARATOR and PARAGRAPH SEPARATOR characters as visible escapes in terminal compare output, preventing hidden line breaks in hostile filenames or findings.
