@@ -2,25 +2,25 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.41 (version-independent checksum docs) — published
+## Current iteration — v0.3.42 (safe terminal output) — published
 
-- Replaced hard-coded v0.3.36 names in checksum instructions with a wildcard for Linux/macOS and exact-one-sidecar discovery in PowerShell; PowerShell derives the ZIP path from the sidecar.
-- Updated the Linux/macOS/Windows CI fixtures to exercise the filename selection and verification commands.
-- Published v0.3.41; 58/58 tests pass, package line coverage 91%, all five preflight jobs and release workflow passed; Pages deployment passed on `56afd7b`.
-- Verified public v0.3.41 ZIP sidecar using the new wildcard command; archive size 34,089 bytes. Scanner runtime is unchanged, so consumers remain intentionally pinned at v0.3.25.
-- Refreshed profile v1.2.103 and portfolio v1.3.82 with 46 releases, 56/57 preflight success (98.2%), 58 tests, 91% coverage, current ZIP size, and v0.3.41 links. Both release workflows and Pages passed; live page confirmed.
+- `modrelease compare` now escapes control-category Unicode in untrusted paths and messages. Newline, ANSI ESC, and bidi-control content is visibly encoded so hostile filenames cannot inject terminal formatting or fake output lines.
+- Added a regression for embedded newline, ANSI color escape, and bidi formatting control. Local public tag and ZIP installs both detect the synthetic token while producing one safe output line.
+- Published v0.3.42. All 59 tests pass, package line coverage 91%; all five preflight jobs, release, and Pages passed on `5b55306`.
+- Public 34,641-byte release ZIP checksum verified; separate clean tag/ZIP installs report version 0.3.42.
+- Profile v1.2.104 and portfolio v1.3.83 reflect 47 releases, 57/58 preflight successes (98.3%), 59 tests, 91% coverage and current asset size; release workflows and Pages passed.
 
-## Previous iteration — v0.3.40 (bytecode-free release archive)
+## Previous iteration — v0.3.41 (version-independent checksum instructions)
 
-- Release packaging removes test-generated `__pycache__` and fails if `.pyc`/`.pyo` entries remain. Public v0.3.40 ZIP has zero bytecode entries; checksum and clean tag/ZIP install smoke passed.
+- Linux/macOS docs use a version-independent sidecar glob; PowerShell detects exactly one matching sidecar. Cross-platform CI verifies instructions. No scanner runtime change.
 
 ## Published baseline
 
-- Latest verified release: v0.3.41.
-- Consumers remain pinned at v0.3.25; recent releases changed packaging/docs/CI only.
+- Latest verified release: v0.3.42.
+- Consumers remain pinned at v0.3.25; v0.3.41 was docs/CI-only, while v0.3.42 changes compare rendering only and not scanner policy/API.
 
 ## Next
 
-1. Continue only concrete, tested improvements to the local-first QA tools; avoid speculative Pro offers.
+1. Audit other local-first QA tools for terminal/output injection from untrusted filenames; reproduce findings first.
 2. Recheck core issue queues, featured links, and consumer pins after material runtime releases.
 3. Keep owner-dependent payout, license, and support terms pending; do not invent credentials or payment details.
