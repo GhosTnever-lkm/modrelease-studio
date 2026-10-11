@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.34 - 2026-10-11
+
+- Correct the README test badge to 57/57 after the v0.3.33 ZIP expanded-size regression.
+- No runtime behavior changed.
+
 ## 0.3.33 - 2026-10-11
 
 - Add an end-to-end CLI regression proving ZIP archives over the unpacked-size limit produce `ARCHIVE_SIZE_LIMIT` in JSON and exit with blocking status 1.
