@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.40 - 2026-10-11
+
+- Exclude test-generated Python bytecode from release ZIPs and fail the release job if any `__pycache__` or `.pyc`/`.pyo` files remain.
+- No runtime behavior changed; the suite remains 58 tests.
+
 ## 0.3.39 - 2026-10-11
 
 - Exercise the documented SHA-256 sidecar verification in CI on Linux (`sha256sum`), macOS (`shasum`), and Windows PowerShell (`Get-FileHash`).

@@ -21,7 +21,13 @@ jobs:
         run: |
           version="${GITHUB_REF_NAME#v}"
           archive="ModRelease-Studio-v${version}.zip"
+          # Tests create ignored bytecode inside these folders; never ship it.
+          find modrelease_studio tests -type d -name __pycache__ -prune -exec rm -rf {} +
           zip -r "dist-${archive}" modrelease_studio tests README.md CHANGELOG.md CONTRIBUTING.md LICENSE SECURITY.md pyproject.toml modrelease.example.toml examples/policies/paradox-release.toml examples/policies/paradox-release-report.md
+          if unzip -Z1 "dist-${archive}" | grep -Eq '(^|/)__pycache__/|\.py[co]$'; then
+            echo "Release archive contains Python bytecode" >&2
+            exit 1
+          fi
           mv "dist-${archive}" "${archive}"
           sha256sum "${archive}" > "${archive}.sha256"
           sha256sum --check "${archive}.sha256"
