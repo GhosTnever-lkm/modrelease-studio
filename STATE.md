@@ -9,6 +9,7 @@ Updated: 2026-10-11
 - Published v0.3.34; the 87,333-byte ZIP checksum and archive integrity verified. There are 39 releases; preflight is 49/50 successful (98.0%).
 - Profile v1.2.95 and portfolio v1.3.73 reflect the release; both release workflows and Pages succeeded and live content was checked.
 - Six featured QA issue queues have zero open issues; seven key release/demo/profile links returned HTTP 200.
+- Fresh-venv smoke tests from both the public v0.3.34 tag and downloaded release ZIP passed: version 0.3.34, sample READY, JSON and Markdown reports generated.
 
 ## Recent technical work
 
@@ -27,6 +28,6 @@ Updated: 2026-10-11
 
 ## Next
 
-1. Smoke-test public v0.3.34 in a fresh virtual environment; verify CLI version, README badge, and release asset consistency.
+1. Automate release-ZIP smoke test in the release workflow: extract the archive, install in an isolated venv, assert the tag version and clean sample report before publishing.
 2. Keep consumer pins at v0.3.25 unless a runtime change justifies an update.
 3. Recheck featured links/issues after the next flagship release; pursue only concrete, tested improvements.
