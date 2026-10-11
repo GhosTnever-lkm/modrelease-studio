@@ -365,6 +365,31 @@ class CompareTests(unittest.TestCase):
 
 
 class SourceEntryLimitReportingTests(unittest.TestCase):
+    def test_file_growth_warning_is_serialized_in_cli_json_and_markdown(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / "mod"
+            target.mkdir()
+            (target / "growing.txt").write_text("x", encoding="utf-8")
+            config = root / "modrelease.toml"
+            config.write_text("[scan]\nmax_file_bytes = 10\nrequired_files = []\n", encoding="utf-8")
+            markdown_path = root / "report.md"
+            output = io.StringIO()
+            with patch("modrelease_studio.sources.DirectorySource.read", return_value=b"x" * 11):
+                with contextlib.redirect_stdout(output):
+                    exit_code = cli.main([
+                        "scan", str(target), "--config", str(config), "--json",
+                        "--md-out", str(markdown_path),
+                    ])
+            markdown_text = markdown_path.read_text(encoding="utf-8")
+        payload = json.loads(output.getvalue())
+        codes = {finding["code"] for finding in payload["findings"]}
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(payload["status"], "REVIEW")
+        self.assertEqual(payload["warnings"], 1)
+        self.assertIn("LARGE_TEXT_FILE", codes)
+        self.assertIn("content checks were skipped", markdown_text)
+
     def test_file_growing_past_read_limit_is_reported_not_silently_skipped(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             source = Source(
@@ -450,7 +475,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.48")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.49")
 
 if __name__ == "__main__":
     unittest.main()

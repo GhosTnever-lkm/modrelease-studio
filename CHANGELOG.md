@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.49 - 2026-10-11
+
+- Add an end-to-end CLI regression verifying file-growth warnings in JSON, Markdown, REVIEW status, and the non-blocking exit code.
+
 ## 0.3.48 - 2026-10-11
 
 - Remove an obsolete project-state document from the public product repository.
