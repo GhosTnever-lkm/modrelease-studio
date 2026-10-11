@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.10 - 2026-10-11
+
+- Refresh the README workflow example and project CI/release workflows to the current first-party GitHub Actions v7 majors.
+- Bump package and CLI version to 0.3.10.
+
 ## 0.3.9 - 2026-10-11
 
 - Reject non-regular special-file entries in ZIP archives instead of scanning them as ordinary files.

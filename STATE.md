@@ -2,7 +2,7 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.9 (reject special ZIP filesystem entries)
+## Current iteration — v0.3.10 (refresh first-party workflow actions)
 
 - Reject ZIP archive entries whose POSIX type is not a regular file, preventing special filesystem objects from being treated as ordinary payloads.
 - Added a Paradox policy example, README configuration guidance, and included the example policy in release archives.
@@ -12,10 +12,10 @@ Updated: 2026-10-11
 
 ## Published baseline
 
-- Latest verified published release before this iteration: v0.3.8.
+- Latest verified published release before this iteration: v0.3.9.
 
 ## Next
 
-1. Publish v0.3.9 and verify release workflow, CI, and Pages.
+1. Publish v0.3.10 and verify release workflow, CI, and Pages.
 2. Add Telegram only if the owner supplies a real handle; GitHub/email remain available meanwhile.
 3. Continue improving the mod-QA ecosystem and verified monetization links.
