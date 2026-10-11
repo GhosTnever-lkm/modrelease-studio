@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.38 - 2026-10-11
+
+- Verify the generated release ZIP `.sha256` sidecar with `sha256sum --check` before running the install smoke test and publishing assets.
+- No runtime behavior changed; suite remains 58 tests.
+
 ## 0.3.37 - 2026-10-11
 
 - Document SHA-256 sidecar verification for downloaded release ZIPs on Linux, macOS, and Windows PowerShell.

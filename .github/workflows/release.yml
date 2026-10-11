@@ -24,6 +24,7 @@ jobs:
           zip -r "dist-${archive}" modrelease_studio tests README.md CHANGELOG.md CONTRIBUTING.md LICENSE SECURITY.md pyproject.toml modrelease.example.toml examples/policies/paradox-release.toml examples/policies/paradox-release-report.md
           mv "dist-${archive}" "${archive}"
           sha256sum "${archive}" > "${archive}.sha256"
+          sha256sum --check "${archive}.sha256"
       - name: Smoke-test packaged release archive
         run: |
           version="${GITHUB_REF_NAME#v}"
