@@ -8,7 +8,8 @@ Updated: 2026-10-11
 - Validation: 57/57 tests pass; package line coverage 91%. Five CI jobs, release, and Pages passed on `316f52d`.
 - Published v0.3.33; archive is 87,290 bytes, published checksum and ZIP integrity verified. There are 38 releases; preflight history is 48/49 success (98.0%).
 - Profile v1.2.94 and portfolio v1.3.72 updated; six core issues zero; seven key URLs HTTP 200.
-- Earlier smoke test of public v0.3.32 in a fresh virtual environment installed successfully, reported correct CLI version, scanned sample to READY, and generated both reports.
+- Fresh-venv smoke test of public v0.3.33: CLI version correct, included sample scanned READY with JSON/Markdown output, and a synthetic ZIP over the patched expansion limit produced `ARCHIVE_SIZE_LIMIT`, FAIL, exit 1.
+- Follow-up: update README badge from 56/56 to 57/57 (new .33 regression raised the suite by one), then synchronize portfolio metrics.
 
 ## Previous iteration — v0.3.32 (scan-limit documentation) — published
 
