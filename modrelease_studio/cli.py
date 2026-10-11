@@ -5,6 +5,7 @@ import argparse
 import json
 import sys
 import tomllib
+import unicodedata
 from collections import Counter
 from pathlib import Path
 
@@ -12,6 +13,27 @@ from . import __version__
 from .models import Finding
 from .reports import markdown, to_dict, write_json, write_markdown
 from .scanner import scan_path
+
+
+def _safe_terminal_field(value: str) -> str:
+    """Render untrusted path/message text without terminal control effects."""
+    rendered: list[str] = []
+    readable_controls = {"\n": r"\n", "\r": r"\r", "\t": r"\t"}
+    for char in value:
+        if char in readable_controls:
+            rendered.append(readable_controls[char])
+            continue
+        if unicodedata.category(char).startswith("C"):
+            codepoint = ord(char)
+            if codepoint <= 0xFF:
+                rendered.append(f"\\x{codepoint:02x}")
+            elif codepoint <= 0xFFFF:
+                rendered.append(f"\\u{codepoint:04x}")
+            else:
+                rendered.append(f"\\U{codepoint:08x}")
+        else:
+            rendered.append(char)
+    return "".join(rendered)
 
 
 def _config(path: str | None) -> dict:
@@ -52,7 +74,9 @@ def _compare(args: argparse.Namespace) -> int:
         for severity, code, path, message in sorted(counter):
             count = counter[(severity, code, path, message)]
             suffix = f" (x{count})" if count > 1 else ""
-            rendered.append(f"{sign} [{severity}] {code} {path or '—'}: {message}{suffix}")
+            safe_path = _safe_terminal_field(path or "—")
+            safe_message = _safe_terminal_field(message)
+            rendered.append(f"{sign} [{severity}] {code} {safe_path}: {safe_message}{suffix}")
         return rendered
 
     removed = left - right

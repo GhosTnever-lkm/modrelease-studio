@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.42 - 2026-10-11
+
+- Escape control, bidi-format, surrogate, and other Unicode control-category characters in compare output so untrusted filenames cannot inject terminal control sequences or extra lines.
+- Add a regression for newline, ANSI escape, and bidi control characters; update the README test badge and coverage/test-count summary.
+
 ## 0.3.41 - 2026-10-11
 
 - Make Linux/macOS checksum commands work with any downloaded release version; PowerShell detects the matching sidecar and fails safely if more than one is present.

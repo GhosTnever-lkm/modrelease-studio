@@ -280,6 +280,24 @@ class RequiredPathPolicyTests(unittest.TestCase):
 
 
 class CompareTests(unittest.TestCase):
+    def test_compare_escapes_terminal_controls_in_untrusted_paths(self) -> None:
+        hostile_path = "config\n+ [ERROR] FAKE \x1b[31m\u202e"
+        before = ScanReport("before", "default", findings=[])
+        after = ScanReport("after", "default", findings=[
+            Finding("UNREADABLE_FILE", "WARNING", hostile_path, "Review filename.")
+        ])
+        args = type("Args", (), {"before": "before", "after": "after", "config": None})()
+        output = io.StringIO()
+        with patch.object(cli, "scan_path", side_effect=[before, after]), contextlib.redirect_stdout(output):
+            result = cli._compare(args)
+
+        text = output.getvalue()
+        self.assertEqual(result, 0)
+        self.assertNotIn("\x1b", text)
+        self.assertNotIn("\u202e", text)
+        self.assertEqual(text.count("\n"), 1)
+        self.assertIn(r"config\n+ [ERROR] FAKE \x1b[31m\u202e", text)
+
     def test_compare_uses_finding_code_and_differences_do_not_block(self) -> None:
         before = ScanReport("before", "default", findings=[])
         after = ScanReport("after", "default", findings=[Finding("NEW_INFO", "INFO", "readme.txt", "New advisory.")])
@@ -389,7 +407,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.41")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.42")
 
 if __name__ == "__main__":
     unittest.main()
