@@ -8,7 +8,8 @@ Updated: 2026-10-11
 - Validation: 54/54 tests pass; Coverage.py 7.16.2 reports 91% package line coverage. Five CI jobs (Ubuntu Python 3.11–3.13, Windows 3.13, macOS 3.13), release workflow, and Pages passed.
 - Published v0.3.29 on commit `1cd5d8f`; ZIP is 83,626 bytes, release SHA-256 verified, and archive integrity checked. There are 34 releases; completed preflight history is 44/45 (97.8%).
 - Profile v1.2.88 and portfolio v1.3.68 now link to the release and verified metrics; both release workflows and the Pages deployment passed, and live portfolio content was verified.
-- No scanner runtime behavior changed; ModRelease Gate and Paradox Mod Quality Gate remain pinned to v0.3.25.
+- No scanner runtime behavior changed; ModRelease Gate v1.0.30 and Paradox Mod Quality Gate v1.0.24 remain pinned to v0.3.25 and now assert exact installed versions in green CI.
+- Rechecked issues in the six featured QA repositories after release; all have zero open issues.
 
 ## Previous iteration — v0.3.28 (corrupt ZIP payload handling) — published
 
@@ -25,6 +26,9 @@ Updated: 2026-10-11
 
 ## Next
 
+1. Add a bounded regression for DirectorySource entry-count exact and overflow boundaries; use small fixtures.
+2. Recheck profile and featured links after next release; preserve historical metrics and pin claims.
+3. Continue only a concrete, tested safety or usability improvement; do not create placeholder Pro storefronts.
 1. Add bounded tests for archive entry-count and total-uncompressed-size limits.
 2. Add a consumer CI assertion that records exact scanner versions for default and explicit pins.
 3. Recheck core issue queues and pinned-project links after the latest release cycle.
