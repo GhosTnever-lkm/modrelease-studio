@@ -32,7 +32,12 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
                         total_bytes=sum(item.size for item in source.records), sha256=source.digest(), files=source.records)
     report.findings.extend(source.findings)
     max_file_bytes = int(config.get("max_file_bytes", 2_000_000))
-    required_files = {str(x).casefold() for x in config.get("required_files", ["README.md"])}
+    if max_file_bytes < 1:
+        raise ValueError("scan.max_file_bytes must be a positive integer")
+    required_files_value = config.get("required_files", ["README.md"])
+    if not isinstance(required_files_value, list) or any(not isinstance(name, str) or not name.strip() for name in required_files_value):
+        raise ValueError("scan.required_files must be a list of non-empty filenames")
+    required_files = {name.casefold() for name in required_files_value}
     file_names = {PurePosixPath(record.path).name.casefold() for record in source.records}
     for name in sorted(required_files - file_names):
         report.findings.append(Finding("MISSING_RELEASE_FILE", "WARNING", name,

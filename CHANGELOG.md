@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.7 - 2026-10-11
+
+- Validate `required_files` and `max_file_bytes` configuration instead of silently accepting malformed policies.
+- Add regression tests for invalid and intentionally empty required-file lists.
+- Bump package and CLI version to 0.3.7.
+
 ## 0.3.6 - 2026-10-11
 
 - Add regression coverage for malformed required-path policy values and Windows-style glob separators.

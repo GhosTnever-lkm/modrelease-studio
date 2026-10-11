@@ -84,6 +84,23 @@ class RequiredPathPolicyTests(unittest.TestCase):
         self.assertNotIn("REQUIRED_PATH_MISSING", {item.code for item in report.findings})
         self.assertEqual(report.errors, 0)
 
+    def test_malformed_required_files_are_rejected(self) -> None:
+        malformed = ["README.md", [""], ["LICENSE", None]]
+        for value in malformed:
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as directory:
+                with self.assertRaisesRegex(ValueError, "required_files"):
+                    scan_path(directory, config={"required_files": value})
+
+    def test_empty_required_files_list_disables_filename_recommendations(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            report = scan_path(directory, config={"required_files": []})
+        self.assertNotIn("MISSING_RELEASE_FILE", {item.code for item in report.findings})
+
+    def test_invalid_max_file_bytes_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, "max_file_bytes"):
+                scan_path(directory, config={"max_file_bytes": 0})
+
     def test_malformed_required_paths_are_rejected(self) -> None:
         malformed = ["descriptor.mod", [""], ["   "], ["README.md", 7]]
         for value in malformed:
@@ -162,7 +179,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.6")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.7")
 
 if __name__ == "__main__":
     unittest.main()
