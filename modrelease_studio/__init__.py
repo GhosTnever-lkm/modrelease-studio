@@ -1,3 +1,3 @@
 """ModRelease Studio: local-first release quality checks for game mods."""
 
-__version__ = "0.3.32"
+__version__ = "0.3.33"

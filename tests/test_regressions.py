@@ -348,6 +348,25 @@ class SourceEntryLimitReportingTests(unittest.TestCase):
                         self.assertIn("ENTRY_LIMIT", {item["code"] for item in payload["findings"]})
                         self.assertEqual(payload["file_count"], 2)
 
+    def test_archive_size_limit_is_reported_and_release_blocking(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "oversized-unpacked-fixture.zip"
+            with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_STORED) as output:
+                output.writestr("one.txt", b"123")
+                output.writestr("two.txt", b"456")
+
+            with patch("modrelease_studio.sources.MAX_TOTAL_UNCOMPRESSED", 5):
+                with contextlib.redirect_stdout(io.StringIO()) as output:
+                    exit_code = cli.main(["scan", str(archive), "--json"])
+
+            payload = json.loads(output.getvalue())
+            self.assertEqual(exit_code, 1)
+            self.assertEqual(payload["status"], "FAIL")
+            self.assertGreater(payload["errors"], 0)
+            self.assertIn("ARCHIVE_SIZE_LIMIT", {item["code"] for item in payload["findings"]})
+            self.assertEqual(payload["file_count"], 2)
+            self.assertEqual(payload["total_bytes"], 6)
+
 
 class VersionTests(unittest.TestCase):
     def test_imported_version_matches_package_metadata(self) -> None:
@@ -360,7 +379,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.32")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.33")
 
 if __name__ == "__main__":
     unittest.main()

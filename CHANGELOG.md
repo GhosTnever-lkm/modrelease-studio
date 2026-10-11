@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.33 - 2026-10-11
+
+- Add an end-to-end CLI regression proving ZIP archives over the unpacked-size limit produce `ARCHIVE_SIZE_LIMIT` in JSON and exit with blocking status 1.
+- Increase the suite to 57 tests; package line coverage remains 91%, above the enforced 80% CI floor.
+
 ## 0.3.32 - 2026-10-11
 
 - Document the 30,000-entry, 4 GiB aggregate ZIP, 2,000,000-byte default text-file, 16 MiB configurable, and 2 MiB Paradox parser bounds and explain incomplete scans.
