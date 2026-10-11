@@ -23,7 +23,8 @@ def _safe_terminal_field(value: str) -> str:
         if char in readable_controls:
             rendered.append(readable_controls[char])
             continue
-        if unicodedata.category(char).startswith("C"):
+        category = unicodedata.category(char)
+        if category.startswith("C") or category in {"Zl", "Zp"}:
             codepoint = ord(char)
             if codepoint <= 0xFF:
                 rendered.append(f"\\x{codepoint:02x}")

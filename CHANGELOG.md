@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.44 - 2026-10-11
+
+- Render Unicode LINE SEPARATOR and PARAGRAPH SEPARATOR characters as visible escapes in terminal compare output, preventing hidden line breaks in hostile filenames or findings.
+- Extend the existing compare regression to cover U+2028 and U+2029.
+
 ## 0.3.43 - 2026-10-11
 
 - Render invisible Unicode controls visibly in Markdown findings, and use valid JSON escapes in JSON reports while preserving the original parsed values.

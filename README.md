@@ -27,7 +27,7 @@ Every mod release is judged in the first minutes after upload: does it install, 
 - Accidental secrets in common text/config files (private keys, AWS access-key IDs, GitHub and Slack tokens, Discord webhooks, and likely hard-coded API keys).
 - Paradox Clausewitz `descriptor.mod` metadata and localization YAML issues.
 - Missing release notes, OS-specific junk, and unexpectedly large files.
-- Stable SHA-256 fingerprint of the build, JSON/Markdown reports, and finding changes between two builds.
+- Stable SHA-256 fingerprint of the build, JSON/Markdown reports, and finding changes between two builds. Untrusted control, bidi, and Unicode line/paragraph separators are visibly escaped in reports and terminal comparisons.
 
 ![modrelease scan demo — a real scan catches a leaked token, a bad localization header, and a missing supported_version](docs/demo.png)
 
