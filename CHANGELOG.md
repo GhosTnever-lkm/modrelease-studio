@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.24 - 2026-10-11
+
+- Add ZIP-source regressions for bounded reads, indexed-entry restrictions, deterministic archive hashing, decompression failures, and invalid ZIP reporting.
+- Increase the suite to 49 passing tests; measured package line coverage returns to 89%, above the 80% CI floor.
+
+
 ## 0.3.23 - 2026-10-11
 
 - Prevent directory-backed reads and digests from following symbolic links or opening paths absent from the scan index.
