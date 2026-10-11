@@ -2,14 +2,18 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.32 (scan-limit documentation) — published
+## Current iteration — v0.3.33 (ZIP expanded-size report regression) — published
 
-- README explains the 30,000-entry indexing cap, 4 GiB ZIP aggregate uncompressed-size threshold, default 2,000,000-byte per-text-file content cap, configured 16 MiB maximum, and fixed 2 MiB Paradox parser ceiling. It explains entry overflow truncation and warns that any blocking limit finding invalidates a complete release approval.
-- Corrected wording that implied `READY` is a safety certification; updated the test badge to 56/56.
-- Validation: 56/56 tests; 91% package line coverage. Five CI jobs, release, and Pages passed on `4ebdce1`.
-- Published v0.3.32; 86,310-byte ZIP checksum and integrity verified. 37 releases; preflight 47/48 successful (97.9%).
-- Profile v1.2.93 and portfolio v1.3.71 show current release/metrics; profile and portfolio release workflows, Pages, and live content verified.
-- All six featured QA issue queues are empty; seven critical release/demo links returned HTTP 200.
+- Added an end-to-end CLI regression with a tiny patched `MAX_TOTAL_UNCOMPRESSED`: oversized ZIP reports `ARCHIVE_SIZE_LIMIT` in JSON, has status FAIL, and returns exit code 1 while preserving the scanned file count and total bytes.
+- Validation: 57/57 tests pass; package line coverage 91%. Five CI jobs, release, and Pages passed on `316f52d`.
+- Published v0.3.33; archive is 87,290 bytes, published checksum and ZIP integrity verified. There are 38 releases; preflight history is 48/49 success (98.0%).
+- Profile v1.2.94 and portfolio v1.3.72 updated; six core issues zero; seven key URLs HTTP 200.
+- Earlier smoke test of public v0.3.32 in a fresh virtual environment installed successfully, reported correct CLI version, scanned sample to READY, and generated both reports.
+
+## Previous iteration — v0.3.32 (scan-limit documentation) — published
+
+- README documented entry-count, archive expanded-size, general text-file, configurable file-size, and Paradox parser bounds; clarified incomplete scans and that READY is not a safety certification. Updated test badge.
+- 56/56 tests, 91% coverage; five CI jobs, release, Pages, checksum, and ZIP integrity passed.
 
 ## Previous iteration — v0.3.31 (entry-limit report regression) — published
 
@@ -42,9 +46,9 @@ Updated: 2026-10-11
 
 ## Next
 
-1. Smoke-test public v0.3.32 GitHub-tag install in isolated venv: CLI version, sample scan, and report output.
-2. Add end-to-end ZIP `ARCHIVE_SIZE_LIMIT` regression using a tiny patched test limit; assert JSON finding and release-blocking exit code.
-3. Keep consumer pins at v0.3.25 unless a runtime change justifies an update; recheck featured links/issues after the next release.
+1. Smoke-test public v0.3.33 tag in a clean virtual environment against an ordinary sample and synthetic oversized ZIP; compare with README limits.
+2. Keep consumer pins at v0.3.25 unless a runtime change justifies an update; recheck featured links/issues after the next release.
+3. Continue only a concrete, tested product improvement; no placeholder Pro storefronts.
 1. Add bounded tests for archive entry-count and total-uncompressed-size limits.
 2. Add a consumer CI assertion that records exact scanner versions for default and explicit pins.
 3. Recheck core issue queues and pinned-project links after the latest release cycle.
