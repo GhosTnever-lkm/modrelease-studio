@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.47 - 2026-10-11
+
+- Update the documented external GitHub Actions install pin to behavioral release v0.3.46.
+
 ## 0.3.46 - 2026-10-11
 
 - Report a `LARGE_TEXT_FILE` warning when an indexed text file grows past the configured read limit during scanning, instead of silently skipping content checks.
