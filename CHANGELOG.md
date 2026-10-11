@@ -1,8 +1,12 @@
+# Changelog
+
+## 0.3.60 - 2026-10-12
+
+- Refresh the pinned installation examples and product landing page to the current release tag v0.3.60.
+
 ## 0.3.59 - 2026-10-12
 
 - Rebuild the GitHub Pages product landing page in Russian with current v0.3.59 details, verified free/Pro status, SARIF and Gate workflow, use cases, quick start, screenshot, and contact links.
-
-# Changelog
 
 ## 0.3.58 - 2026-10-12
 
