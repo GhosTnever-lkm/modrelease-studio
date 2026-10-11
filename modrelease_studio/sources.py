@@ -4,6 +4,7 @@ import hashlib
 import os
 import stat
 import zipfile
+import zlib
 from pathlib import Path, PurePosixPath
 
 from .models import FileRecord, Finding, Source
@@ -191,7 +192,7 @@ class ZipSource(Source):
         try:
             with zipfile.ZipFile(self.target) as archive, archive.open(info) as stream:
                 return stream.read(limit + 1)
-        except (OSError, RuntimeError, zipfile.BadZipFile, zipfile.LargeZipFile):
+        except (OSError, RuntimeError, zipfile.BadZipFile, zipfile.LargeZipFile, zlib.error):
             return None
 
     def digest(self) -> str:

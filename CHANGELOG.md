@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.28 - 2026-10-11
+
+- Catch zlib decompression errors while reading ZIP entries and surface corrupt text files as unreadable findings instead of crashing the scan.
+- Add a synthetic corrupt-DEFLATE regression; the suite now has 52 tests and 90% package line coverage.
+
+
 ## 0.3.27 - 2026-10-11
 
 - Add a temporal symlink-swap regression: after a file enters the scan index, replacing it with an outside symlink must not expose target contents through reads or directory digests.

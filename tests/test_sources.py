@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import struct
 import tempfile
 import unittest
 import zipfile
@@ -8,6 +9,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 from modrelease_studio.sources import open_source
+from modrelease_studio.scanner import scan_path
 
 
 class DirectorySourceSafetyTests(unittest.TestCase):
@@ -88,6 +90,24 @@ class ZipSourceTests(unittest.TestCase):
             source = open_source(archive)
             with patch("zipfile.ZipFile.open", side_effect=RuntimeError("synthetic decompression failure")):
                 self.assertIsNone(source.read("notes.txt", 100))
+
+    def test_corrupt_deflate_payload_becomes_unreadable_finding(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "corrupt-payload.zip"
+            with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as output:
+                output.writestr("payload.txt", b"alpha-beta-gamma-" * 1000)
+            with zipfile.ZipFile(archive) as source_zip:
+                info = source_zip.getinfo("payload.txt")
+            content = bytearray(archive.read_bytes())
+            filename_size, extra_size = struct.unpack_from("<HH", content, info.header_offset + 26)
+            compressed_data = info.header_offset + 30 + filename_size + extra_size
+            content[compressed_data] ^= 0xFF
+            archive.write_bytes(content)
+
+            report = scan_path(str(archive))
+
+            self.assertIn("UNREADABLE_FILE", {finding.code for finding in report.findings})
+            self.assertEqual(report.errors, 0)
 
     def test_invalid_zip_is_reported_without_raising(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
