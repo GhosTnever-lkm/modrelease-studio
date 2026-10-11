@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.61 - 2026-10-12
+
+- Sync the product page with ModRelease Gate v1.0.44 and refresh the current release examples to v0.3.61.
+
 ## 0.3.60 - 2026-10-12
 
 - Refresh the pinned installation examples and product landing page to the current release tag v0.3.60.
