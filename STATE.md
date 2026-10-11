@@ -2,7 +2,15 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.28 (corrupt ZIP payload handling) — published
+## Current iteration — v0.3.29 (archive limit boundary tests) — published
+
+- Added small synthetic ZIP fixtures for exact and over-limit entry counts and total uncompressed size; tests exercise bounds without allocating large payloads.
+- Validation: 54/54 tests pass; Coverage.py 7.16.2 reports 91% package line coverage. Five CI jobs (Ubuntu Python 3.11–3.13, Windows 3.13, macOS 3.13), release workflow, and Pages passed.
+- Published v0.3.29 on commit `1cd5d8f`; ZIP is 83,626 bytes, release SHA-256 verified, and archive integrity checked. There are 34 releases; completed preflight history is 44/45 (97.8%).
+- Profile v1.2.88 and portfolio v1.3.68 now link to the release and verified metrics; both release workflows and the Pages deployment passed, and live portfolio content was verified.
+- No scanner runtime behavior changed; ModRelease Gate and Paradox Mod Quality Gate remain pinned to v0.3.25.
+
+## Previous iteration — v0.3.28 (corrupt ZIP payload handling) — published
 
 - A synthetic corrupted DEFLATE entry exposed an uncaught `zlib.error` from `ZipSource.read()`. The reader now catches decompression errors, and `scan_path()` reports `UNREADABLE_FILE` instead of aborting.
 - Added an end-to-end regression that corrupts a ZIP payload after central-directory indexing.
