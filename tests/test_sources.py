@@ -82,6 +82,41 @@ class ZipSourceTests(unittest.TestCase):
             self.assertIsNone(source.read("missing.txt", 3))
             self.assertEqual(source.digest(), hashlib.sha256(archive.read_bytes()).hexdigest())
 
+    def test_zip_entry_limit_accepts_exact_boundary_and_truncates_overflow(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            at_limit_archive = Path(directory) / "entry-at-limit.zip"
+            with zipfile.ZipFile(at_limit_archive, "w") as output:
+                output.writestr("one.txt", b"fixture")
+                output.writestr("two.txt", b"fixture")
+            over_limit_archive = Path(directory) / "entry-over-limit.zip"
+            with zipfile.ZipFile(over_limit_archive, "w") as output:
+                for name in ("one.txt", "two.txt", "three.txt"):
+                    output.writestr(name, b"fixture")
+
+            with patch("modrelease_studio.sources.MAX_ENTRIES", 2):
+                at_limit = open_source(at_limit_archive)
+                self.assertEqual([record.path for record in at_limit.records], ["one.txt", "two.txt"])
+                self.assertNotIn("ENTRY_LIMIT", {finding.code for finding in at_limit.findings})
+
+                over_limit = open_source(over_limit_archive)
+                self.assertEqual([record.path for record in over_limit.records], ["one.txt", "two.txt"])
+                self.assertIn("ENTRY_LIMIT", {finding.code for finding in over_limit.findings})
+
+    def test_zip_uncompressed_size_limit_accepts_exact_boundary_and_flags_overflow(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "size-boundary.zip"
+            with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_STORED) as output:
+                output.writestr("first.txt", b"123")
+                output.writestr("second.txt", b"456")
+
+            with patch("modrelease_studio.sources.MAX_TOTAL_UNCOMPRESSED", 6):
+                at_limit = open_source(archive)
+                self.assertNotIn("ARCHIVE_SIZE_LIMIT", {finding.code for finding in at_limit.findings})
+
+            with patch("modrelease_studio.sources.MAX_TOTAL_UNCOMPRESSED", 5):
+                over_limit = open_source(archive)
+                self.assertIn("ARCHIVE_SIZE_LIMIT", {finding.code for finding in over_limit.findings})
+
     def test_zip_read_returns_none_when_decompression_fails(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             archive = Path(directory) / "fixture.zip"

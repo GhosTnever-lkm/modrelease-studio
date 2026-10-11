@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.29 - 2026-10-11
+
+- Add bounded ZIP entry-count and total-uncompressed-size boundary regressions using small synthetic fixtures.
+- Increase the suite to 54 tests; package line coverage is 91%, above the enforced 80% CI floor.
+
+
 ## 0.3.28 - 2026-10-11
 
 - Catch zlib decompression errors while reading ZIP entries and surface corrupt text files as unreadable findings instead of crashing the scan.
