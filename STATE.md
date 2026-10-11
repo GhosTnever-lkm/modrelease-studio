@@ -14,10 +14,9 @@ Updated: 2026-10-11
 
 ## Published baseline
 
-- Latest verified published release: v0.3.17.
+- Latest verified published release: v0.3.18.
 
 ## Next
 
-1. Verify v0.3.18 CI on both supported Python versions and release assets.
-2. Continue concrete, tested hardening of the mod-QA tools.
-3. Add Telegram only if the owner supplies a real handle; do not invent wallet or payout details.
+1. Continue concrete, tested hardening of the mod-QA tools.
+2. Add Telegram only if the owner supplies a real handle; do not invent wallet or payout details.
