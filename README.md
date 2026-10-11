@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-28%2F28%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-36%2F36%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -142,10 +142,10 @@ This is an early, intentionally conservative release checker. It does not fully 
 python -m modrelease_studio --help
 python -m pip install -e ".[test]"
 coverage run --source=modrelease_studio -m unittest discover -s tests -v
-coverage report --include="modrelease_studio/*.py" --fail-under=75
+coverage report --include="modrelease_studio/*.py" --fail-under=80
 ```
 
-CI runs the same test suite on Python 3.11 and 3.12 and enforces at least 75% line coverage.
+The 36-test suite currently covers 84% of package lines. CI runs it on Python 3.11 and 3.12 and enforces at least 80% line coverage.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 

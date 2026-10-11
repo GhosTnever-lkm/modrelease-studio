@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.20 - 2026-10-11
+
+- Add unit tests for descriptor parsing and Paradox localization edge cases; measured package line coverage rises to 84%.
+- Raise the CI coverage floor from 75% to 80% and refresh the test badge to 36/36.
+
 ## 0.3.19 - 2026-10-11
 
 - Measure Python package line coverage in the CI matrix and enforce a 75% minimum; expose coverage as an optional test-only extra.
