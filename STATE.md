@@ -2,20 +2,20 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.10 (refresh first-party workflow actions)
+## Current iteration — v0.3.11 (reject colon syntax in ZIP paths)
 
-- Reject ZIP archive entries whose POSIX type is not a regular file, preventing special filesystem objects from being treated as ordinary payloads.
-- Added a Paradox policy example, README configuration guidance, and included the example policy in release archives.
-- Removed the unverified Boosty link from support copy; kept Buy Me a Coffee and GitHub Sponsors.
-- Version synchronized across package metadata, CLI, pinned README install, and regression test; changelog updated.
-- Local validation pending for v0.3.9. The CI workflow runs the checked-in policy alongside the baseline example scan; a reproducible sample report is linked from README and included in the release archive. README install and self-example pins use v0.3.6; regression tests cover malformed policy values, max-file-size validation, Windows-style separators, and case/Unicode collisions across folders and ZIPs. A local wheel build could not run because setuptools is absent in this environment with `--no-build-isolation`; tag CI remains the authoritative packaging check.
+- Updated the README GitHub Actions example and the project's preflight/release workflows from older first-party Action majors to v7.
+- Retained tested archive hardening: reject non-regular ZIP entries, detect case/Unicode path collisions, and validate configured release policies.
+- Version synchronized across package metadata, CLI, README pins, and the version regression test; CHANGELOG updated.
+- Local validation: 22/22 tests pass, clean Paradox example scan is READY with zero findings, workflow YAML parses, and `git diff --check` passes.
+- Published release includes ZIP + SHA-256; tag release workflow, preflight CI, and Pages build all succeeded.
 
 ## Published baseline
 
-- Latest verified published release before this iteration: v0.3.9.
+- Latest verified published release before this iteration: v0.3.10.
 
 ## Next
 
-1. Publish v0.3.10 and verify release workflow, CI, and Pages.
-2. Add Telegram only if the owner supplies a real handle; GitHub/email remain available meanwhile.
-3. Continue improving the mod-QA ecosystem and verified monetization links.
+1. Publish v0.3.11 and verify release CI, preflight, and Pages.
+2. Continue concrete, tested hardening of the mod-QA tools.
+3. Add Telegram only if the owner supplies a real handle; do not invent wallet or payout details.

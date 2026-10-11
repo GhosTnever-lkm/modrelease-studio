@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-22%2F22%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-23%2F23%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. It uses only the Python standard library.
@@ -23,7 +23,7 @@ Every mod release is judged in the first minutes after upload: does it install, 
 
 ## What it checks
 
-- Folder and ZIP contents, unsafe archive paths, duplicate paths, and case/Unicode-normalization collisions that can behave differently across filesystems, and rejects ZIP entries that are not regular files.
+- Folder and ZIP contents, unsafe and non-portable archive paths (including drive/colon syntax), duplicate paths, and case/Unicode-normalization collisions that can behave differently across filesystems, and rejects ZIP entries that are not regular files.
 - Accidental secrets in common text/config files (private keys, AWS access-key IDs, GitHub and Slack tokens, Discord webhooks, and likely hard-coded API keys).
 - Paradox Clausewitz `descriptor.mod` metadata and localization YAML issues.
 - Missing release notes, OS-specific junk, and unexpectedly large files.

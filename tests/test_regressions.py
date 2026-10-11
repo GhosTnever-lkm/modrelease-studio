@@ -53,6 +53,18 @@ class SecretPatternTests(unittest.TestCase):
         self.assertNotIn(secret.decode(), repr(report.to_dict()))
 
 
+class ArchivePathSafetyTests(unittest.TestCase):
+    def test_zip_rejects_colon_in_nested_path_component(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "colon-path.zip"
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr("mod/payload.txt:stream", "synthetic fixture")
+            report = scan_path(str(archive_path))
+        finding = next(item for item in report.findings if item.code == "UNSAFE_PATH")
+        self.assertEqual(finding.severity, "ERROR")
+        self.assertEqual(report.errors, 1)
+
+
 class SpecialArchiveEntryTests(unittest.TestCase):
     def test_zip_fifo_entry_is_blocked_without_reading_payload(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -230,7 +242,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.10")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.11")
 
 if __name__ == "__main__":
     unittest.main()

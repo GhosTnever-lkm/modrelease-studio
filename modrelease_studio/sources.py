@@ -89,11 +89,11 @@ class ZipSource(Source):
                     path = PurePosixPath(normalized)
                     rel = path.as_posix()
                     unsafe = (normalized.startswith("/") or ".." in path.parts
-                              or (path.parts and ":" in path.parts[0]) or "\x00" in raw)
+                              or any(":" in part for part in path.parts) or "\x00" in raw)
                     if unsafe:
                         findings.append(Finding("UNSAFE_PATH", "ERROR", raw,
-                                                "Archive entry has an absolute, parent-traversal, or drive-qualified path.",
-                                                "Rebuild the ZIP using paths relative to the mod root."))
+                                                "Archive entry has an absolute, parent-traversal, drive-qualified, or colon-containing path.",
+                                                "Rebuild the ZIP using portable relative paths without drive or stream syntax."))
                         continue
                     if "\\" in raw:
                         findings.append(Finding("BACKSLASH_PATH", "WARNING", raw,

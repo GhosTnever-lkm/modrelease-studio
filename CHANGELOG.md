@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.11 - 2026-10-11
+
+- Reject ZIP entry paths with colon syntax in any component to avoid drive/alternate-stream portability hazards.
+- Add a regression fixture for colon syntax nested below the archive root.
+- Bump package and CLI version to 0.3.11.
+
 ## 0.3.10 - 2026-10-11
 
 - Refresh the README workflow example and project CI/release workflows to the current first-party GitHub Actions v7 majors.
