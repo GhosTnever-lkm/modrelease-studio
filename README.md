@@ -145,7 +145,7 @@ coverage run --source=modrelease_studio -m unittest discover -s tests -v
 coverage report --include="modrelease_studio/*.py" --fail-under=80
 ```
 
-The 43-test suite currently covers 89% of package lines. CI runs it on Python 3.11 and 3.12 and enforces at least 80% line coverage.
+The 43-test suite currently covers 89% of package lines. CI runs it on Python 3.11, 3.12, and 3.13 and enforces at least 80% line coverage.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.22 - 2026-10-11
+
+- Extend the Ubuntu preflight matrix to Python 3.13; the full 43-test suite and 80% coverage floor run on Python 3.11, 3.12, and 3.13.
+
+
 ## 0.3.21 - 2026-10-11
 
 - Add CLI regression tests for default and explicit configuration, JSON/Markdown exports, error exit codes, and version output.

@@ -2,7 +2,7 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.21 (CLI regression coverage) — published
+## Current iteration — v0.3.22 (verify Python 3.13 CI support)
 
 - Added focused CLI tests for absent/default TOML config, configured scan policy loading, JSON stdout and JSON/Markdown file exports, findings-driven exit status, missing/invalid config handling, and `--version`.
 - Validation: 43/43 tests pass; pinned Coverage.py 7.16.2 reports 89% package line coverage (80% CI floor). CLI module coverage is 97%.
@@ -19,3 +19,6 @@ Updated: 2026-10-11
 1. Continue concrete, tested hardening of the local-first mod-QA tools.
 2. Recheck the ecosystem after any scanner runtime change; keep consumer pins intentional.
 3. Do not invent Telegram, wallet, payment, or payout details.
+
+
+- Extend CI matrix to Python 3.13 after confirming the full suite runs locally on Python 3.13.14. Pending final GitHub preflight verification.
