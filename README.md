@@ -70,6 +70,35 @@ modrelease scan ./my-mod.zip --md-out release-report.md
 
 The command exits with `0` when there are no critical/error findings, `1` when release-blocking findings exist, and `2` for an invalid input or configuration. Warnings are advisory by default.
 
+## Verify a downloaded release
+
+GitHub Releases publish both the ZIP archive and a `.sha256` sidecar. After downloading both files, verify that the archive was not corrupted in transit. The checksum is distributed alongside the archive; it is an integrity check, not a separate signature or provenance attestation.
+
+**Linux (GNU coreutils):**
+
+```bash
+sha256sum --check ModRelease-Studio-v0.3.36.zip.sha256
+```
+
+**macOS:**
+
+```bash
+shasum -a 256 -c ModRelease-Studio-v0.3.36.zip.sha256
+```
+
+**Windows PowerShell:**
+
+```powershell
+$archive = ".\ModRelease-Studio-v0.3.36.zip"
+$checksumFile = ".\ModRelease-Studio-v0.3.36.zip.sha256"
+$expected = ((Get-Content $checksumFile -Raw) -split "\s+")[0].ToLowerInvariant()
+$actual = (Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+if ($actual -ne $expected) { throw "SHA-256 mismatch; do not use this archive." }
+"SHA-256 OK"
+```
+
+For a different release, substitute its matching version in both filenames.
+
 ## Compare builds
 
 ```console

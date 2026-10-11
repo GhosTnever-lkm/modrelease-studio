@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.37 - 2026-10-11
+
+- Document SHA-256 sidecar verification for downloaded release ZIPs on Linux, macOS, and Windows PowerShell.
+- Clarify that the co-published checksum detects corruption but is not a separate signature or provenance attestation.
+
 ## 0.3.36 - 2026-10-11
 
 - Add a regression that discovers the unittest suite and asserts the README test badge matches its size, preventing stale test metrics.
