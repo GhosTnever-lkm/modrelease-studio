@@ -11,7 +11,7 @@ from pathlib import Path
 
 from . import __version__
 from .models import Finding
-from .reports import markdown, to_dict, write_json, write_markdown
+from .reports import json_report, markdown, to_dict, write_json, write_markdown
 from .scanner import scan_path
 
 
@@ -50,7 +50,7 @@ def _config(path: str | None) -> dict:
 def _scan(args: argparse.Namespace) -> int:
     report = scan_path(args.path, config=_config(args.config))
     if args.json:
-        print(json.dumps(to_dict(report), ensure_ascii=False, indent=2))
+        print(json_report(report))
     else:
         print(markdown(report))
     if args.json_out:

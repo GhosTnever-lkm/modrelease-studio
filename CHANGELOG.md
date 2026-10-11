@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.43 - 2026-10-11
+
+- Render invisible Unicode controls visibly in Markdown findings, and use valid JSON escapes in JSON reports while preserving the original parsed values.
+- Apply the same safe JSON serialization to CLI stdout and saved JSON files.
+- Add a regression for bidi, C1, ANSI, and newline controls in untrusted target/path/message fields; 60 tests.
+
 ## 0.3.42 - 2026-10-11
 
 - Escape control, bidi-format, surrogate, and other Unicode control-category characters in compare output so untrusted filenames cannot inject terminal control sequences or extra lines.

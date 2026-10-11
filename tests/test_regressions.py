@@ -14,7 +14,7 @@ from unittest.mock import patch
 from modrelease_studio import __version__, cli
 from modrelease_studio.models import Finding, ScanReport, Source
 from modrelease_studio.scanner import scan_path, scan_source
-from modrelease_studio.reports import markdown
+from modrelease_studio.reports import json_report, markdown
 from modrelease_studio.scanner import SECRET_PATTERNS, MAX_CONFIGURED_TEXT_FILE_BYTES
 
 
@@ -56,6 +56,27 @@ class SecretPatternTests(unittest.TestCase):
 
 
 class MarkdownReportEscapingTests(unittest.TestCase):
+    def test_control_and_bidi_characters_are_visible_in_markdown_and_json_escaped(self) -> None:
+        unsafe = "mod\u202Egpj.zip\nsecond\u0085part"
+        report = ScanReport(
+            target=unsafe,
+            profile="default",
+            findings=[Finding("UNSAFE_PATH", "ERROR", unsafe, "control\u001b[31m and bidi\u202E")],
+        )
+        rendered = markdown(report)
+        self.assertNotIn("\u202e", rendered.casefold())
+        self.assertNotIn("\u0085", rendered)
+        self.assertNotIn("\u001b", rendered)
+        self.assertIn("202e", rendered.casefold())
+        self.assertEqual(sum(line.startswith("| ERROR |") for line in rendered.splitlines()), 1)
+
+        serialized = json_report(report)
+        self.assertNotIn("\u202e", serialized.casefold())
+        self.assertNotIn("\u0085", serialized)
+        self.assertNotIn("\u001b", serialized)
+        self.assertIn(r"\u202e", serialized.casefold())
+        self.assertEqual(json.loads(serialized), report.to_dict(include_files=True))
+
     def test_untrusted_paths_and_details_cannot_break_markdown_table(self) -> None:
         report = ScanReport(
             target="source`|name\n![spoof](https://example.invalid)",
@@ -407,7 +428,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.42")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.43")
 
 if __name__ == "__main__":
     unittest.main()

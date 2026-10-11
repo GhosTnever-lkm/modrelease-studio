@@ -25,16 +25,30 @@ class CliTests(unittest.TestCase):
 
     def test_scan_writes_json_and_markdown_reports(self) -> None:
         with tempfile.TemporaryDirectory() as directory, contextlib.chdir(directory):
-            report = ScanReport(target="fixture.zip", profile="default")
+            target = "fixture\u202Egpj.zip"
+            unsafe_path = "folder\u202Ename.txt"
+            report = ScanReport(
+                target=target,
+                profile="default",
+                findings=[Finding("UNSAFE_PATH", "ERROR", unsafe_path, "control\u001b[31m and C1\u0085")],
+            )
             stdout = io.StringIO()
             with patch.object(cli, "scan_path", return_value=report) as scan_path, contextlib.redirect_stdout(stdout):
                 result = cli.main(["scan", "fixture.zip", "--json", "--json-out", "report.json", "--md-out", "report.md"])
 
-            self.assertEqual(result, 0)
+            self.assertEqual(result, 1)
             scan_path.assert_called_once_with("fixture.zip", config={})
-            self.assertEqual(json.loads(stdout.getvalue())["status"], "READY")
-            self.assertEqual(json.loads(Path("report.json").read_text(encoding="utf-8"))["target"], "fixture.zip")
-            self.assertIn("# ModRelease Studio report", Path("report.md").read_text(encoding="utf-8"))
+            self.assertNotIn("\u202e", stdout.getvalue().casefold())
+            self.assertNotIn("\u001b", stdout.getvalue())
+            parsed = json.loads(stdout.getvalue())
+            self.assertEqual(parsed["target"], target)
+            self.assertEqual(parsed["findings"][0]["path"], unsafe_path)
+            self.assertEqual(parsed, json.loads(Path("report.json").read_text(encoding="utf-8")))
+            markdown = Path("report.md").read_text(encoding="utf-8")
+            self.assertIn("# ModRelease Studio report", markdown)
+            self.assertNotIn("\u202e", markdown.casefold())
+            self.assertNotIn("\u001b", markdown)
+            self.assertIn("202e", markdown.casefold())
 
     def test_scan_returns_one_when_report_has_errors(self) -> None:
         report = ScanReport(

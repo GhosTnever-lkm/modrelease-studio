@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import html
 import json
+import unicodedata
 from pathlib import Path
 
 from .models import ScanReport
@@ -12,12 +13,51 @@ def to_dict(report: ScanReport) -> dict:
     return report.to_dict(include_files=True)
 
 
+def _is_invisible_or_control(char: str) -> bool:
+    category = unicodedata.category(char)
+    return category.startswith("C") or category in {"Zl", "Zp"}
+
+
+def _escape_json_string_controls(document: str) -> str:
+    """Escape invisible code points inside JSON strings without changing values."""
+    output: list[str] = []
+    in_string = False
+    escaped = False
+    for char in document:
+        if in_string:
+            if escaped:
+                output.append(char)
+                escaped = False
+            elif char == "\\":
+                output.append(char)
+                escaped = True
+            elif char == '"':
+                output.append(char)
+                in_string = False
+            elif _is_invisible_or_control(char):
+                output.append(json.dumps(char, ensure_ascii=True)[1:-1])
+            else:
+                output.append(char)
+        else:
+            output.append(char)
+            if char == '"':
+                in_string = True
+    return "".join(output)
+
+
+def json_report(report: ScanReport) -> str:
+    """Serialize a shareable JSON report while escaping invisible string controls."""
+    document = json.dumps(to_dict(report), ensure_ascii=False, indent=2)
+    return _escape_json_string_controls(document)
+
+
 def write_json(report: ScanReport, path: str | Path) -> None:
-    Path(path).write_text(json.dumps(to_dict(report), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    Path(path).write_text(json_report(report) + "\n", encoding="utf-8")
 
 
 def _safe_markdown_cell(value: str) -> str:
     value = value.replace("\r\n", " ").replace("\r", " ").replace("\n", " ").replace("\t", " ")
+    value = "".join(f"\\u{{{ord(char):04x}}}" if _is_invisible_or_control(char) else char for char in value)
     escaped = html.escape(value, quote=False)
     entities = {ord(char): f"&#{ord(char)};" for char in "\\|`*_{}[]!#>~:@"}
     return escaped.translate(entities)
