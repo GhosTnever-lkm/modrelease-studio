@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.23 - 2026-10-11
+
+- Prevent directory-backed reads and digests from following symbolic links or opening paths absent from the scan index.
+- Add three regressions for file/directory symlinks, indexed-path enforcement, bounded reads, and deterministic safe-file digests.
+- Raise the suite to 46 tests; package line coverage is 88%, above the enforced 80% floor.
+
+
 ## 0.3.22 - 2026-10-11
 
 - Extend the Ubuntu preflight matrix to Python 3.13; the full 43-test suite and 80% coverage floor run on Python 3.11, 3.12, and 3.13.

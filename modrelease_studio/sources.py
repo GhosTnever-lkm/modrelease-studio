@@ -47,9 +47,32 @@ class DirectorySource(Source):
             findings.append(Finding("SCAN_DIRECTORY", "ERROR", ".",
                                     f"Could not scan directory: {exc}"))
         super().__init__(target=target, records=records, findings=findings, is_zip=False)
+        self._record_paths = {record.path for record in records}
+
+    def _safe_record_path(self, relative_path: str) -> Path | None:
+        """Return an indexed regular file path without following symlinks."""
+        relative = PurePosixPath(relative_path)
+        if (relative_path not in self._record_paths or relative.is_absolute()
+                or not relative.parts or ".." in relative.parts):
+            return None
+        file_path = self.target
+        try:
+            for part in relative.parts:
+                file_path = file_path / part
+                if file_path.is_symlink():
+                    return None
+            resolved = file_path.resolve(strict=True)
+            root = self.target.resolve(strict=True)
+            if root not in resolved.parents or not resolved.is_file():
+                return None
+        except (OSError, RuntimeError):
+            return None
+        return file_path
 
     def read(self, relative_path: str, limit: int) -> bytes | None:
-        file_path = self.target.joinpath(*PurePosixPath(relative_path).parts)
+        file_path = self._safe_record_path(relative_path)
+        if file_path is None:
+            return None
         try:
             with file_path.open("rb") as stream:
                 return stream.read(limit + 1)
@@ -63,10 +86,17 @@ class DirectorySource(Source):
         for record in sorted(self.records, key=lambda item: item.path.casefold()):
             hasher.update(record.path.encode("utf-8", "surrogatepass"))
             hasher.update(b"\0")
-            file_path = self.target.joinpath(*PurePosixPath(record.path).parts)
-            with file_path.open("rb") as stream:
-                while chunk := stream.read(1024 * 1024):
-                    hasher.update(chunk)
+            file_path = self._safe_record_path(record.path)
+            if file_path is None:
+                hasher.update(b"UNREADABLE")
+                hasher.update(b"\0")
+                continue
+            try:
+                with file_path.open("rb") as stream:
+                    while chunk := stream.read(1024 * 1024):
+                        hasher.update(chunk)
+            except OSError:
+                hasher.update(b"UNREADABLE")
             hasher.update(b"\0")
         return hasher.hexdigest()
 
