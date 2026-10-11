@@ -19,8 +19,12 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Run regression tests
-        run: python -m unittest discover -s tests -v
+      - name: Install test tooling
+        run: python -m pip install -e ".[test]"
+      - name: Run regression tests with line coverage
+        run: coverage run --source=modrelease_studio -m unittest discover -s tests -v
+      - name: Enforce line coverage floor
+        run: coverage report --include="modrelease_studio/*.py" --fail-under=75
       - name: Scan example project
         run: |
           python -m pip install .

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modrelease-studio"
-version = "0.3.18"
+version = "0.3.19"
 description = "Local-first release preflight for game mods and mod packs"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -21,6 +21,9 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Topic :: Software Development :: Quality Assurance",
 ]
+
+[project.optional-dependencies]
+test = ["coverage==7.16.2"]
 
 [project.urls]
 Homepage = "https://github.com/GhosTnever-lkm/modrelease-studio"

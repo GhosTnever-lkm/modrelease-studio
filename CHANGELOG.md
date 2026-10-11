@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.19 - 2026-10-11
+
+- Measure Python package line coverage in the CI matrix and enforce a 75% minimum; expose coverage as an optional test-only extra.
+- Refresh the README test badge to 28/28 and document the coverage command.
+
 ## 0.3.18 - 2026-10-11
 
 - Run the regression and example preflight in CI on both supported Python versions, 3.11 and 3.12.
