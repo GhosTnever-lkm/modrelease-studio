@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-57%2F57%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-58%2F58%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.

@@ -368,6 +368,16 @@ class SourceEntryLimitReportingTests(unittest.TestCase):
             self.assertEqual(payload["total_bytes"], 6)
 
 
+class DocumentationMetricTests(unittest.TestCase):
+    def test_readme_test_badge_matches_discovered_suite_size(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        suite = unittest.defaultTestLoader.discover(str(root / "tests"))
+        test_count = suite.countTestCases()
+        badge = f"tests-{test_count}%2F{test_count}%20passing"
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn(badge, readme)
+
+
 class VersionTests(unittest.TestCase):
     def test_imported_version_matches_package_metadata(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -379,7 +389,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.35")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.36")
 
 if __name__ == "__main__":
     unittest.main()

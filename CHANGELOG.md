@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.36 - 2026-10-11
+
+- Add a regression that discovers the unittest suite and asserts the README test badge matches its size, preventing stale test metrics.
+- Update the badge to 58/58; runtime behavior is unchanged.
+
 ## 0.3.35 - 2026-10-11
 
 - Make the release workflow extract the built ZIP, install it into an isolated virtual environment, check its CLI version against the tag, and scan the clean included sample before publishing.
