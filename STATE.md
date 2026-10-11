@@ -2,27 +2,26 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.36 (README test-badge consistency guard) — published
+## Current iteration — v0.3.37 (release checksum guidance) — published
 
-- Added a regression that discovers the full unittest suite and asserts the README shield badge matches its count, so new test additions cannot silently leave stale test metrics. README badge now reads 58/58.
-- Validation: 58/58 tests, 91% package line coverage. Five CI jobs, release, and Pages passed on `e3e2b7e`.
-- Release workflow smoke-tested the extracted distribution: isolated install, tag-matched CLI version, included sample scan READY, then published v0.3.36. Downloaded 87,994-byte ZIP checksum and integrity verified. There are 41 releases; preflight is 51/52 successful (98.1%).
-- Profile v1.2.97 and portfolio v1.3.75 show current metrics; release workflows and Pages succeeded; live content verified.
-- Six featured issue queues have zero open issues; seven key release/demo/profile URLs returned HTTP 200.
-- Fresh-v-0.3.36 public Git-tag and release-ZIP installs both reported version 0.3.36 and produced READY sample reports; tagged README badge is 58/58.
-- Consumer integrations remain intentionally pinned at runtime scanner v0.3.25; both assert exact installed scanner versions in CI.
+- README documents `.sha256` sidecar checks for Linux `sha256sum`, macOS `shasum`, and Windows PowerShell `Get-FileHash`; it clarifies that a co-published checksum detects corruption but is not a separate signature/provenance attestation.
+- Validation: 58/58 tests, 91% package line coverage. Five CI jobs, release archive smoke step, release, and Pages passed on `8137521`.
+- Published v0.3.37; 88,534-byte ZIP checksum and archive integrity verified. There are 42 releases; preflight is 52/53 success (98.1%).
+- Profile v1.2.98 and portfolio v1.3.76 updated; workflows and Pages green; live content checked.
+- Six featured issue queues have zero open issues; seven key URLs returned HTTP 200.
+- Linux `sha256sum --check` documentation example validated against the actual v0.3.36 asset; macOS and PowerShell commands were reviewed but could not be executed in this Linux environment.
 
-## Previous iteration — v0.3.35 (release ZIP smoke automation)
+## Previous iteration — v0.3.36 (README test-badge consistency guard)
 
-- Release workflow extracts the package ZIP, installs in a fresh venv, checks CLI/tag parity and scans the included clean example before publication.
-- Release smoke job passed; preflight, release, and Pages green. 57/57 tests, 91% coverage; 87,432-byte ZIP verified.
+- Regression discovers full unittest suite and asserts README badge matches test count; badge 58/58.
+- 58 tests, 91% coverage; release ZIP smoke install, five CI jobs, release, Pages, checksum and integrity verified.
 
 ## Published baseline
 
-- Latest verified release: v0.3.36.
+- Latest verified release: v0.3.37.
 
 ## Next
 
-1. Document and verify SHA-256 release ZIP validation commands for Linux/macOS and PowerShell.
+1. Smoke-test public v0.3.37 tag and ZIP in fresh virtual environments; verify version, checksum docs, and sample output.
 2. Keep consumer pins at v0.3.25 unless a runtime change justifies updating them.
-3. Continue only concrete, tested improvements.
+3. Continue concrete, tested improvements only.
