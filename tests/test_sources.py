@@ -33,6 +33,28 @@ class DirectorySourceSafetyTests(unittest.TestCase):
             if os.name == "nt" and hasattr(Path, "is_junction"):
                 self._assert_windows_junction_to_external_directory_is_not_traversed()
 
+    def test_junction_status_permission_error_prunes_directory_and_warns(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "mod"
+            restricted = root / "restricted"
+            restricted.mkdir(parents=True)
+            (root / "inside.txt").write_text("inside fixture", encoding="utf-8")
+            (restricted / "private-fixture.txt").write_text("must not be indexed", encoding="utf-8")
+
+            def junction_status(path: Path) -> bool:
+                if path.name == "restricted":
+                    raise PermissionError(13, "Permission denied", str(path))
+                return False
+
+            with patch.object(Path, "is_junction", junction_status, create=True):
+                source = open_source(root)
+
+        self.assertIn(("READ_METADATA", "restricted"),
+                      {(item.code, item.path) for item in source.findings})
+        self.assertEqual([record.path for record in source.records], ["inside.txt"])
+        self.assertNotIn("SCAN_DIRECTORY", {item.code for item in source.findings})
+        self.assertIsNone(source.read("restricted/private-fixture.txt", 1024))
+
     def _assert_windows_junction_to_external_directory_is_not_traversed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)

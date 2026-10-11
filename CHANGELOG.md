@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.57 - 2026-10-11
+
+- Fail closed when junction metadata cannot be read: prune the directory and report a path-specific `READ_METADATA` warning.
+- Add a regression proving inaccessible directory metadata cannot lead to traversal or indexing.
+- Refresh the test badge and pin the README install example to v0.3.57.
+
 ## 0.3.56 - 2026-10-11
 
 - Do not traverse Windows directory junctions during folder scans; report them as advisory findings and reject junction components during safe reads.
