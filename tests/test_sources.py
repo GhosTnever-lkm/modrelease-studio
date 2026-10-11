@@ -18,8 +18,11 @@ class DirectorySourceSafetyTests(unittest.TestCase):
             outside = Path(external) / "descriptor.mod"
             outside.write_text('name = "outside-only-fixture"\n', encoding="utf-8")
             (Path(external) / "payload.txt").write_text("outside payload fixture", encoding="utf-8")
-            (root / "descriptor.mod").symlink_to(outside)
-            (root / "linked-folder").symlink_to(Path(external), target_is_directory=True)
+            try:
+                (root / "descriptor.mod").symlink_to(outside)
+                (root / "linked-folder").symlink_to(Path(external), target_is_directory=True)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"symlinks are unavailable on this runner: {error}")
             (root / "README.md").write_text("inside fixture", encoding="utf-8")
 
             source = open_source(root)

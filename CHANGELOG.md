@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.25 - 2026-10-11
+
+- Extend CI coverage to Windows and macOS on Python 3.13 while keeping the Ubuntu/Python 3.11–3.13 matrix.
+- Add a ZIP case-collision regression and make directory case/Unicode collision tests skip when the host filesystem cannot represent distinct names.
+- Increase the suite to 50 tests; measured package line coverage remains 89%.
+
+
 ## 0.3.24 - 2026-10-11
 
 - Add ZIP-source regressions for bounded reads, indexed-entry restrictions, deterministic archive hashing, decompression failures, and invalid ZIP reporting.

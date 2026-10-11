@@ -153,7 +153,10 @@ class PathCollisionTests(unittest.TestCase):
             first = Path(directory) / "Common"
             second = Path(directory) / "common"
             first.mkdir()
-            second.mkdir()
+            try:
+                second.mkdir()
+            except FileExistsError:
+                self.skipTest("temporary filesystem is case-insensitive")
             (first / "Events.txt").write_text("a", encoding="utf-8")
             (second / "events.TXT").write_text("b", encoding="utf-8")
             report = scan_path(directory)
@@ -166,8 +169,20 @@ class PathCollisionTests(unittest.TestCase):
             decomposed = Path(directory) / "cafe\u0301.txt"
             composed.write_text("a", encoding="utf-8")
             decomposed.write_text("b", encoding="utf-8")
+            if len(list(Path(directory).iterdir())) < 2:
+                self.skipTest("temporary filesystem normalizes Unicode filenames")
             report = scan_path(directory)
         self.assertIn("UNICODE_COLLISION", {item.code for item in report.findings})
+        self.assertEqual(report.errors, 1)
+
+    def test_zip_scan_finds_case_collisions_on_any_filesystem(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "mod.zip"
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr("Common/Events.txt", "a")
+                archive.writestr("common/events.txt", "b")
+            report = scan_path(str(archive_path))
+        self.assertIn("CASE_COLLISION", {item.code for item in report.findings})
         self.assertEqual(report.errors, 1)
 
     def test_zip_scan_finds_unicode_normalization_collisions(self) -> None:
@@ -319,7 +334,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.24")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.25")
 
 if __name__ == "__main__":
     unittest.main()
