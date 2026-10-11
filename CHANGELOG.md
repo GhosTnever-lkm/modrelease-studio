@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.58 - 2026-10-12
+
+- Export scan findings as SARIF 2.1.0 for GitHub Code Scanning, with severity mapping, repository-relative paths, and line locations for localization findings.
+- Add `--sarif-path-prefix` for scanning a mod stored below the checked-out repository root; reject unsafe path prefixes and omit locations for missing files and scan-wide findings.
+- Add CLI regressions for SARIF output, version metadata, path safety, missing-file handling, and subdirectory mapping.
+
 ## 0.3.57 - 2026-10-11
 
 - Fail closed when junction metadata cannot be read: prune the directory and report a path-specific `READ_METADATA` warning.

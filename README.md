@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-70%2F70%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-72%2F72%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -69,6 +69,45 @@ modrelease scan ./my-mod.zip --md-out release-report.md
 ```
 
 The command exits with `0` when there are no critical/error findings, `1` when release-blocking findings exist, and `2` for an invalid input or configuration. Warnings are advisory by default.
+
+## GitHub Code Scanning (SARIF)
+
+Export findings as SARIF 2.1.0 for GitHub Code Scanning:
+
+```console
+modrelease scan . --sarif-out modrelease.sarif
+```
+
+If you scan a subdirectory of the checked-out repository, add its repository-relative path so GitHub can match findings to source files:
+
+```console
+modrelease scan ./my-mod --sarif-out modrelease.sarif --sarif-path-prefix mods/my-mod
+```
+
+Upload the report from a workflow with `security-events: write` permission:
+
+```yaml
+permissions:
+  contents: read
+  security-events: write
+
+steps:
+  - uses: actions/checkout@v7
+  - uses: actions/setup-python@v7
+    with:
+      python-version: "3.12"
+  - name: Install ModRelease Studio
+    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.58"
+  - name: Scan mod
+    run: modrelease scan . --sarif-out modrelease.sarif || test $? -eq 1
+  - name: Upload findings
+    if: always()
+    uses: github/codeql-action/upload-sarif@v4
+    with:
+      sarif_file: modrelease.sarif
+```
+
+The scanner omits local absolute paths and does not attach locations to findings about missing files or scan-wide limits. GitHub's SARIF upload requires a supported repository and workflow permissions; see [GitHub's upload guide](https://docs.github.com/en/code-security/how-tos/find-and-fix-code-vulnerabilities/integrate-with-existing-tools/upload-sarif-file). ZIP entry paths are relative to the archive root; use `--sarif-path-prefix` when that archive represents a subdirectory in the checked-out repository.
 
 ## Verify a downloaded release
 
@@ -148,7 +187,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.57"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.58"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -160,7 +199,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.57`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.58`.
 
 ## Project-specific release policy
 
@@ -185,7 +224,7 @@ coverage run --source=modrelease_studio -m unittest discover -s tests -v
 coverage report --include="modrelease_studio/*.py" --fail-under=80
 ```
 
-The 69-test suite covers **92% of package lines**; CI enforces at least 80% line coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13. The junction regression uses a safe simulated fixture everywhere and additionally tests a real external junction on Windows.
+The 72-test suite is run with line coverage; CI enforces at least 80% package coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13. The junction regression uses a safe simulated fixture everywhere and additionally tests a real external junction on Windows.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 
