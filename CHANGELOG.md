@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.21 - 2026-10-11
+
+- Add CLI regression tests for default and explicit configuration, JSON/Markdown exports, error exit codes, and version output.
+- Raise the full test suite to 43 tests and measured package line coverage to 89%.
+
+
 ## 0.3.20 - 2026-10-11
 
 - Add unit tests for descriptor parsing and Paradox localization edge cases; measured package line coverage rises to 84%.
