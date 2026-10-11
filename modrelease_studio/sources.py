@@ -111,6 +111,12 @@ class ZipSource(Source):
                                                 "Archive contains a symbolic-link entry.",
                                                 "Avoid shipping symlinks unless the target platform supports them."))
                         continue
+                    file_type = stat.S_IFMT(mode)
+                    if file_type not in {0, stat.S_IFREG}:
+                        findings.append(Finding("UNSAFE_SPECIAL_ENTRY", "ERROR", rel,
+                                                "Archive entry is a non-regular filesystem object.",
+                                                "Rebuild the release archive with regular files and directories only."))
+                        continue
                     if info.flag_bits & 0x1:
                         findings.append(Finding("ENCRYPTED_ENTRY", "ERROR", rel,
                                                 "Encrypted entries cannot be inspected without a password.",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.9 - 2026-10-11
+
+- Reject non-regular special-file entries in ZIP archives instead of scanning them as ordinary files.
+- Add a regression fixture proving FIFO entries are blocked without reading their payload.
+- Bump package and CLI version to 0.3.9.
+
 ## 0.3.8 - 2026-10-11
 
 - Detect case-only and Unicode-normalization path collisions in both folders and ZIPs.

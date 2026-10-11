@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import stat
 import tempfile
 import tomllib
 import unittest
@@ -50,6 +51,21 @@ class SecretPatternTests(unittest.TestCase):
         report = self.scan_fixture("config.txt", b"aws_access_key_id=" + secret)
         self.assertIn("AWS_ACCESS_KEY", {finding.code for finding in report.findings})
         self.assertNotIn(secret.decode(), repr(report.to_dict()))
+
+
+class SpecialArchiveEntryTests(unittest.TestCase):
+    def test_zip_fifo_entry_is_blocked_without_reading_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "special.zip"
+            info = zipfile.ZipInfo("mod/fifo")
+            info.create_system = 3
+            info.external_attr = (stat.S_IFIFO | 0o644) << 16
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr(info, b"synthetic fixture only")
+            report = scan_path(str(archive_path))
+        finding = next(item for item in report.findings if item.code == "UNSAFE_SPECIAL_ENTRY")
+        self.assertEqual(finding.severity, "ERROR")
+        self.assertEqual(report.errors, 1)
 
 
 class PathCollisionTests(unittest.TestCase):
@@ -214,7 +230,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.8")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.9")
 
 if __name__ == "__main__":
     unittest.main()
