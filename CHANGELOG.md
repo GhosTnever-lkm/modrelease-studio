@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.30 - 2026-10-11
+
+- Add a bounded DirectorySource entry-count test for exact-limit acceptance and overflow truncation, complementing the ZIP boundary coverage.
+- Increase the suite to 55 tests; package line coverage remains 91%, above the enforced 80% CI floor.
+
 ## 0.3.29 - 2026-10-11
 
 - Add bounded ZIP entry-count and total-uncompressed-size boundary regressions using small synthetic fixtures.

@@ -62,6 +62,27 @@ class DirectorySourceSafetyTests(unittest.TestCase):
             expected = hashlib.sha256(b"notes.txt\0UNREADABLE\0").hexdigest()
             self.assertEqual(source.digest(), expected)
 
+    def test_directory_entry_limit_accepts_exact_boundary_and_truncates_overflow(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            at_limit = root / "at-limit"
+            at_limit.mkdir()
+            for name in ("one.txt", "two.txt"):
+                (at_limit / name).write_text("fixture", encoding="utf-8")
+            over_limit = root / "over-limit"
+            over_limit.mkdir()
+            for name in ("one.txt", "two.txt", "three.txt"):
+                (over_limit / name).write_text("fixture", encoding="utf-8")
+
+            with patch("modrelease_studio.sources.MAX_ENTRIES", 2):
+                exact_source = open_source(at_limit)
+                self.assertEqual(len(exact_source.records), 2)
+                self.assertNotIn("ENTRY_LIMIT", {finding.code for finding in exact_source.findings})
+
+                overflow_source = open_source(over_limit)
+                self.assertEqual(len(overflow_source.records), 2)
+                self.assertIn("ENTRY_LIMIT", {finding.code for finding in overflow_source.findings})
+
     def test_directory_digest_matches_safe_file_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
