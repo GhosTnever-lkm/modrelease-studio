@@ -47,7 +47,9 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
     if required_paths_severity not in {"ERROR", "WARNING", "INFO"}:
         raise ValueError("scan.required_paths_severity must be ERROR, WARNING, or INFO")
 
-    report = ScanReport(target=str(source.target), profile="default", file_count=len(source.records),
+    # Reports are designed to be shared with maintainers and CI artifacts. Keep
+    # the useful source label while omitting user names and parent directories.
+    report = ScanReport(target=source.target.name or ".", profile="default", file_count=len(source.records),
                         total_bytes=sum(item.size for item in source.records), sha256=source.digest(), files=source.records)
     report.findings.extend(source.findings)
     file_names = {PurePosixPath(record.path).name.casefold() for record in source.records}

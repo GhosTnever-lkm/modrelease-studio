@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import json
 import stat
 import tempfile
 import tomllib
@@ -73,6 +74,18 @@ class MarkdownReportEscapingTests(unittest.TestCase):
         self.assertNotIn("<img src=x>", rendered)
         self.assertIn("&lt;img src=x&gt;", rendered)
         self.assertIn("&#124;", rendered)
+
+    def test_shareable_reports_include_only_source_basename(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="private-user-path-") as parent:
+            target = Path(parent) / "sample-mod"
+            target.mkdir()
+            (target / "README.md").write_text("Synthetic fixture", encoding="utf-8")
+            report = scan_path(str(target))
+            serialized = json.dumps(report.to_dict(), ensure_ascii=False)
+            rendered = markdown(report)
+        self.assertEqual(report.target, "sample-mod")
+        self.assertNotIn(parent, serialized)
+        self.assertNotIn(parent, rendered)
 
 
 class ConfigValidationOrderTests(unittest.TestCase):
@@ -306,7 +319,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.15")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.16")
 
 if __name__ == "__main__":
     unittest.main()

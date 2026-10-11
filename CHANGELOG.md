@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.16 - 2026-10-11
+
+- Omit local parent directories from JSON and Markdown reports to avoid exposing usernames or machine-specific paths in shared CI artifacts.
+- Keep the source basename so reports still identify the scanned archive or folder.
+
 ## 0.3.15 - 2026-10-11
 
 - Validate scan configuration before computing source hashes, avoiding unnecessary full reads on invalid settings.

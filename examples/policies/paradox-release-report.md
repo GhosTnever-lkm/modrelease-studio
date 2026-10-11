@@ -1,6 +1,6 @@
 # ModRelease Studio report
 
-- Source: `examples/paradox-mod`
+- Source: paradox-mod
 - Profile: `default`
 - SHA-256: `1a0c7145791deac138f16e6230784937bb15fbf270270d5e183b03041e7a4101`
 - Files scanned: **3** (314 bytes)
