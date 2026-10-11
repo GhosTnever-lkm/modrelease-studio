@@ -84,6 +84,24 @@ class TraversalPolicyTests(unittest.TestCase):
         self.assertTrue(all(finding.severity == "WARNING" for finding in junk))
         self.assertEqual(report.errors, 0)
 
+    def test_os_junk_in_zip_is_serialized_as_safe_advisory_report(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "mod.zip"
+            with zipfile.ZipFile(archive, "w") as bundle:
+                for name in ("Thumbs.db", "nested/.DS_Store", "nested/desktop.ini"):
+                    bundle.writestr(name, b"")
+            report = scan_path(archive, config={"required_files": []})
+
+        payload = json.loads(json_report(report))
+        paths = {item["path"] for item in payload["findings"] if item["code"] == "OS_JUNK"}
+        rendered = markdown(report)
+        self.assertEqual(paths, {"Thumbs.db", "nested/.DS_Store", "nested/desktop.ini"})
+        self.assertEqual(payload["warnings"], 3)
+        self.assertEqual(payload["errors"], 0)
+        self.assertEqual(payload["status"], "REVIEW")
+        self.assertIn("nested/.DS&#95;Store", rendered)
+        self.assertNotIn("nested/.DS_Store", rendered)
+
 
 class MarkdownReportEscapingTests(unittest.TestCase):
     def test_control_and_bidi_characters_are_visible_in_markdown_and_json_escaped(self) -> None:
@@ -505,7 +523,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.50")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.51")
 
 if __name__ == "__main__":
     unittest.main()

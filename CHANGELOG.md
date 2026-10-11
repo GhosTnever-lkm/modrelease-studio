@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.51 - 2026-10-11
+
+- Add an end-to-end ZIP regression for OS-junk warnings in JSON and safely escaped Markdown output.
+- Keep scanner behavior unchanged; refresh suite count and install example.
+
+
 ## 0.3.50 - 2026-10-11
 
 - Exclude generated and dependency directories from content security checks.
