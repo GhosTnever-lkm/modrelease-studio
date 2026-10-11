@@ -13,6 +13,7 @@ from unittest.mock import patch
 from modrelease_studio import __version__, cli
 from modrelease_studio.models import Finding, ScanReport
 from modrelease_studio.scanner import scan_path
+from modrelease_studio.reports import markdown
 from modrelease_studio.scanner import SECRET_PATTERNS
 
 
@@ -51,6 +52,27 @@ class SecretPatternTests(unittest.TestCase):
         report = self.scan_fixture("config.txt", b"aws_access_key_id=" + secret)
         self.assertIn("AWS_ACCESS_KEY", {finding.code for finding in report.findings})
         self.assertNotIn(secret.decode(), repr(report.to_dict()))
+
+
+class MarkdownReportEscapingTests(unittest.TestCase):
+    def test_untrusted_paths_and_details_cannot_break_markdown_table(self) -> None:
+        report = ScanReport(
+            target="source`|name\n![spoof](https://example.invalid)",
+            profile="default",
+            findings=[Finding(
+                "UNSAFE_PATH", "ERROR", "bad|`name`\n![row](https://example.invalid)",
+                "detail | [link](https://example.invalid)\n<img src=x>",
+            )],
+        )
+        rendered = markdown(report)
+        finding_rows = [line for line in rendered.splitlines() if line.startswith("| ERROR |")]
+        self.assertEqual(len(finding_rows), 1)
+        self.assertNotIn("![spoof]", rendered)
+        self.assertNotIn("![row]", rendered)
+        self.assertNotIn("[link]", rendered)
+        self.assertNotIn("<img src=x>", rendered)
+        self.assertIn("&lt;img src=x&gt;", rendered)
+        self.assertIn("&#124;", rendered)
 
 
 class ArchivePathSafetyTests(unittest.TestCase):
@@ -254,7 +276,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.12")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.13")
 
 if __name__ == "__main__":
     unittest.main()

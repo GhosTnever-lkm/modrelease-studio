@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.13 - 2026-10-11
+
+- Escape untrusted paths and message text in Markdown reports so ZIP filenames cannot inject rows or markup.
+- Add regression coverage for newlines, table pipes, Markdown links/images, and HTML-like filenames.
+- Bump package and CLI version to 0.3.13.
+
 ## 0.3.12 - 2026-10-11
 
 - Reject unsafe directory entries and Windows-nonportable ZIP path components (reserved device names, trailing dots/spaces).
