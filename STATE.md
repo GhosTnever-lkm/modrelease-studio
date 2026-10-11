@@ -8,7 +8,7 @@ Updated: 2026-10-11
 - Validation: 50/50 tests pass, line coverage 89%. Five platform jobs remain green: Ubuntu/Python 3.11–3.13, Windows/Python 3.13, macOS/Python 3.13.
 - Published v0.3.26; preflight, release, and Pages passed on the install-doc update. Release ZIP is 79,717 bytes plus SHA-256; 31 releases exist. Current completed preflight history: 41/42 successful (97.6%).
 - Repointed consumer defaults to the runtime fix v0.3.25: ModRelease Gate v1.0.29 and Paradox Mod Quality Gate v1.0.23. Both integration CI suites and release entries succeeded; the Pro launcher also uses v0.3.25.
-- Profile v1.2.84 and portfolio v1.3.65 link scanner v0.3.26 and consumer releases; profile/Pages releases succeeded and live content was checked.
+- Profile v1.2.85 and portfolio v1.3.65 link scanner v0.3.26 and consumer releases; profile/Pages releases succeeded and live content was checked.
 
 ## Published baseline
 
