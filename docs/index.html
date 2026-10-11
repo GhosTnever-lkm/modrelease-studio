@@ -1,183 +1,105 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ModRelease Studio — release preflight for game mods and mod packs</title>
-<meta name="description" content="Scan folders and ZIP archives for packaging risks, secrets, and missing metadata before you publish a game mod or mod pack. Local-first, Python standard library only.">
-<style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0f1117; color: #e6e8ee; line-height: 1.6; }
-  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
-  header { padding: 28px 0; border-bottom: 1px solid #232836; }
-  .brand { font-weight: 700; font-size: 18px; letter-spacing: .2px; color: #fff; }
-  .brand span { color: #58a6ff; }
-  nav { margin-left: auto; display: flex; gap: 20px; align-items: center; }
-  header .wrap { display: flex; align-items: center; gap: 24px; }
-  nav a { color: #9aa4b2; text-decoration: none; font-size: 14px; }
-  nav a:hover { color: #fff; }
-  .hero { padding: 72px 0 48px; text-align: center; }
-  h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.15; color: #fff; margin-bottom: 16px; }
-  h1 em { font-style: normal; color: #58a6ff; }
-  .sub { font-size: 18px; color: #9aa4b2; max-width: 640px; margin: 0 auto 28px; }
-  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-  .btn { display: inline-block; padding: 13px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 15px; border: 1px solid transparent; }
-  .btn-primary { background: #238636; color: #fff; }
-  .btn-primary:hover { background: #2ea043; }
-  .btn-ghost { background: #161b26; color: #e6e8ee; border-color: #30363d; }
-  .btn-ghost:hover { background: #1c2333; }
-  .btn-warn { background: #bf8700; color: #fff; }
-  .btn-warn:hover { background: #d29922; }
-  section { padding: 56px 0; border-top: 1px solid #1b2029; }
-  .section-title { font-size: 22px; color: #fff; margin-bottom: 8px; }
-  .section-sub { color: #9aa4b2; margin-bottom: 24px; }
-  .shot { width: 100%; max-width: 720px; border: 1px solid #30363d; border-radius: 12px; margin: 0 auto; display: block; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 8px; }
-  .card { background: #161b26; border: 1px solid #232836; border-radius: 12px; padding: 22px; }
-  .card h3 { color: #fff; font-size: 17px; margin-bottom: 8px; }
-  .card p { color: #9aa4b2; font-size: 14.5px; }
-  pre { background: #0b0e14; border: 1px solid #232836; border-radius: 10px; padding: 18px; overflow-x: auto; margin-top: 20px; }
-  pre code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13.5px; color: #d2d8e0; }
-  .price { text-align: center; }
-  .price .free { color: #3fb950; font-weight: 700; }
-  .price .soon { color: #d29922; font-weight: 700; }
-  .price .serv { color: #58a6ff; font-weight: 700; }
-  ul.check { list-style: none; margin-top: 8px; }
-  ul.check li { color: #9aa4b2; font-size: 14.5px; padding: 5px 0 5px 26px; position: relative; }
-  ul.check li::before { content: "✓"; position: absolute; left: 0; color: #3fb950; font-weight: 700; }
-  footer { border-top: 1px solid #1b2029; padding: 28px 0 48px; color: #6e7681; font-size: 13.5px; }
-  footer .wrap { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
-  footer a { color: #9aa4b2; text-decoration: none; }
-  footer a:hover { color: #fff; }
-  .badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
-  .badges img { height: 22px; }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0d12">
+  <title>ModRelease Studio — проверка мода перед публикацией</title>
+  <meta name="description" content="Проверьте папку или ZIP мода перед релизом: структуру, секреты, метаданные Paradox и отчёты SARIF. Локальный инструмент с открытым исходным кодом.">
+  <meta name="author" content="GhosTnever">
+  <link rel="canonical" href="https://ghostnever-lkm.github.io/modrelease-studio/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ModRelease Studio — проверка мода перед публикацией">
+  <meta property="og:description" content="Поймайте ошибки упаковки и метаданных до того, как мод скачают игроки.">
+  <meta property="og:url" content="https://ghostnever-lkm.github.io/modrelease-studio/">
+  <meta property="og:image" content="https://raw.githubusercontent.com/GhosTnever-lkm/modrelease-studio/main/docs/demo.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "ModRelease Studio",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Windows, macOS, Linux",
+    "softwareVersion": "0.3.59",
+    "license": "https://opensource.org/licenses/MIT",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "RUB"},
+    "url": "https://ghostnever-lkm.github.io/modrelease-studio/",
+    "author": {"@type": "Person", "name": "GhosTnever", "url": "https://github.com/GhosTnever-lkm"},
+    "description": "Локальная проверка игровых модов и модпаков перед публикацией: ZIP, метаданные, секреты и отчёты."
+  }
+  </script>
+  <style>
+    :root{color-scheme:dark;--bg:#0a0d12;--panel:#111722;--panel2:#151e2b;--line:#263247;--text:#edf2fb;--muted:#a5b1c3;--blue:#7eb5ff;--green:#74d9a1;--gold:#f2c66d;--max:1120px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 70% 0%,#14243b 0,transparent 42%),var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--blue);text-underline-offset:4px}a:hover{color:#c5dcff}.wrap{width:min(var(--max),calc(100% - 40px));margin:auto}.top{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 0;border-bottom:1px solid var(--line)}.brand{font-weight:800;letter-spacing:.2px;color:var(--text);text-decoration:none}.brand span{color:var(--blue)}nav{display:flex;gap:22px;flex-wrap:wrap}nav a{color:var(--muted);text-decoration:none;font-size:14px}.hero{padding:76px 0 54px;display:grid;grid-template-columns:1.08fr .92fr;gap:44px;align-items:center}.eyebrow{color:var(--green);text-transform:uppercase;font-weight:750;letter-spacing:.13em;font-size:12px}.hero h1{font-size:clamp(38px,6vw,66px);line-height:1.05;letter-spacing:-.04em;margin:14px 0 20px}.hero h1 em{font-style:normal;color:var(--blue)}.lead{font-size:19px;color:#c1ccdb;max-width:670px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0}.button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:11px 18px;border-radius:10px;border:1px solid var(--line);font-weight:700;text-decoration:none}.primary{background:#3479d4;border-color:#3479d4;color:white}.secondary{background:#111722;color:var(--text)}.badges{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}.badges img{height:22px}.facts{display:flex;gap:10px;flex-wrap:wrap}.chip{border:1px solid var(--line);border-radius:99px;padding:5px 11px;color:var(--muted);font-size:13px}.preview{padding:10px;border:1px solid var(--line);border-radius:18px;background:#0d131d;box-shadow:0 30px 90px #0008}.preview img{display:block;width:100%;height:auto;border-radius:10px}.caption{color:var(--muted);font-size:13px;margin:10px 4px 0}.section{padding:55px 0;border-top:1px solid var(--line)}h2{font-size:clamp(27px,4vw,38px);line-height:1.2;margin:0 0 12px}.intro{max-width:760px;color:var(--muted);margin:0 0 25px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{background:linear-gradient(155deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:15px;padding:21px}.card h3{margin:0 0 8px;font-size:18px}.card p,.card li{color:var(--muted)}.card ul{padding-left:20px;margin:10px 0 0}.card li+li{margin-top:5px}.step{color:var(--blue);font-size:13px;font-weight:800;letter-spacing:.1em}.code{overflow:auto;background:#080c12;border:1px solid var(--line);border-radius:12px;padding:17px 20px;color:#dce8fa;font:14px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace}.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.price{font-size:26px;font-weight:800;color:var(--green);margin:8px 0}.soon{color:var(--gold)}.contact{display:flex;align-items:center;justify-content:space-between;gap:28px;background:linear-gradient(100deg,#121d2c,transparent);border:1px solid var(--line);border-radius:18px;padding:26px}.contact p{color:var(--muted);margin:6px 0 0}.contact-links{display:flex;gap:10px;flex-wrap:wrap}.contact-links a{padding:9px 12px;border:1px solid var(--line);border-radius:9px;text-decoration:none}.foot{padding:30px 0 46px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}.foot a{color:var(--muted)}:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+    @media(max-width:800px){.hero{grid-template-columns:1fr;padding-top:54px}.grid,.pricing{grid-template-columns:1fr}.contact{align-items:flex-start;flex-direction:column}.top{align-items:flex-start;flex-direction:column}nav{gap:14px}.wrap{width:min(var(--max),calc(100% - 28px))}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="brand">ModRelease <span>Studio</span></div>
-    <nav>
-      <a href="#what">What it checks</a>
-      <a href="#how">How it works</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </div>
-</header>
-
-<section class="hero">
-  <div class="wrap">
-    <h1>Release preflight for <em>game mods &amp; mod packs</em></h1>
-    <p class="sub">Scan a folder or ZIP before you publish. Catch packaging risks, leaked secrets, and missing metadata — and share a clean report with your players.</p>
-    <div class="cta">
-      <a class="btn btn-primary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases" target="_blank" rel="noopener">⬇ Download</a>
-      <a class="btn btn-warn" href="https://www.buymeacoffee.com/azizazimov8" target="_blank" rel="noopener">☕ Buy me a coffee</a>
-      <a class="btn btn-ghost" href="#contact">Contact</a>
-    </div>
-    <div class="badges">
-      <img src="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg" alt="CI status">
-      <img src="https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver" alt="Latest release">
-      <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT license">
-    </div>
-  </div>
-</section>
-
-<section id="what">
-  <div class="wrap">
-    <div class="section-title">What it checks</div>
-    <div class="section-sub">One command, repeatable checks, a readable report.</div>
-    <div class="grid">
-      <div class="card">
-        <h3>Packaging risks</h3>
-        <ul class="check">
-          <li>Unsafe archive paths &amp; path collisions</li>
-          <li>Case-only collisions</li>
-          <li>Unexpectedly large or junk files</li>
-          <li>Missing required files (README, LICENSE…)</li>
-        </ul>
+  <header class="top wrap">
+    <a class="brand" href="#top">ModRelease <span>Studio</span></a>
+    <nav aria-label="Навигация"><a href="#checks">Проверки</a><a href="#scenarios">Сценарии</a><a href="#start">Запуск</a><a href="#pricing">Стоимость</a><a href="#contact">Контакты</a></nav>
+  </header>
+  <main id="top" class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <p class="eyebrow">Релизный контроль для игровых модов</p>
+        <h1 id="hero-title">Проверь сборку <em>до игроков</em></h1>
+        <p class="lead">ModRelease Studio помогает авторам модов и сборок заранее находить проблемы в папке или ZIP: ошибки упаковки, случайно добавленные секреты и неполные метаданные.</p>
+        <div class="actions"><a class="button primary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/latest">Скачать бесплатно ↗</a><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio">Исходный код ↗</a></div>
+        <div class="badges" aria-label="Состояние проекта"><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg" alt="Статус CI ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/releases"><img src="https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver" alt="Последний релиз ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://img.shields.io/badge/tests-72%2F72%20passing-brightgreen" alt="72 из 72 тестов проходят"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Лицензия MIT"></a></div><div class="facts"><span class="chip">v0.3.59</span><span class="chip">Python 3.11+</span><span class="chip">MIT · бесплатно</span><span class="chip">Файлы остаются локально</span></div>
       </div>
-      <div class="card">
-        <h3>Secrets &amp; safety</h3>
-        <ul class="check">
-          <li>Private keys, API keys, tokens</li>
-          <li>GitHub / Slack / Discord tokens</li>
-          <li>AWS access-key IDs</li>
-          <li>Best-effort scan — review findings yourself</li>
-        </ul>
+      <figure class="preview"><img src="demo.png" alt="Пример отчёта ModRelease Studio: найдены тестовый секрет, неверный заголовок локализации и отсутствующий supported_version" width="1440" height="870"><figcaption class="caption">Пример на тестовом моде. Найденные сигналы нужно проверить вручную.</figcaption></figure>
+    </section>
+
+    <section id="checks" class="section" aria-labelledby="checks-title">
+      <h2 id="checks-title">Что проверяет</h2>
+      <p class="intro">Одна повторяемая проверка перед публикацией вместо ручного просмотра каждого файла. Сканер локальный: исходники никуда не отправляются.</p>
+      <div class="grid">
+        <article class="card"><h3>Структуру и архив</h3><ul><li>опасные и дублирующиеся пути;</li><li>конфликты регистра и Unicode-имён;</li><li>лишние, слишком крупные и служебные файлы.</li></ul></article>
+        <article class="card"><h3>Содержимое и метаданные</h3><ul><li>распространённые API-ключи и токены;</li><li>поля <code>descriptor.mod</code> и YAML-локализации;</li><li>release notes и версию сборки.</li></ul></article>
+        <article class="card"><h3>Изменения и CI</h3><ul><li>сравнение двух сборок и SHA-256;</li><li>отчёты Markdown, JSON и SARIF 2.1.0;</li><li>GitHub Action для автоматического preflight.</li></ul></article>
       </div>
-      <div class="card">
-        <h3>Mod metadata</h3>
-        <ul class="check">
-          <li>Paradox <code>descriptor.mod</code> checks</li>
-          <li>Localization YAML headers &amp; keys</li>
-          <li>Missing <code>supported_version</code></li>
-          <li>SHA-256 fingerprint of each build</li>
-        </ul>
+    </section>
+
+    <section id="scenarios" class="section" aria-labelledby="scenarios-title">
+      <h2 id="scenarios-title">Три типовых сценария</h2>
+      <div class="grid">
+        <article class="card"><span class="step">01 · ПЕРВЫЙ РЕЛИЗ</span><h3>Перед загрузкой мода</h3><p>Проверь папку, найди лишнюю вложенность, пропущенный файл или ошибку в метаданных и просмотри понятный отчёт.</p></article>
+        <article class="card"><span class="step">02 · СБОРКА</span><h3>Перед обновлением модпака</h3><p>Просканируй ZIP-файлы единым способом и сравни новую сборку с предыдущей, чтобы заметить неожиданные изменения.</p></article>
+        <article class="card"><span class="step">03 · CI</span><h3>На каждом pull request</h3><p>Подключи <a href="https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.43">ModRelease Gate v1.0.43</a>: проверка и отчёты появятся рядом с изменениями.</p></article>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-<section id="how">
-  <div class="wrap">
-    <div class="section-title">How it works</div>
-    <div class="section-sub">Local-first: your mods never leave your machine unless you upload the report.</div>
-    <img class="shot" src="demo.png" alt="modrelease scan output catching a leaked token, a bad localization header, and a missing supported_version">
-    <pre><code># Before your first release
-modrelease scan ./my-mod --md-out release-report.md
+    <section id="start" class="section" aria-labelledby="start-title">
+      <h2 id="start-title">Быстрый старт</h2>
+      <p class="intro">Нужен Python 3.11 или новее. Для установки используй виртуальное окружение; ниже закреплена актуальная версия.</p>
+      <pre class="code"><code>python -m venv .venv
+# Windows: .venv\Scripts\Activate.ps1
+# macOS / Linux: source .venv/bin/activate
+python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.59"
+modrelease scan ./my-mod --md-out release-report.md --json-out release-report.json
+modrelease compare ./previous-build ./candidate-build</code></pre>
+      <p class="intro" style="margin-top:16px">SARIF можно отправить в GitHub Code Scanning отдельным workflow-шагом. Для этого в вашем workflow потребуется разрешение <code>security-events: write</code>; сам сканер ничего не загружает.</p>
+      <div class="actions"><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio#quick-start">Все инструкции ↗</a><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/tag/v0.3.59">Что нового в v0.3.59 ↗</a></div>
+    </section>
 
-# Compare two builds
-modrelease compare ./previous-build ./candidate-build
-
-# Or gate releases in CI with the GitHub Action
-- uses: GhosTnever-lkm/modrelease-studio-action@v1</code></pre>
-    <p class="section-sub" style="margin-top:16px">Exits with code <code>0</code> (ready), <code>1</code> (release-blocking findings), or <code>2</code> (invalid input). Requires Python 3.11+, standard library only.</p>
-  </div>
-</section>
-
-<section id="pricing" class="price">
-  <div class="wrap">
-    <div class="section-title">Pricing</div>
-    <div class="grid">
-      <div class="card">
-        <h3 class="free">Core — Free</h3>
-        <p>MIT-licensed CLI. Scan, compare, JSON/Markdown reports. Run locally or in CI.</p>
+    <section id="pricing" class="section" aria-labelledby="pricing-title">
+      <h2 id="pricing-title">Стоимость и поддержка</h2>
+      <p class="intro">Базовый инструмент открыт для всех. Статусы и условия платных предложений указываю только после их реального выпуска.</p>
+      <div class="pricing">
+        <article class="card"><h3>Core</h3><div class="price">0 ₽</div><p>Открытый MIT-инструмент: проверки, сравнение сборок и отчёты Markdown, JSON, SARIF.</p><a href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/latest">Скачать ↗</a></article>
+        <article class="card"><h3>ModRelease Gate</h3><div class="price">0 ₽</div><p>GitHub Action для CI и pull request. Код и инструкция доступны в отдельном репозитории.</p><a href="https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.43">Открыть Gate ↗</a></article>
+        <article class="card"><h3 class="soon">Pro и услуги</h3><div class="price soon">Пока не продаются</div><p>Платная версия не выпущена, цена не установлена. Запросы на индивидуальные проверки можно обсудить по email.</p><a href="mailto:azizazimov038l@gmail.com?subject=ModRelease%20Studio">Написать по email ↗</a></article>
       </div>
-      <div class="card">
-        <h3 class="soon">Pro — Coming soon</h3>
-        <p>Custom rule packs, team reporting, release dashboards. Join the waitlist via contact.</p>
-      </div>
-      <div class="card">
-        <h3 class="serv">Services</h3>
-        <p>Custom checks, release audits, and gate setup for your mod distribution.</p>
-      </div>
-    </div>
-    <div class="cta" style="margin-top:26px">
-      <a class="btn btn-primary" href="https://github.com/GhosTnever-lkm/modrelease-studio" target="_blank" rel="noopener">View on GitHub</a>
-    </div>
-  </div>
-</section>
+      <p class="intro" style="margin-top:18px">Если проект уже помог, можно поддержать разработку на <a href="https://boosty.to/azizazimov">Boosty</a> или <a href="https://buymeacoffee.com/azizazimov8">Buy Me a Coffee</a>. Поддержка добровольная и не открывает скрытые функции.</p>
+    </section>
 
-<section id="contact">
-  <div class="wrap" style="text-align:center">
-    <div class="section-title">Contact</div>
-    <p class="section-sub">Questions, custom checks, or a release audit? Reach out by GitHub or email.</p>
-    <div class="cta">
-      <a class="btn btn-ghost" href="https://github.com/GhosTnever-lkm" target="_blank" rel="noopener">GitHub profile</a>
-      <a class="btn btn-ghost" href="https://github.com/GhosTnever-lkm/modrelease-studio/issues" target="_blank" rel="noopener">Open an issue</a>
-      <a class="btn btn-ghost" href="mailto:azizazimov038l@gmail.com">Email</a>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <span>© 2026 GhosTnever — ModRelease Studio is MIT-licensed.</span>
-    <a href="https://github.com/GhosTnever-lkm/modrelease-studio" target="_blank" rel="noopener">Source</a>
-    <a href="https://github.com/GhosTnever-lkm/modrelease-studio/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a>
-  </div>
-</footer>
+    <section id="contact" class="section" aria-labelledby="contact-title">
+      <div class="contact"><div><h2 id="contact-title">Вопрос, баг или заказ?</h2><p>Для ошибки приложи безопасный отчёт без секретов. Для запроса на индивидуальную проверку опиши игру, формат сборки и нужный результат.</p></div><div class="contact-links"><a href="https://github.com/GhosTnever-lkm/modrelease-studio/issues">GitHub Issues</a><a href="mailto:azizazimov038l@gmail.com">Email</a></div></div>
+    </section>
+  </main>
+  <footer class="foot wrap"><span>© 2026 GhosTnever · ModRelease Studio распространяется по MIT.</span><span><a href="https://github.com/GhosTnever-lkm/modrelease-studio">Исходный код</a> · <a href="https://github.com/GhosTnever-lkm">Профиль GitHub</a></span></footer>
 </body>
 </html>

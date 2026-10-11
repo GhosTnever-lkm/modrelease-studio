@@ -1,3 +1,7 @@
+## 0.3.59 - 2026-10-12
+
+- Rebuild the GitHub Pages product landing page in Russian with current v0.3.59 details, verified free/Pro status, SARIF and Gate workflow, use cases, quick start, screenshot, and contact links.
+
 # Changelog
 
 ## 0.3.58 - 2026-10-12
