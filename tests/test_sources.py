@@ -41,6 +41,25 @@ class DirectorySourceSafetyTests(unittest.TestCase):
             self.assertIsNone(source.read("../notes.txt", 3))
             self.assertIsNone(source.read("not-indexed.txt", 3))
 
+    def test_replaced_indexed_file_symlink_is_refused_and_not_hashed(self) -> None:
+        with tempfile.TemporaryDirectory() as parent, tempfile.TemporaryDirectory() as external:
+            root = Path(parent) / "mod"
+            root.mkdir()
+            source_file = root / "notes.txt"
+            source_file.write_text("safe original fixture", encoding="utf-8")
+            external_file = Path(external) / "outside.txt"
+            external_file.write_text("external fixture must not be read", encoding="utf-8")
+            source = open_source(root)
+            source_file.unlink()
+            try:
+                source_file.symlink_to(external_file)
+            except (OSError, NotImplementedError) as error:
+                self.skipTest(f"symlinks are unavailable on this runner: {error}")
+
+            self.assertIsNone(source.read("notes.txt", 1024))
+            expected = hashlib.sha256(b"notes.txt\0UNREADABLE\0").hexdigest()
+            self.assertEqual(source.digest(), expected)
+
     def test_directory_digest_matches_safe_file_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

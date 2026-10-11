@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.27 - 2026-10-11
+
+- Add a temporal symlink-swap regression: after a file enters the scan index, replacing it with an outside symlink must not expose target contents through reads or directory digests.
+- Raise the suite to 51 tests and package line coverage to 90% (80% CI floor).
+
+
 ## 0.3.26 - 2026-10-11
 
 - Refresh GitHub Actions scanner examples from v0.3.16 to v0.3.25, including the explanation of the pinned sample.
