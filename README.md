@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-67%2F67%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-68%2F68%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -148,7 +148,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.52"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.53"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -160,7 +160,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.52`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.53`.
 
 ## Project-specific release policy
 
@@ -185,7 +185,7 @@ coverage run --source=modrelease_studio -m unittest discover -s tests -v
 coverage report --include="modrelease_studio/*.py" --fail-under=80
 ```
 
-The 67-test suite covers **92% of package lines**; CI enforces at least 80% line coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13.
+The 68-test suite covers **92% of package lines**; CI enforces at least 80% line coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 

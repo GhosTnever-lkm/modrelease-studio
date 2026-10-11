@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.54 - 2026-10-11
+
+- Add regression coverage for path-specific `SCAN_DIRECTORY` errors reported by the bounded directory walker.
+- Refresh test metrics; keep the behavioral install example pinned to scanner runtime v0.3.53.
+
+
 ## 0.3.53 - 2026-10-11
 
 - Scan secret-bearing files in ignored/generated path names when they are inside a ZIP release artifact; directory scans still prune those folders from working trees.

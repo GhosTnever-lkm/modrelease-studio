@@ -13,6 +13,23 @@ from modrelease_studio.scanner import scan_path
 
 
 class DirectorySourceSafetyTests(unittest.TestCase):
+    def test_walk_permission_error_becomes_path_specific_blocking_finding(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            denied = root / "restricted"
+
+            def walk_with_permission_error(path, *, topdown, onerror, followlinks):
+                onerror(PermissionError(13, "Permission denied", str(denied)))
+                yield str(root), [], []
+
+            with patch("modrelease_studio.sources.os.walk", side_effect=walk_with_permission_error):
+                report = scan_path(root, config={"required_files": []})
+
+        finding = next(item for item in report.findings if item.code == "SCAN_DIRECTORY")
+        self.assertEqual(finding.path, "restricted")
+        self.assertEqual(finding.severity, "ERROR")
+        self.assertEqual(report.errors, 1)
+
     def test_read_refuses_symlinked_files_and_directories(self) -> None:
         with tempfile.TemporaryDirectory() as parent, tempfile.TemporaryDirectory() as external:
             root = Path(parent) / "mod"
