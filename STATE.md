@@ -9,6 +9,7 @@ Updated: 2026-10-11
 - Release workflow smoke-tested the extracted distribution: isolated install, tag-matched CLI version, included sample scan READY, then published v0.3.36. Downloaded 87,994-byte ZIP checksum and integrity verified. There are 41 releases; preflight is 51/52 successful (98.1%).
 - Profile v1.2.97 and portfolio v1.3.75 show current metrics; release workflows and Pages succeeded; live content verified.
 - Six featured issue queues have zero open issues; seven key release/demo/profile URLs returned HTTP 200.
+- Fresh-v-0.3.36 public Git-tag and release-ZIP installs both reported version 0.3.36 and produced READY sample reports; tagged README badge is 58/58.
 - Consumer integrations remain intentionally pinned at runtime scanner v0.3.25; both assert exact installed scanner versions in CI.
 
 ## Previous iteration — v0.3.35 (release ZIP smoke automation)
@@ -22,6 +23,6 @@ Updated: 2026-10-11
 
 ## Next
 
-1. Smoke-test public v0.3.36 tag and downloadable ZIP in fresh virtual environments; verify version, README badge, and sample output.
+1. Document and verify SHA-256 release ZIP validation commands for Linux/macOS and PowerShell.
 2. Keep consumer pins at v0.3.25 unless a runtime change justifies updating them.
 3. Continue only concrete, tested improvements.
