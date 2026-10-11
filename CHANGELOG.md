@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.50 - 2026-10-11
+
+- Exclude generated and dependency directories from content security checks.
+- Report Windows/macOS filesystem junk as advisory findings.
+- Add traversal-policy regression tests and refresh the test-count badge.
+
+
 ## 0.3.49 - 2026-10-11
 
 - Add an end-to-end CLI regression verifying file-growth warnings in JSON, Markdown, REVIEW status, and the non-blocking exit code.

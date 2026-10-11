@@ -55,6 +55,36 @@ class SecretPatternTests(unittest.TestCase):
         self.assertNotIn(secret.decode(), repr(report.to_dict()))
 
 
+class TraversalPolicyTests(unittest.TestCase):
+    def test_generated_directories_are_excluded_from_content_checks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in (".git/config.cfg", ".venv/settings.cfg", "Node_Modules/pkg/settings.cfg"):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("api_key=FAKE_api_key_value_123456789", encoding="utf-8")
+            report = scan_path(root, config={"required_files": []})
+
+        codes = {finding.code for finding in report.findings}
+        self.assertNotIn("GENERIC_API_KEY", codes)
+        self.assertEqual(report.errors, 0)
+
+    def test_operating_system_junk_names_are_reported_as_warnings(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            paths = ("Thumbs.db", "nested/.DS_Store", "nested/desktop.ini")
+            for relative in paths:
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"")
+            report = scan_path(root, config={"required_files": []})
+
+        junk = [finding for finding in report.findings if finding.code == "OS_JUNK"]
+        self.assertEqual({finding.path for finding in junk}, set(paths))
+        self.assertTrue(all(finding.severity == "WARNING" for finding in junk))
+        self.assertEqual(report.errors, 0)
+
+
 class MarkdownReportEscapingTests(unittest.TestCase):
     def test_control_and_bidi_characters_are_visible_in_markdown_and_json_escaped(self) -> None:
         unsafe = "mod\u202Egpj.zip\nsecond\u0085part"
@@ -475,7 +505,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.49")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.50")
 
 if __name__ == "__main__":
     unittest.main()
