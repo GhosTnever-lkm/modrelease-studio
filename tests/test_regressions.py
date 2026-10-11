@@ -323,6 +323,32 @@ class CompareTests(unittest.TestCase):
         self.assertIn("- [ERROR] DUPLICATE common/example.txt: Duplicate path. (x2)", output.getvalue())
 
 
+class SourceEntryLimitReportingTests(unittest.TestCase):
+    def test_entry_limit_is_reported_as_release_blocking_for_folder_and_zip(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            folder = root / "folder-mod"
+            folder.mkdir()
+            for name in ("one.txt", "two.txt", "three.txt"):
+                (folder / name).write_text("synthetic fixture", encoding="utf-8")
+            archive = root / "zip-mod.zip"
+            with zipfile.ZipFile(archive, "w") as output:
+                for name in ("one.txt", "two.txt", "three.txt"):
+                    output.writestr(name, "synthetic fixture")
+
+            with patch("modrelease_studio.sources.MAX_ENTRIES", 2):
+                for target in (folder, archive):
+                    with self.subTest(target=target.suffix or "folder"):
+                        with contextlib.redirect_stdout(io.StringIO()) as output:
+                            exit_code = cli.main(["scan", str(target), "--json"])
+                        payload = json.loads(output.getvalue())
+                        self.assertEqual(exit_code, 1)
+                        self.assertEqual(payload["status"], "FAIL")
+                        self.assertGreater(payload["errors"], 0)
+                        self.assertIn("ENTRY_LIMIT", {item["code"] for item in payload["findings"]})
+                        self.assertEqual(payload["file_count"], 2)
+
+
 class VersionTests(unittest.TestCase):
     def test_imported_version_matches_package_metadata(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -334,7 +360,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.30")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.31")
 
 if __name__ == "__main__":
     unittest.main()

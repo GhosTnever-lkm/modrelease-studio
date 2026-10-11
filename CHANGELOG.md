@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.31 - 2026-10-11
+
+- Add an end-to-end CLI regression proving `ENTRY_LIMIT` appears in JSON reports and blocks release scans for both folder and ZIP inputs.
+- Increase the suite to 56 tests; package line coverage remains 91%, above the enforced 80% CI floor.
+
 ## 0.3.30 - 2026-10-11
 
 - Add a bounded DirectorySource entry-count test for exact-limit acceptance and overflow truncation, complementing the ZIP boundary coverage.
