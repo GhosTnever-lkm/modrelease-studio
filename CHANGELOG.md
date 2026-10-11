@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.39 - 2026-10-11
+
+- Exercise the documented SHA-256 sidecar verification in CI on Linux (`sha256sum`), macOS (`shasum`), and Windows PowerShell (`Get-FileHash`).
+- Keep the release workflow checksum gate and 58-test badge.
+
 ## 0.3.38 - 2026-10-11
 
 - Verify the generated release ZIP `.sha256` sidecar with `sha256sum --check` before running the install smoke test and publishing assets.
