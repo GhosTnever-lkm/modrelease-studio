@@ -16,11 +16,11 @@ class DirectorySourceSafetyTests(unittest.TestCase):
     def test_walk_permission_error_becomes_path_specific_blocking_finding(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            denied = root / "restricted"
-
             def walk_with_permission_error(path, *, topdown, onerror, followlinks):
+                walk_root = Path(path)
+                denied = walk_root / "restricted"
                 onerror(PermissionError(13, "Permission denied", str(denied)))
-                yield str(root), [], []
+                yield str(walk_root), [], []
 
             with patch("modrelease_studio.sources.os.walk", side_effect=walk_with_permission_error):
                 report = scan_path(root, config={"required_files": []})

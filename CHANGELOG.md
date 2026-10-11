@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.55 - 2026-10-11
+
+- Make the directory-walker permission-error regression derive its fixture path from the resolved scan root on every OS.
+
+
 ## 0.3.54 - 2026-10-11
 
 - Add regression coverage for path-specific `SCAN_DIRECTORY` errors reported by the bounded directory walker.
