@@ -11,11 +11,14 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
       - name: Run regression tests
         run: python -m unittest discover -s tests -v
       - name: Scan example project

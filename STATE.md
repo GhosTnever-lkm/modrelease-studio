@@ -2,7 +2,7 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.17 (refresh pinned installation example)
+## Current iteration — v0.3.18 (verify supported Python range in CI)
 
 - Updated the README GitHub Actions example and the project's preflight/release workflows from older first-party Action majors to v7.
 - Retained tested archive hardening: reject non-regular ZIP entries, detect case/Unicode path collisions, and validate configured release policies.
@@ -18,5 +18,6 @@ Updated: 2026-10-11
 
 ## Next
 
-1. Continue concrete, tested hardening of the mod-QA tools.
-2. Add Telegram only if the owner supplies a real handle; do not invent wallet or payout details.
+1. Verify v0.3.18 CI on both supported Python versions and release assets.
+2. Continue concrete, tested hardening of the mod-QA tools.
+3. Add Telegram only if the owner supplies a real handle; do not invent wallet or payout details.

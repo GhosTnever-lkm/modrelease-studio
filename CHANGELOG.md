@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.18 - 2026-10-11
+
+- Run the regression and example preflight in CI on both supported Python versions, 3.11 and 3.12.
+
+
 ## 0.3.17 - 2026-10-11
 
 - Refresh the GitHub Actions installation example to pin the current scanner release, v0.3.16.
