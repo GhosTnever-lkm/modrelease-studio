@@ -9,7 +9,8 @@ Updated: 2026-10-11
 - Published v0.3.37; 88,534-byte ZIP checksum and archive integrity verified. There are 42 releases; preflight is 52/53 success (98.1%).
 - Profile v1.2.98 and portfolio v1.3.76 updated; workflows and Pages green; live content checked.
 - Six featured issue queues have zero open issues; seven key URLs returned HTTP 200.
-- Linux `sha256sum --check` documentation example validated against the actual v0.3.36 asset; macOS and PowerShell commands were reviewed but could not be executed in this Linux environment.
+- Linux `sha256sum --check` documentation example validated against release assets. macOS and PowerShell commands are documented; not executed in this Linux environment.
+- Public v0.3.37 tag and downloaded ZIP were installed in separate clean venvs: both reported 0.3.37, scanned the sample READY (3 files), and the tagged README badge was 58/58.
 
 ## Previous iteration — v0.3.36 (README test-badge consistency guard)
 
