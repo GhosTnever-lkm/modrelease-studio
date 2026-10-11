@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.35 - 2026-10-11
+
+- Make the release workflow extract the built ZIP, install it into an isolated virtual environment, check its CLI version against the tag, and scan the clean included sample before publishing.
+- Keep the README test badge at 57/57; no runtime scanner behavior changed.
+
 ## 0.3.34 - 2026-10-11
 
 - Correct the README test badge to 57/57 after the v0.3.33 ZIP expanded-size regression.

@@ -24,6 +24,28 @@ jobs:
           zip -r "dist-${archive}" modrelease_studio tests README.md CHANGELOG.md CONTRIBUTING.md LICENSE SECURITY.md pyproject.toml modrelease.example.toml examples/policies/paradox-release.toml examples/policies/paradox-release-report.md
           mv "dist-${archive}" "${archive}"
           sha256sum "${archive}" > "${archive}.sha256"
+      - name: Smoke-test packaged release archive
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          extracted="$RUNNER_TEMP/modrelease-release-archive"
+          venv="$RUNNER_TEMP/modrelease-release-venv"
+          mkdir -p "$extracted"
+          unzip -q "ModRelease-Studio-v${version}.zip" -d "$extracted"
+          python -m venv "$venv"
+          "$venv/bin/python" -m pip install --disable-pip-version-check "$extracted"
+          actual="$($venv/bin/modrelease --version)"
+          test "$actual" = "modrelease $version"
+          "$venv/bin/modrelease" scan "$GITHUB_WORKSPACE/examples/paradox-mod" \
+            --md-out "$RUNNER_TEMP/modrelease-smoke.md" \
+            --json-out "$RUNNER_TEMP/modrelease-smoke.json"
+          "$venv/bin/python" - "$RUNNER_TEMP/modrelease-smoke.json" <<'PY'
+          import json
+          import sys
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              report = json.load(stream)
+          if report.get("status") != "READY":
+              raise SystemExit(f"Release archive smoke scan was not READY: {report.get('status')}")
+          PY
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
