@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.53 - 2026-10-11
+
+- Scan secret-bearing files in ignored/generated path names when they are inside a ZIP release artifact; directory scans still prune those folders from working trees.
+- Add regression coverage for `.git` and `node_modules` archive contents.
+
+
 ## 0.3.52 - 2026-10-11
 
 - Prune generated/dependency directories before indexing so their files cannot consume the scan entry limit or affect the build fingerprint.

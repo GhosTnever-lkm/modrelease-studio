@@ -85,7 +85,11 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
     for record in source.records:
         path = PurePosixPath(record.path)
         folded_parts = {part.casefold() for part in path.parts}
-        if folded_parts & IGNORED_DIRS:
+        # A directory scan walks a working tree, where generated/dependency
+        # trees are pruned for relevance and bounded traversal. A ZIP is the
+        # shipped artifact itself, so inspect every archived file even when
+        # its path component is normally ignored in a checkout.
+        if folded_parts & IGNORED_DIRS and not source.is_zip:
             continue
         if path.name.casefold() in {"thumbs.db", ".ds_store", "desktop.ini"}:
             report.findings.append(Finding("OS_JUNK", "WARNING", record.path, "Operating-system metadata should not be in a release."))

@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-66%2F66%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-67%2F67%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -24,7 +24,7 @@ Every mod release is judged in the first minutes after upload: does it install, 
 ## What it checks
 
 - Folder and ZIP contents, unsafe and non-portable archive paths (including traversal, drive/colon syntax, Windows device names, and trailing dots/spaces), duplicate paths, and case/Unicode-normalization collisions that can behave differently across filesystems, and rejects ZIP entries that are not regular files.
-- Accidental secrets in common text/config files (private keys, AWS access-key IDs, GitHub and Slack tokens, Discord webhooks, and likely hard-coded API keys).
+- Accidental secrets in common text/config files (private keys, AWS access-key IDs, GitHub and Slack tokens, Discord webhooks, and likely hard-coded API keys). Folder scans prune generated/dependency directories; ZIP scans inspect every archived path, including `.git` and `node_modules`, because all archive contents ship.
 - Paradox Clausewitz `descriptor.mod` metadata and localization YAML issues.
 - Missing release notes, OS-specific junk, and unexpectedly large files.
 - Stable SHA-256 fingerprint of the build, JSON/Markdown reports, and finding changes between two builds. Untrusted control, bidi, and Unicode line/paragraph separators are visibly escaped in reports and terminal comparisons.
@@ -185,7 +185,7 @@ coverage run --source=modrelease_studio -m unittest discover -s tests -v
 coverage report --include="modrelease_studio/*.py" --fail-under=80
 ```
 
-The 66-test suite covers **92% of package lines**; CI enforces at least 80% line coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13.
+The 67-test suite covers **92% of package lines**; CI enforces at least 80% line coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 

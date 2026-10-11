@@ -119,6 +119,21 @@ class TraversalPolicyTests(unittest.TestCase):
         self.assertNotIn("nested/.DS_Store", rendered)
 
 
+class ArchiveContentPolicyTests(unittest.TestCase):
+    def test_secrets_inside_ignored_directory_names_are_scanned_in_zip(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "release.zip"
+            paths = (".git/config.cfg", "node_modules/pkg/settings.cfg")
+            with zipfile.ZipFile(archive, "w") as bundle:
+                for path in paths:
+                    bundle.writestr(path, "api_key=FAKE_api_key_value_123456789")
+            report = scan_path(archive, config={"required_files": []})
+
+        secrets = [finding for finding in report.findings if finding.code == "GENERIC_API_KEY"]
+        self.assertEqual({finding.path for finding in secrets}, set(paths))
+        self.assertEqual(report.errors, 2)
+
+
 class MarkdownReportEscapingTests(unittest.TestCase):
     def test_control_and_bidi_characters_are_visible_in_markdown_and_json_escaped(self) -> None:
         unsafe = "mod\u202Egpj.zip\nsecond\u0085part"
@@ -539,7 +554,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.52")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.53")
 
 if __name__ == "__main__":
     unittest.main()
