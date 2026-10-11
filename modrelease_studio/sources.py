@@ -12,6 +12,7 @@ from .models import FileRecord, Finding, Source
 MAX_ENTRIES = 30_000
 MAX_TOTAL_UNCOMPRESSED = 4 * 1024 * 1024 * 1024
 MAX_TEXT_FILE = 2 * 1024 * 1024
+IGNORED_DIRS = {".git", ".github", "node_modules", "__pycache__", ".venv"}
 WINDOWS_RESERVED_BASENAMES = {
     "CON", "PRN", "AUX", "NUL",
     *(f"COM{number}" for number in range(1, 10)),
@@ -23,27 +24,67 @@ class DirectorySource(Source):
     def __init__(self, target: Path):
         findings: list[Finding] = []
         records: list[FileRecord] = []
+
+        def on_walk_error(error: OSError) -> None:
+            filename = getattr(error, "filename", None)
+            try:
+                relative = Path(filename).relative_to(target).as_posix() if filename else "."
+            except ValueError:
+                relative = "."
+            findings.append(Finding("SCAN_DIRECTORY", "ERROR", relative,
+                                    f"Could not scan directory: {error}"))
+
         try:
-            for item in target.rglob("*"):
-                rel = item.relative_to(target).as_posix()
-                try:
-                    if item.is_symlink():
-                        findings.append(Finding("SYMLINK", "WARNING", rel,
-                                                "Symbolic link is not followed during scanning.",
-                                                "Replace it with a regular file or document why it is required."))
-                        continue
-                    if item.is_file():
-                        records.append(FileRecord(rel, item.stat().st_size))
-                        if len(records) > MAX_ENTRIES:
-                            findings.append(Finding("ENTRY_LIMIT", "ERROR", ".",
-                                                    f"More than {MAX_ENTRIES} files were found.",
-                                                    "Split the release or remove generated build output."))
-                            records = records[:MAX_ENTRIES]
-                            break
-                except OSError as exc:
-                    findings.append(Finding("READ_METADATA", "WARNING", rel,
-                                            f"Could not read file metadata: {exc}",
-                                            "Check file permissions and retry."))
+            limit_reached = False
+            for current, directories, filenames in os.walk(
+                target, topdown=True, onerror=on_walk_error, followlinks=False
+            ):
+                current_path = Path(current)
+                directories.sort(key=str.casefold)
+                filenames.sort(key=str.casefold)
+
+                # Prune generated/dependency folders before traversing them so
+                # they cannot consume the bounded entry index.
+                for name in list(directories):
+                    item = current_path / name
+                    rel = item.relative_to(target).as_posix()
+                    try:
+                        if item.is_symlink():
+                            findings.append(Finding("SYMLINK", "WARNING", rel,
+                                                    "Symbolic link is not followed during scanning.",
+                                                    "Replace it with a regular file or document why it is required."))
+                            directories.remove(name)
+                        elif name.casefold() in IGNORED_DIRS:
+                            directories.remove(name)
+                    except OSError as exc:
+                        findings.append(Finding("READ_METADATA", "WARNING", rel,
+                                                f"Could not read file metadata: {exc}",
+                                                "Check file permissions and retry."))
+
+                for name in filenames:
+                    item = current_path / name
+                    rel = item.relative_to(target).as_posix()
+                    try:
+                        if item.is_symlink():
+                            findings.append(Finding("SYMLINK", "WARNING", rel,
+                                                    "Symbolic link is not followed during scanning.",
+                                                    "Replace it with a regular file or document why it is required."))
+                            continue
+                        if item.is_file():
+                            records.append(FileRecord(rel, item.stat().st_size))
+                            if len(records) > MAX_ENTRIES:
+                                findings.append(Finding("ENTRY_LIMIT", "ERROR", ".",
+                                                        f"More than {MAX_ENTRIES} files were found.",
+                                                        "Split the release or remove generated build output."))
+                                records = records[:MAX_ENTRIES]
+                                limit_reached = True
+                                break
+                    except OSError as exc:
+                        findings.append(Finding("READ_METADATA", "WARNING", rel,
+                                                f"Could not read file metadata: {exc}",
+                                                "Check file permissions and retry."))
+                if limit_reached:
+                    break
         except OSError as exc:
             findings.append(Finding("SCAN_DIRECTORY", "ERROR", ".",
                                     f"Could not scan directory: {exc}"))

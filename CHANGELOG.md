@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.52 - 2026-10-11
+
+- Prune generated/dependency directories before indexing so their files cannot consume the scan entry limit or affect the build fingerprint.
+- Add a deterministic regression reproducing an ignored `.git` directory triggering `ENTRY_LIMIT` ahead of the actual mod file.
+
+
 ## 0.3.51 - 2026-10-11
 
 - Add an end-to-end ZIP regression for OS-junk warnings in JSON and safely escaped Markdown output.

@@ -8,7 +8,7 @@ from pathlib import PurePosixPath
 
 from .models import Finding, ScanReport, Source
 from .paradox import check_paradox_localization, parse_descriptor
-from .sources import open_source
+from .sources import IGNORED_DIRS, open_source
 
 SECRET_PATTERNS = (
     ("PRIVATE_KEY", re.compile(rb"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"), "Possible private key found."),
@@ -21,7 +21,6 @@ SECRET_PATTERNS = (
 )
 MAX_CONFIGURED_TEXT_FILE_BYTES = 16 * 1024 * 1024
 TEXT_EXTENSIONS = {".txt", ".yml", ".yaml", ".json", ".cfg", ".ini", ".lua", ".py", ".js", ".ts", ".toml", ".md", ".xml", ".properties", ".pem", ".key"}
-IGNORE_PARTS = {".git", ".github", "node_modules", "__pycache__", ".venv"}
 
 
 def scan_path(path: str, *, config: dict | None = None) -> ScanReport:
@@ -86,7 +85,7 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
     for record in source.records:
         path = PurePosixPath(record.path)
         folded_parts = {part.casefold() for part in path.parts}
-        if folded_parts & IGNORE_PARTS:
+        if folded_parts & IGNORED_DIRS:
             continue
         if path.name.casefold() in {"thumbs.db", ".ds_store", "desktop.ini"}:
             report.findings.append(Finding("OS_JUNK", "WARNING", record.path, "Operating-system metadata should not be in a release."))

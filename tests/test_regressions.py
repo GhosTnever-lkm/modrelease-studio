@@ -67,6 +67,22 @@ class TraversalPolicyTests(unittest.TestCase):
 
         codes = {finding.code for finding in report.findings}
         self.assertNotIn("GENERIC_API_KEY", codes)
+        self.assertEqual(report.file_count, 0)
+        self.assertEqual(report.errors, 0)
+
+    def test_generated_directories_do_not_consume_the_entry_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            generated = root / ".git" / "history.cfg"
+            generated.parent.mkdir()
+            generated.write_text("api_key=FAKE_api_key_value_123456789", encoding="utf-8")
+            (root / "mod.cfg").write_text("name=sample", encoding="utf-8")
+            with patch("modrelease_studio.sources.MAX_ENTRIES", 1):
+                report = scan_path(root, config={"required_files": []})
+
+        self.assertEqual(report.file_count, 1)
+        self.assertNotIn("ENTRY_LIMIT", {finding.code for finding in report.findings})
+        self.assertNotIn("GENERIC_API_KEY", {finding.code for finding in report.findings})
         self.assertEqual(report.errors, 0)
 
     def test_operating_system_junk_names_are_reported_as_warnings(self) -> None:
@@ -523,7 +539,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.51")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.52")
 
 if __name__ == "__main__":
     unittest.main()
