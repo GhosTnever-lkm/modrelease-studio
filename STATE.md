@@ -8,7 +8,7 @@ Updated: 2026-10-11
 - Validation: 43/43 tests pass; pinned Coverage.py 7.16.2 reports 89% package line coverage (80% CI floor). CLI module coverage is 97%.
 - Product README badge/coverage statement, package version, CLI version regression, and CHANGELOG are synchronized.
 - Published v0.3.21; release workflow and preflight passed on commit `928fa0712e578db92c5f1b430fad470543171007`. Pages workflow passed. Release ZIP: 73,072 bytes, plus SHA-256 asset.
-- Verified account metrics: 26 releases; 35/36 completed preflight runs successful (97.2%). Profile v1.2.78 and portfolio v1.3.60 now point to this release and show 43 tests / 89% coverage. Both release workflows and the portfolio Pages deployment passed; raw profile README and live site returned HTTP 200.
+- At release commit `928fa07`, account metrics were 26 releases and 35/36 completed preflight runs successful (97.2%). A later docs-only STATE sync added one successful workflow run; current completed preflight history is 36/37 (97.3%). Profile v1.2.79 and portfolio v1.3.60 now point to this release and show 43 tests / 89% coverage. Both release workflows and the portfolio Pages deployment passed; raw profile README and live site returned HTTP 200.
 
 ## Published baseline
 
