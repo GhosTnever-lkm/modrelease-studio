@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.17 - 2026-10-11
+
+- Refresh the GitHub Actions installation example to pin the current scanner release, v0.3.16.
+
+
 ## 0.3.16 - 2026-10-11
 
 - Omit local parent directories from JSON and Markdown reports to avoid exposing usernames or machine-specific paths in shared CI artifacts.
