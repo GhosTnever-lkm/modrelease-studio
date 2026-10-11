@@ -2,13 +2,19 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.30 (directory entry boundary test) — published
+## Current iteration — v0.3.31 (entry-limit report regression) — published
 
-- Added small, deterministic folder fixtures at and above `MAX_ENTRIES`; exact limit is accepted and overflow adds `ENTRY_LIMIT` while retaining only the configured number of records.
-- Validation: 55/55 tests pass; Coverage.py 7.16.2 reports 91% package line coverage. Five CI jobs (Ubuntu Python 3.11–3.13, Windows 3.13, macOS 3.13), release workflow, and Pages passed.
-- Published v0.3.30 on commit `9ef48ee`; ZIP is 84,332 bytes, release SHA-256 verified, and archive integrity checked. There are 35 releases; completed preflight history is 45/46 (97.8%).
-- Profile v1.2.91 and portfolio v1.3.69 show current release/metrics; profile release, portfolio release and Pages deployment passed; live content verified.
-- ModRelease Gate v1.0.30 and Paradox Mod Quality Gate v1.0.24 remain intentionally pinned at runtime v0.3.25 (no scanner runtime changes) and assert the installed versions in CI.
+- Added an end-to-end CLI test with synthetic folder and ZIP inputs over `MAX_ENTRIES`; both JSON reports retain `ENTRY_LIMIT`, report `FAIL`, and return exit code 1.
+- Validation: 56/56 tests pass; Coverage.py 7.16.2 reports 91% package line coverage. Five CI jobs (Ubuntu Python 3.11–3.13, Windows 3.13, macOS 3.13), release workflow, and Pages passed.
+- Published v0.3.31 on commit `5244137`; ZIP is 85,804 bytes, release SHA-256 verified, and archive integrity checked. There are 36 releases; completed preflight history is 46/47 (97.9%).
+- Profile v1.2.92 and portfolio v1.3.70 show the release and metrics; profile release, portfolio release/Pages deployments, and live pages were verified.
+- ModRelease Gate v1.0.30 and Paradox Mod Quality Gate v1.0.24 remain intentionally pinned at runtime v0.3.25 (no scanner runtime change) and assert exact installed versions in green CI.
+- All six featured QA issue queues have zero open issues; seven critical release/demo links returned HTTP 200.
+
+## Previous iteration — v0.3.30 (directory entry boundary test) — published
+
+- Added deterministic directory fixtures at and above `MAX_ENTRIES`; exact limit accepted, overflow emits `ENTRY_LIMIT` and retains only the configured count.
+- Suite: 55 tests, 91% package line coverage; five CI jobs, release, and Pages passed. The 84,332-byte ZIP checksum and archive integrity were verified.
 
 ## Previous iteration — v0.3.29 (archive limit boundary tests) — published
 
@@ -31,9 +37,9 @@ Updated: 2026-10-11
 
 ## Next
 
-1. Add an end-to-end regression proving ENTRY_LIMIT survives scan/report generation and remains release-blocking for folder and ZIP sources.
-2. Recheck the six featured QA issue queues and profile/portfolio links after v0.3.30.
-3. Continue only a concrete, tested product improvement; keep consumer pins v0.3.25 unless a runtime change justifies an update.
+1. Document scanner bounds in README: entry count, ZIP unpacked-size threshold, default/configured text-file bytes, and how limit findings affect completeness.
+2. Continue only a concrete, tested product improvement; keep consumer pins v0.3.25 unless a runtime change justifies an update.
+3. Recheck featured links/issues after the next flagship release.
 1. Add bounded tests for archive entry-count and total-uncompressed-size limits.
 2. Add a consumer CI assertion that records exact scanner versions for default and explicit pins.
 3. Recheck core issue queues and pinned-project links after the latest release cycle.
