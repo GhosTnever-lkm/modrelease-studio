@@ -14,7 +14,7 @@ from modrelease_studio import __version__, cli
 from modrelease_studio.models import Finding, ScanReport
 from modrelease_studio.scanner import scan_path
 from modrelease_studio.reports import markdown
-from modrelease_studio.scanner import SECRET_PATTERNS
+from modrelease_studio.scanner import SECRET_PATTERNS, MAX_CONFIGURED_TEXT_FILE_BYTES
 
 
 class SecretPatternTests(unittest.TestCase):
@@ -193,10 +193,20 @@ class RequiredPathPolicyTests(unittest.TestCase):
             report = scan_path(directory, config={"required_files": []})
         self.assertNotIn("MISSING_RELEASE_FILE", {item.code for item in report.findings})
 
-    def test_invalid_max_file_bytes_is_rejected(self) -> None:
+    def test_invalid_or_unbounded_max_file_bytes_is_rejected(self) -> None:
+        invalid_values = [0, -1, True, 1.5, "2000000", MAX_CONFIGURED_TEXT_FILE_BYTES + 1]
+        for value in invalid_values:
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as directory:
+                with self.assertRaisesRegex(ValueError, "max_file_bytes"):
+                    scan_path(directory, config={"max_file_bytes": value})
+
+    def test_max_file_bytes_ceiling_keeps_larger_text_files_unscanned(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaisesRegex(ValueError, "max_file_bytes"):
-                scan_path(directory, config={"max_file_bytes": 0})
+            path = Path(directory) / "large.txt"
+            with path.open("wb") as stream:
+                stream.truncate(MAX_CONFIGURED_TEXT_FILE_BYTES + 1)
+            report = scan_path(directory, config={"max_file_bytes": MAX_CONFIGURED_TEXT_FILE_BYTES})
+        self.assertIn("LARGE_TEXT_FILE", {item.code for item in report.findings})
 
     def test_malformed_required_paths_are_rejected(self) -> None:
         malformed = ["descriptor.mod", [""], ["   "], ["README.md", 7]]
@@ -276,7 +286,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.13")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.14")
 
 if __name__ == "__main__":
     unittest.main()

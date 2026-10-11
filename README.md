@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-25%2F25%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-26%2F26%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. It uses only the Python standard library.
@@ -86,7 +86,7 @@ required_files = ["README.md", "CHANGELOG.md", "LICENSE"]
 max_file_bytes = 2000000
 ```
 
-`required_files` checks basenames anywhere in the package. Secret scanning is a best-effort detector; review findings and do not treat a clean scan as proof that a release contains no secret.
+`required_files` checks basenames anywhere in the package. `max_file_bytes` accepts integers from 1 to 16 MiB; larger values are rejected so a project config cannot disable the scanner’s bounded-memory behavior. Secret scanning is a best-effort detector; review findings and do not treat a clean scan as proof that a release contains no secret.
 
 ## GitHub Actions
 

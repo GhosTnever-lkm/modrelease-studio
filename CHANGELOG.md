@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.14 - 2026-10-11
+
+- Cap configured text-file scanning at 16 MiB and reject booleans, floats, strings, and out-of-range limits to preserve bounded memory.
+- Add regression tests for invalid limits and skipping larger text files.
+- Bump package and CLI version to 0.3.14.
+
 ## 0.3.13 - 2026-10-11
 
 - Escape untrusted paths and message text in Markdown reports so ZIP filenames cannot inject rows or markup.

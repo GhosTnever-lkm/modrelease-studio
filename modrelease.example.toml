@@ -1,3 +1,4 @@
 [scan]
 required_files = ["README.md", "CHANGELOG.md", "LICENSE"]
+# Maximum is 16777216 bytes (16 MiB) to keep content scanning bounded.
 max_file_bytes = 2000000

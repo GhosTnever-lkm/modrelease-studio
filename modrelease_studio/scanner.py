@@ -19,6 +19,7 @@ SECRET_PATTERNS = (
     ("DISCORD_WEBHOOK", re.compile(rb"https?://(?:canary\.|ptb\.)?discord(?:app)?\.com/api/webhooks/[0-9]{15,}/[A-Za-z0-9._-]{20,}"), "Possible Discord webhook found."),
     ("GENERIC_API_KEY", re.compile(rb"(?i)(?:\"(?:api[_-]?key|secret|token)\"|(?:api[_-]?key|secret|token))\s*[:=]\s*[\"']?(?!YOUR_|PLACEHOLDER|EXAMPLE|CHANGEME|XXXX|AAAA)[A-Za-z0-9_./+=-]{12,}[\"']?"), "Possible hard-coded secret found."),
 )
+MAX_CONFIGURED_TEXT_FILE_BYTES = 16 * 1024 * 1024
 TEXT_EXTENSIONS = {".txt", ".yml", ".yaml", ".json", ".cfg", ".ini", ".lua", ".py", ".js", ".ts", ".toml", ".md", ".xml", ".properties", ".pem", ".key"}
 IGNORE_PARTS = {".git", ".github", "node_modules", "__pycache__", ".venv"}
 
@@ -32,9 +33,12 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
     report = ScanReport(target=str(source.target), profile="default", file_count=len(source.records),
                         total_bytes=sum(item.size for item in source.records), sha256=source.digest(), files=source.records)
     report.findings.extend(source.findings)
-    max_file_bytes = int(config.get("max_file_bytes", 2_000_000))
-    if max_file_bytes < 1:
-        raise ValueError("scan.max_file_bytes must be a positive integer")
+    max_file_bytes = config.get("max_file_bytes", 2_000_000)
+    if (isinstance(max_file_bytes, bool) or not isinstance(max_file_bytes, int)
+            or not 1 <= max_file_bytes <= MAX_CONFIGURED_TEXT_FILE_BYTES):
+        raise ValueError(
+            "scan.max_file_bytes must be an integer from 1 to 16777216"
+        )
     required_files_value = config.get("required_files", ["README.md"])
     if not isinstance(required_files_value, list) or any(not isinstance(name, str) or not name.strip() for name in required_files_value):
         raise ValueError("scan.required_files must be a list of non-empty filenames")
