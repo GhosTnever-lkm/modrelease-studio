@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import struct
+import subprocess
 import tempfile
 import unittest
 import zipfile
@@ -13,6 +15,53 @@ from modrelease_studio.scanner import scan_path
 
 
 class DirectorySourceSafetyTests(unittest.TestCase):
+    def test_junction_like_directory_is_pruned_before_traversal(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "mod"
+            linked = root / "linked"
+            linked.mkdir(parents=True)
+            (root / "inside.txt").write_text("inside fixture", encoding="utf-8")
+            (linked / "outside.txt").write_text("outside fixture", encoding="utf-8")
+
+            with patch.object(Path, "is_junction", lambda path: path.name == "linked", create=True):
+                source = open_source(root)
+
+            self.assertIn(("JUNCTION", "linked"), {(item.code, item.path) for item in source.findings})
+            self.assertEqual([record.path for record in source.records], ["inside.txt"])
+            self.assertIsNone(source.read("linked/outside.txt", 1024))
+
+            if os.name == "nt" and hasattr(Path, "is_junction"):
+                self._assert_windows_junction_to_external_directory_is_not_traversed()
+
+    def _assert_windows_junction_to_external_directory_is_not_traversed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            root = base / "mod"
+            external = base / "external"
+            junction = root / "linked"
+            root.mkdir()
+            external.mkdir()
+            (root / "inside.txt").write_text("inside fixture", encoding="utf-8")
+            (external / "private-fixture.txt").write_text("must not be indexed", encoding="utf-8")
+
+            try:
+                subprocess.run(
+                    ["cmd", "/c", "mklink", "/J", str(junction), str(external)],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertTrue(junction.is_junction())
+
+                source = open_source(root)
+
+                self.assertIn(("JUNCTION", "linked"), {(item.code, item.path) for item in source.findings})
+                self.assertEqual([record.path for record in source.records], ["inside.txt"])
+                self.assertIsNone(source.read("linked/private-fixture.txt", 1024))
+            finally:
+                if junction.is_junction():
+                    junction.rmdir()
+
     def test_walk_permission_error_becomes_path_specific_blocking_finding(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

@@ -20,6 +20,12 @@ WINDOWS_RESERVED_BASENAMES = {
 }
 
 
+def _is_junction(path: Path) -> bool:
+    """Check for a Windows directory junction when the runtime supports it."""
+    check = getattr(path, "is_junction", None)
+    return bool(check()) if check is not None else False
+
+
 class DirectorySource(Source):
     def __init__(self, target: Path):
         findings: list[Finding] = []
@@ -54,9 +60,17 @@ class DirectorySource(Source):
                                                     "Symbolic link is not followed during scanning.",
                                                     "Replace it with a regular file or document why it is required."))
                             directories.remove(name)
+                        elif _is_junction(item):
+                            findings.append(Finding("JUNCTION", "WARNING", rel,
+                                                    "Directory junction is not followed during scanning.",
+                                                    "Replace it with a regular directory or document why it is required."))
+                            directories.remove(name)
                         elif name.casefold() in IGNORED_DIRS:
                             directories.remove(name)
                     except OSError as exc:
+                        # If link/junction status cannot be checked, fail closed
+                        # rather than letting os.walk enter an unverified path.
+                        directories.remove(name)
                         findings.append(Finding("READ_METADATA", "WARNING", rel,
                                                 f"Could not read file metadata: {exc}",
                                                 "Check file permissions and retry."))
@@ -101,7 +115,7 @@ class DirectorySource(Source):
         try:
             for part in relative.parts:
                 file_path = file_path / part
-                if file_path.is_symlink():
+                if file_path.is_symlink() or _is_junction(file_path):
                     return None
             resolved = file_path.resolve(strict=True)
             root = self.target.resolve(strict=True)

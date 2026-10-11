@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.56 - 2026-10-11
+
+- Do not traverse Windows directory junctions during folder scans; report them as advisory findings and reject junction components during safe reads.
+- Add a deterministic junction-pruning regression and a Windows-only regression using an external directory junction.
+- Refresh the suite count and pin the README example to v0.3.56.
+
 ## 0.3.55 - 2026-10-11
 
 - Make the directory-walker permission-error regression derive its fixture path from the resolved scan root on every OS.
