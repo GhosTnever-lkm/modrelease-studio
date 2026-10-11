@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.26 - 2026-10-11
+
+- Refresh GitHub Actions scanner examples from v0.3.16 to v0.3.25, including the explanation of the pinned sample.
+
+
 ## 0.3.25 - 2026-10-11
 
 - Extend CI coverage to Windows and macOS on Python 3.13 while keeping the Ubuntu/Python 3.11–3.13 matrix.
