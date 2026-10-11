@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.48 - 2026-10-11
+
+- Remove an obsolete project-state document from the public product repository.
+
 ## 0.3.47 - 2026-10-11
 
 - Update the documented external GitHub Actions install pin to behavioral release v0.3.46.
