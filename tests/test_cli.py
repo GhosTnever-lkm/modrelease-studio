@@ -85,3 +85,53 @@ class CliTests(unittest.TestCase):
             cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
         self.assertIn(cli.__version__, stdout.getvalue())
+
+
+class SarifCliTests(unittest.TestCase):
+    def test_scan_writes_sarif_with_repo_relative_prefixed_locations(self) -> None:
+        with tempfile.TemporaryDirectory() as directory, contextlib.chdir(directory):
+            report = ScanReport(
+                target="private-local-folder",
+                profile="default",
+                findings=[
+                    Finding("SECRET", "ERROR", "config/settings.json", "Possible secret found."),
+                    Finding("DUPLICATE_LOCALIZATION_KEY", "WARNING", "localisation/english.yml:12", "Duplicate key."),
+                    Finding("MISSING_RELEASE_FILE", "WARNING", "README.md", "Recommended file is missing."),
+                    Finding("ADVISORY", "INFO", "C:\\private\\mod\\file.txt", "No repository path."),
+                ],
+            )
+            with patch.object(cli, "scan_path", return_value=report), contextlib.redirect_stdout(io.StringIO()):
+                result = cli.main(["scan", "mod", "--sarif-out", "report.sarif", "--sarif-path-prefix", "mods/my mod#1"])
+
+            document = json.loads(Path("report.sarif").read_text(encoding="utf-8"))
+            run = document["runs"][0]
+            results = {item["ruleId"]: item for item in run["results"]}
+            self.assertEqual(result, 1)
+            self.assertEqual(document["version"], "2.1.0")
+            self.assertEqual(run["tool"]["driver"]["semanticVersion"], cli.__version__)
+            self.assertEqual(results["SECRET"]["level"], "error")
+            self.assertEqual(results["MISSING_RELEASE_FILE"]["level"], "warning")
+            self.assertEqual(results["ADVISORY"]["level"], "note")
+            self.assertEqual(
+                results["SECRET"]["locations"][0]["physicalLocation"]["artifactLocation"]["uri"],
+                "mods/my%20mod%231/config/settings.json",
+            )
+            self.assertEqual(
+                results["DUPLICATE_LOCALIZATION_KEY"]["locations"][0]["physicalLocation"]["region"]["startLine"], 12,
+            )
+            self.assertNotIn("locations", results["MISSING_RELEASE_FILE"])
+            self.assertNotIn("locations", results["ADVISORY"])
+            serialized = Path("report.sarif").read_text(encoding="utf-8")
+            self.assertNotIn("private-local-folder", serialized)
+            self.assertNotIn("C:\\\\private", serialized)
+
+    def test_sarif_rejects_unsafe_path_prefix(self) -> None:
+        for prefix in ("../mods", "/absolute", "C:\\mods"):
+            with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "report.sarif"
+                stderr = io.StringIO()
+                with patch.object(cli, "scan_path", return_value=ScanReport("mod", "default")), \
+                     contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(stderr):
+                    result = cli.main(["scan", "mod", "--sarif-out", str(output), "--sarif-path-prefix", prefix])
+                self.assertEqual(result, 2)
+                self.assertFalse(output.exists())

@@ -11,7 +11,7 @@ from pathlib import Path
 
 from . import __version__
 from .models import Finding
-from .reports import json_report, markdown, to_dict, write_json, write_markdown
+from .reports import json_report, markdown, to_dict, write_json, write_markdown, write_sarif
 from .scanner import scan_path
 
 
@@ -58,6 +58,8 @@ def _scan(args: argparse.Namespace) -> int:
         write_json(report, args.json_out)
     if args.md_out:
         write_markdown(report, args.md_out)
+    if args.sarif_out:
+        write_sarif(report, args.sarif_out, version=__version__, path_prefix=args.sarif_path_prefix)
     return 1 if report.errors else 0
 
 
@@ -97,6 +99,8 @@ def main(argv: list[str] | None = None) -> int:
     scan.add_argument("--json", action="store_true", help="print machine-readable JSON")
     scan.add_argument("--json-out", help="write JSON report")
     scan.add_argument("--md-out", help="write Markdown report")
+    scan.add_argument("--sarif-out", help="write a SARIF 2.1.0 report for GitHub Code Scanning")
+    scan.add_argument("--sarif-path-prefix", default="", help="repository-relative directory containing the scanned source")
     scan.set_defaults(func=_scan)
     compare = sub.add_parser("compare", help="compare findings between two builds")
     compare.add_argument("before")

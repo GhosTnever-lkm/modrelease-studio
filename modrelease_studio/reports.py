@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import html
 import json
+import re
 import unicodedata
 from pathlib import Path
+from urllib.parse import quote
 
 from .models import ScanReport
 
@@ -82,3 +84,69 @@ def markdown(report: ScanReport) -> str:
 
 def write_markdown(report: ScanReport, path: str | Path) -> None:
     Path(path).write_text(markdown(report), encoding="utf-8")
+
+
+_NO_FILE_LOCATION = {
+    "MISSING_RELEASE_FILE", "REQUIRED_PATH_MISSING", "SCAN_DIRECTORY",
+    "ENTRY_LIMIT", "ARCHIVE_SIZE_LIMIT", "INVALID_ZIP",
+}
+
+
+def _artifact_uri(path: str | None) -> str | None:
+    if not path:
+        return None
+    normalized = path.replace("\\", "/")
+    parts = normalized.split("/")
+    if normalized.startswith("/") or any(part in {"", ".", ".."} for part in parts) or (parts and ":" in parts[0]) or normalized == "—":
+        return None
+    return quote(normalized, safe="/-._~!$&'()*+,;=:@")
+
+
+def sarif(report: ScanReport, *, version: str, path_prefix: str = "") -> dict:
+    """Build a SARIF 2.1.0 report using only repository-relative file paths."""
+    normalized_prefix = path_prefix.replace("\\", "/").rstrip("/")
+    prefix = _artifact_uri(normalized_prefix) if normalized_prefix else ""
+    if path_prefix and prefix is None:
+        raise ValueError("SARIF path prefix must be repository-relative and cannot contain '..' or drive syntax")
+    prefix = prefix.rstrip("/")
+    rule_ids = sorted({item.code for item in report.findings})
+    results = []
+    for item in report.findings:
+        result = {
+            "ruleId": item.code,
+            "level": {"ERROR": "error", "WARNING": "warning", "INFO": "note"}.get(item.severity, "warning"),
+            "message": {"text": "".join(f"\\u{ord(char):04x}" if _is_invisible_or_control(char) else char for char in item.message)},
+        }
+        finding_path = item.path or ""
+        line = None
+        if item.code not in _NO_FILE_LOCATION:
+            match = re.fullmatch(r"(.+):(\d+)", finding_path)
+            if match:
+                finding_path, line = match.group(1), int(match.group(2))
+        artifact_uri = _artifact_uri(finding_path) if item.code not in _NO_FILE_LOCATION else None
+        if artifact_uri:
+            physical_location = {"artifactLocation": {"uri": f"{prefix}/{artifact_uri}" if prefix else artifact_uri}}
+            if line is not None:
+                physical_location["region"] = {"startLine": line}
+            result["locations"] = [{"physicalLocation": physical_location}]
+        results.append(result)
+
+    return {
+        "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+        "version": "2.1.0",
+        "runs": [{
+            "tool": {"driver": {
+                "name": "ModRelease Studio",
+                "semanticVersion": version,
+                "informationUri": "https://github.com/GhosTnever-lkm/modrelease-studio",
+                "rules": [{"id": code, "shortDescription": {"text": code}} for code in rule_ids],
+            }},
+            "results": results,
+            "columnKind": "utf16CodeUnits",
+        }],
+    }
+
+
+def write_sarif(report: ScanReport, path: str | Path, *, version: str, path_prefix: str = "") -> None:
+    document = sarif(report, version=version, path_prefix=path_prefix)
+    Path(path).write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
