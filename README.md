@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-52%2F52%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-56%2F56%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -39,7 +39,7 @@ Every mod release is judged in the first minutes after upload: does it install, 
 modrelease scan ./my-mod --md-out release-report.md
 ```
 
-A clean report (`Status: READY`) means you are safe to publish; a `FAIL` report lists exactly which files block the release.
+A clean report (`Status: READY`) means no blocking findings were detected—not that a release is certified safe. Review the report and files before publishing; secret detection is best-effort.
 
 **2. A modpack maintainer screening many ZIPs.** You collect mods from many authors and cannot open every archive. Scan them all with the same command, read one report per ZIP, and only forward the ones that pass:
 
@@ -87,6 +87,15 @@ max_file_bytes = 2000000
 ```
 
 `required_files` checks basenames anywhere in the package. `max_file_bytes` accepts integers from 1 to 16 MiB; larger values are rejected so a project config cannot disable the scanner’s bounded-memory behavior. Secret scanning is a best-effort detector; review findings and do not treat a clean scan as proof that a release contains no secret.
+
+## Scan limits and completeness
+
+- **Entry count:** folder and ZIP scans index at most 30,000 entries. More entries produce the blocking `ENTRY_LIMIT` finding; entries beyond the limit are not included, so the report is incomplete. Reduce the package and scan again.
+- **ZIP unpacked size:** archives whose aggregate uncompressed file size exceeds 4 GiB receive the blocking `ARCHIVE_SIZE_LIMIT` finding. Split the release archive and rerun the scan.
+- **Text-file content:** the default `max_file_bytes` is 2,000,000 bytes per text file. Larger recognized text files are skipped by content checks and receive `LARGE_TEXT_FILE`; configure a value from 1 byte through 16 MiB when appropriate.
+- **Paradox parsing:** `descriptor.mod` and localization text have a separate 2 MiB parsing ceiling.
+
+Any blocking limit finding means the preflight is not a clean, complete release approval.
 
 ## GitHub Actions
 

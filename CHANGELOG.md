@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.32 - 2026-10-11
+
+- Document the 30,000-entry, 4 GiB aggregate ZIP, 2,000,000-byte default text-file, 16 MiB configurable, and 2 MiB Paradox parser bounds and explain incomplete scans.
+- Clarify that `READY` is not a safety certification; update the README test badge to 56/56.
+
 ## 0.3.31 - 2026-10-11
 
 - Add an end-to-end CLI regression proving `ENTRY_LIMIT` appears in JSON reports and blocks release scans for both folder and ZIP inputs.
