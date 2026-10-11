@@ -10,14 +10,13 @@ Updated: 2026-10-11
 - Version synchronized across package metadata, CLI, and the version regression test; CHANGELOG updated.
 - Local validation: 28/28 tests pass, clean Paradox example scan is READY with zero findings, workflow YAML parses, and `git diff --check` passes.
 - Published and verified: v0.3.16 release ZIP + SHA-256; tag release, preflight CI, and Pages workflows succeeded.
-- Pending publish of v0.3.17 documentation refresh and its release CI checks.
+- Published and verified: v0.3.17 release ZIP + SHA-256; tag release and preflight CI succeeded; Pages deployment succeeded.
 
 ## Published baseline
 
-- Latest verified published release: v0.3.16.
+- Latest verified published release: v0.3.17.
 
 ## Next
 
-1. Verify v0.3.17 release, CI, and Pages.
-2. Continue concrete, tested hardening of the mod-QA tools.
-3. Add Telegram only if the owner supplies a real handle; do not invent wallet or payout details.
+1. Continue concrete, tested hardening of the mod-QA tools.
+2. Add Telegram only if the owner supplies a real handle; do not invent wallet or payout details.
