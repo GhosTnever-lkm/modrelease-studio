@@ -12,7 +12,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from modrelease_studio import __version__, cli
-from modrelease_studio.models import Finding, ScanReport, Source
+from modrelease_studio.models import FileRecord, Finding, ScanReport, Source
 from modrelease_studio.scanner import scan_path, scan_source
 from modrelease_studio.reports import json_report, markdown
 from modrelease_studio.scanner import SECRET_PATTERNS, MAX_CONFIGURED_TEXT_FILE_BYTES
@@ -365,6 +365,26 @@ class CompareTests(unittest.TestCase):
 
 
 class SourceEntryLimitReportingTests(unittest.TestCase):
+    def test_file_growing_past_read_limit_is_reported_not_silently_skipped(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            source = Source(
+                target=Path(directory),
+                records=[FileRecord("growing.txt", 1)],
+                findings=[],
+                is_zip=False,
+            )
+            with patch.object(Source, "read", return_value=b"x" * 11), patch.object(
+                Source, "digest", return_value="0" * 64
+            ):
+                report = scan_source(source, config={"max_file_bytes": 10, "required_files": []})
+
+        finding = next((item for item in report.findings if item.code == "LARGE_TEXT_FILE"), None)
+        self.assertIsNotNone(finding)
+        assert finding is not None
+        self.assertEqual(finding.severity, "WARNING")
+        self.assertIn("exceeded", finding.message)
+        self.assertEqual(report.status, "REVIEW")
+
     def test_entry_limit_is_reported_as_release_blocking_for_folder_and_zip(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -430,7 +450,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.45")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.46")
 
 if __name__ == "__main__":
     unittest.main()

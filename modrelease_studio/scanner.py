@@ -103,6 +103,12 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
             report.findings.append(Finding("UNREADABLE_FILE", "WARNING", record.path, "Could not read this file for content checks."))
             continue
         if len(data) > max_file_bytes:
+            report.findings.append(Finding(
+                "LARGE_TEXT_FILE",
+                "WARNING",
+                record.path,
+                f"Text file exceeded configured scan limit ({max_file_bytes} bytes) while being read; content checks were skipped.",
+            ))
             continue
         for code, pattern, message in SECRET_PATTERNS:
             if pattern.search(data):

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.46 - 2026-10-11
+
+- Report a `LARGE_TEXT_FILE` warning when an indexed text file grows past the configured read limit during scanning, instead of silently skipping content checks.
+- Add a deterministic regression for the changed-file-size boundary.
+
 ## 0.3.45 - 2026-10-11
 
 - Refresh the external GitHub Actions install example to scanner v0.3.44.
