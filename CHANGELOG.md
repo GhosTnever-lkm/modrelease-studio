@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.8 - 2026-10-11
+
+- Detect case-only and Unicode-normalization path collisions in both folders and ZIPs.
+- Add directory and archive regression fixtures for cross-filesystem portability findings.
+- Bump package and CLI version to 0.3.8.
+
 ## 0.3.7 - 2026-10-11
 
 - Validate `required_files` and `max_file_bytes` configuration instead of silently accepting malformed policies.

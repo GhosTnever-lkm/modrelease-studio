@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import fnmatch
 import re
+import unicodedata
 from pathlib import PurePosixPath
 
 from .models import Finding, ScanReport, Source
@@ -57,6 +58,22 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
                 "REQUIRED_PATH_MISSING", required_paths_severity, pattern,
                 f"Configured release path is missing: {pattern}",
             ))
+
+    normalized_seen: dict[str, str] = {}
+    for record in source.records:
+        identity = unicodedata.normalize("NFC", record.path).casefold()
+        previous = normalized_seen.get(identity)
+        if previous and previous != record.path:
+            case_only = previous.casefold() == record.path.casefold()
+            code = "CASE_COLLISION" if case_only else "UNICODE_COLLISION"
+            message = (
+                f"Path differs only by letter case from `{previous}`."
+                if case_only else f"Path is Unicode-normalization equivalent to `{previous}`."
+            )
+            report.findings.append(Finding(code, "ERROR", record.path, message,
+                                           "Rename one entry; the target filesystem may treat these paths as identical."))
+        else:
+            normalized_seen[identity] = record.path
 
     localization_found = False
     for record in source.records:

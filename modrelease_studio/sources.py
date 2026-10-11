@@ -81,7 +81,6 @@ class ZipSource(Source):
                     infos = infos[:MAX_ENTRIES]
                 total_size = 0
                 exact_seen: set[str] = set()
-                folded_seen: dict[str, str] = {}
                 for info in infos:
                     raw = info.filename
                     if info.is_dir():
@@ -106,14 +105,6 @@ class ZipSource(Source):
                                                 "Remove duplicate entries before publishing."))
                         continue
                     exact_seen.add(rel)
-                    folded = rel.casefold()
-                    previous = folded_seen.get(folded)
-                    if previous and previous != rel:
-                        findings.append(Finding("CASE_COLLISION", "ERROR", rel,
-                                                f"Path differs only by letter case from `{previous}`.",
-                                                "Rename one file; some systems treat these paths as identical."))
-                    else:
-                        folded_seen[folded] = rel
                     mode = (info.external_attr >> 16) & 0xFFFF
                     if stat.S_ISLNK(mode):
                         findings.append(Finding("ZIP_SYMLINK", "WARNING", rel,

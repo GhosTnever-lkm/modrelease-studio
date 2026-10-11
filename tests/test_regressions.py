@@ -5,6 +5,7 @@ import io
 import tempfile
 import tomllib
 import unittest
+import zipfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -49,6 +50,40 @@ class SecretPatternTests(unittest.TestCase):
         report = self.scan_fixture("config.txt", b"aws_access_key_id=" + secret)
         self.assertIn("AWS_ACCESS_KEY", {finding.code for finding in report.findings})
         self.assertNotIn(secret.decode(), repr(report.to_dict()))
+
+
+class PathCollisionTests(unittest.TestCase):
+    def test_directory_scan_finds_case_collisions(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            first = Path(directory) / "Common"
+            second = Path(directory) / "common"
+            first.mkdir()
+            second.mkdir()
+            (first / "Events.txt").write_text("a", encoding="utf-8")
+            (second / "events.TXT").write_text("b", encoding="utf-8")
+            report = scan_path(directory)
+        self.assertIn("CASE_COLLISION", {item.code for item in report.findings})
+        self.assertEqual(report.errors, 1)
+
+    def test_directory_scan_finds_unicode_normalization_collisions(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            composed = Path(directory) / "café.txt"
+            decomposed = Path(directory) / "cafe\u0301.txt"
+            composed.write_text("a", encoding="utf-8")
+            decomposed.write_text("b", encoding="utf-8")
+            report = scan_path(directory)
+        self.assertIn("UNICODE_COLLISION", {item.code for item in report.findings})
+        self.assertEqual(report.errors, 1)
+
+    def test_zip_scan_finds_unicode_normalization_collisions(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "mod.zip"
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr("common/café.txt", "a")
+                archive.writestr("common/cafe\u0301.txt", "b")
+            report = scan_path(str(archive_path))
+        self.assertIn("UNICODE_COLLISION", {item.code for item in report.findings})
+        self.assertEqual(report.errors, 1)
 
 
 class RequiredPathPolicyTests(unittest.TestCase):
@@ -179,7 +214,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.7")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.8")
 
 if __name__ == "__main__":
     unittest.main()
