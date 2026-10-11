@@ -2,32 +2,26 @@
 
 Updated: 2026-10-11
 
-## Current iteration — v0.3.34 (test badge correction) — published
+## Current iteration — v0.3.35 (release ZIP smoke automation) — published
 
-- Corrected the README test badge to 57/57 after v0.3.33 added the ZIP expanded-size CLI regression; no runtime behavior changed.
-- Validation: 57/57 tests, 91% package line coverage. Five CI jobs (Ubuntu Python 3.11–3.13, Windows 3.13, macOS 3.13), release, and Pages passed on `a50f7f4`.
-- Published v0.3.34; the 87,333-byte ZIP checksum and archive integrity verified. There are 39 releases; preflight is 49/50 successful (98.0%).
-- Profile v1.2.95 and portfolio v1.3.73 reflect the release; both release workflows and Pages succeeded and live content was checked.
-- Six featured QA issue queues have zero open issues; seven key release/demo/profile links returned HTTP 200.
-- Fresh-venv smoke tests from both the public v0.3.34 tag and downloaded release ZIP passed: version 0.3.34, sample READY, JSON and Markdown reports generated.
+- Release workflow tests the distributable before publishing: extract built ZIP, install into an isolated venv, assert `modrelease --version` matches the tag, scan the included clean example, and require JSON status READY.
+- The v0.3.35 GitHub Actions release job passed every step including `Smoke-test packaged release archive`; preflight matrix and Pages passed on `aaf6e1e`. 57/57 tests; 91% package line coverage.
+- Published v0.3.35; archive is 87,432 bytes. Downloaded SHA-256 and ZIP integrity verified. There are 40 releases; preflight is 50/51 successful (98.0%).
+- Profile v1.2.96 and portfolio v1.3.74 updated; release workflows and Pages succeeded; live pages verified.
+- Six core QA issue queues have zero open issues; seven key URLs return HTTP 200.
+- Consumer integrations ModRelease Gate v1.0.30 and Paradox Mod Quality Gate v1.0.24 intentionally remain on runtime scanner v0.3.25; both assert exact installed versions in CI.
 
-## Recent technical work
+## Previous iteration — v0.3.34 (badge correction)
 
-- v0.3.33: end-to-end CLI regression verifies an oversized ZIP emits `ARCHIVE_SIZE_LIMIT` in JSON, status FAIL, exit code 1, using a small patched threshold.
-- v0.3.32: documented 30,000-entry cap, 4 GiB aggregate ZIP threshold, default 2,000,000-byte text-file cap, configurable 16 MiB maximum, and 2 MiB Paradox parsing ceiling; clarified that READY is not a safety certification.
-- v0.3.31: folder and ZIP `ENTRY_LIMIT` appear in JSON and block release scans.
-- v0.3.30: deterministic folder entry-count exact/overflow boundary test.
-- v0.3.29: ZIP entry-count and aggregate-uncompressed-size boundary tests.
-- v0.3.28: corrupt DEFLATE content becomes `UNREADABLE_FILE` rather than aborting.
-- Consumer integrations ModRelease Gate v1.0.30 and Paradox Mod Quality Gate v1.0.24 intentionally pin scanner v0.3.25; CI asserts the exact installed version. No runtime scanner change since that pin.
+- README badge corrected to 57/57 after v0.3.33's expanded ZIP-size regression; no runtime behavior change.
+- 57 tests, 91% coverage; release, five CI jobs, Pages, ZIP checksum, and integrity verified.
 
 ## Published baseline
 
-- Latest verified release: v0.3.34.
-- Public v0.3.33 was installed in an isolated venv and tested against a normal sample plus a synthetic oversized ZIP; the checks passed.
+- Latest verified release: v0.3.35.
 
 ## Next
 
-1. Automate release-ZIP smoke test in the release workflow: extract the archive, install in an isolated venv, assert the tag version and clean sample report before publishing.
-2. Keep consumer pins at v0.3.25 unless a runtime change justifies an update.
-3. Recheck featured links/issues after the next flagship release; pursue only concrete, tested improvements.
+1. Smoke-test public v0.3.35 tag and downloadable ZIP in clean environments; compare installed version, README badge, and sample output.
+2. Keep consumer pins at v0.3.25 unless a runtime change justifies updating them.
+3. Continue only concrete, tested product improvements.
