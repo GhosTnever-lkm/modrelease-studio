@@ -77,27 +77,29 @@ GitHub Releases publish both the ZIP archive and a `.sha256` sidecar. After down
 **Linux (GNU coreutils):**
 
 ```bash
-sha256sum --check ModRelease-Studio-v0.3.36.zip.sha256
+sha256sum --check ModRelease-Studio-*.zip.sha256
 ```
 
 **macOS:**
 
 ```bash
-shasum -a 256 -c ModRelease-Studio-v0.3.36.zip.sha256
+shasum -a 256 -c ModRelease-Studio-*.zip.sha256
 ```
 
 **Windows PowerShell:**
 
 ```powershell
-$archive = ".\ModRelease-Studio-v0.3.36.zip"
-$checksumFile = ".\ModRelease-Studio-v0.3.36.zip.sha256"
+$checksumFiles = @(Get-ChildItem -File -Filter "ModRelease-Studio-*.zip.sha256")
+if ($checksumFiles.Count -ne 1) { throw "Keep exactly one matching release checksum file in this folder." }
+$checksumFile = $checksumFiles[0].FullName
+$archive = $checksumFile -replace '\.sha256$', ''
 $expected = ((Get-Content $checksumFile -Raw) -split "\s+")[0].ToLowerInvariant()
 $actual = (Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($actual -ne $expected) { throw "SHA-256 mismatch; do not use this archive." }
 "SHA-256 OK"
 ```
 
-For a different release, substitute its matching version in both filenames.
+Keep the downloaded ZIP and its matching sidecar in this folder. The commands match a release of any version; the PowerShell example requires exactly one matching sidecar.
 
 ## Compare builds
 

@@ -39,23 +39,27 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          printf 'synthetic checksum fixture\n' > checksum-fixture.txt
+          printf 'synthetic checksum fixture\n' > ModRelease-Studio-v0.0.0.zip
           if [[ "$RUNNER_OS" == "macOS" ]]; then
-            shasum -a 256 checksum-fixture.txt > checksum-fixture.txt.sha256
-            shasum -a 256 -c checksum-fixture.txt.sha256
+            shasum -a 256 ModRelease-Studio-v0.0.0.zip > ModRelease-Studio-v0.0.0.zip.sha256
+            shasum -a 256 -c ModRelease-Studio-v0.0.0.zip.sha256
           else
-            sha256sum checksum-fixture.txt > checksum-fixture.txt.sha256
-            sha256sum --check checksum-fixture.txt.sha256
+            sha256sum ModRelease-Studio-v0.0.0.zip > ModRelease-Studio-v0.0.0.zip.sha256
+            sha256sum --check ModRelease-Studio-v0.0.0.zip.sha256
           fi
       - name: Verify Windows PowerShell checksum instructions
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $archive = ".\checksum-fixture.txt"
-          $checksumFile = ".\checksum-fixture.txt.sha256"
+          $archive = ".\ModRelease-Studio-v0.0.0.zip"
+          $checksumFile = "$archive.sha256"
           Set-Content -NoNewline -Path $archive -Value "synthetic checksum fixture"
           $hash = (Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$hash  checksum-fixture.txt" | Set-Content -NoNewline -Path $checksumFile
+          "$hash  ModRelease-Studio-v0.0.0.zip" | Set-Content -NoNewline -Path $checksumFile
+          $checksumFiles = @(Get-ChildItem -File -Filter "ModRelease-Studio-*.zip.sha256")
+          if ($checksumFiles.Count -ne 1) { throw "Expected exactly one matching sidecar." }
+          $checksumFile = $checksumFiles[0].FullName
+          $archive = $checksumFile -replace '\.sha256$', ''
           $expected = ((Get-Content $checksumFile -Raw) -split "\s+")[0].ToLowerInvariant()
           $actual = (Get-FileHash $archive -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($actual -ne $expected) { throw "SHA-256 mismatch; do not use this archive." }

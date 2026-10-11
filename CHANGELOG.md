@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.41 - 2026-10-11
+
+- Make Linux/macOS checksum commands work with any downloaded release version; PowerShell detects the matching sidecar and fails safely if more than one is present.
+- Update the OS-specific CI fixtures to exercise the version-independent file selection; no scanner runtime behavior changed.
+
 ## 0.3.40 - 2026-10-11
 
 - Exclude test-generated Python bytecode from release ZIPs and fail the release job if any `__pycache__` or `.pyc`/`.pyo` files remain.
