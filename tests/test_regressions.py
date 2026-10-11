@@ -64,6 +64,18 @@ class ArchivePathSafetyTests(unittest.TestCase):
         self.assertEqual(finding.severity, "ERROR")
         self.assertEqual(report.errors, 1)
 
+    def test_zip_rejects_unsafe_and_windows_nonportable_directory_paths(self) -> None:
+        entries = ["../outside/", "mod/CON.txt/", "mod/trailing./", "mod/trailing /"]
+        for entry in entries:
+            with self.subTest(entry=entry), tempfile.TemporaryDirectory() as directory:
+                archive_path = Path(directory) / "unsafe-directory.zip"
+                with zipfile.ZipFile(archive_path, "w") as archive:
+                    archive.writestr(entry, b"")
+                report = scan_path(str(archive_path))
+            self.assertIn("UNSAFE_PATH", {finding.code for finding in report.findings})
+            self.assertEqual(report.errors, 1)
+
+
 
 class SpecialArchiveEntryTests(unittest.TestCase):
     def test_zip_fifo_entry_is_blocked_without_reading_payload(self) -> None:
@@ -242,7 +254,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.11")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.12")
 
 if __name__ == "__main__":
     unittest.main()

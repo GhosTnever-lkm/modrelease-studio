@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.12 - 2026-10-11
+
+- Reject unsafe directory entries and Windows-nonportable ZIP path components (reserved device names, trailing dots/spaces).
+- Add regression coverage for traversal and nonportable directory entries.
+- Bump package and CLI version to 0.3.12.
+
 ## 0.3.11 - 2026-10-11
 
 - Reject ZIP entry paths with colon syntax in any component to avoid drive/alternate-stream portability hazards.

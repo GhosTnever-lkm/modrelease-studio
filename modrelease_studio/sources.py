@@ -11,6 +11,11 @@ from .models import FileRecord, Finding, Source
 MAX_ENTRIES = 30_000
 MAX_TOTAL_UNCOMPRESSED = 4 * 1024 * 1024 * 1024
 MAX_TEXT_FILE = 2 * 1024 * 1024
+WINDOWS_RESERVED_BASENAMES = {
+    "CON", "PRN", "AUX", "NUL",
+    *(f"COM{number}" for number in range(1, 10)),
+    *(f"LPT{number}" for number in range(1, 10)),
+}
 
 
 class DirectorySource(Source):
@@ -83,22 +88,28 @@ class ZipSource(Source):
                 exact_seen: set[str] = set()
                 for info in infos:
                     raw = info.filename
-                    if info.is_dir():
-                        continue
                     normalized = raw.replace("\\", "/")
                     path = PurePosixPath(normalized)
                     rel = path.as_posix()
+                    windows_nonportable = any(
+                        part.endswith((" ", "."))
+                        or part.split(".", 1)[0].upper() in WINDOWS_RESERVED_BASENAMES
+                        for part in path.parts
+                    )
                     unsafe = (normalized.startswith("/") or ".." in path.parts
-                              or any(":" in part for part in path.parts) or "\x00" in raw)
+                              or any(":" in part for part in path.parts)
+                              or "\x00" in raw or windows_nonportable)
                     if unsafe:
                         findings.append(Finding("UNSAFE_PATH", "ERROR", raw,
-                                                "Archive entry has an absolute, parent-traversal, drive-qualified, or colon-containing path.",
-                                                "Rebuild the ZIP using portable relative paths without drive or stream syntax."))
+                                                "Archive entry has an absolute, parent-traversal, drive/stream-qualified, or Windows-nonportable path.",
+                                                "Rebuild the ZIP using portable relative paths without drive, stream, reserved-name, or trailing-dot/space syntax."))
                         continue
                     if "\\" in raw:
                         findings.append(Finding("BACKSLASH_PATH", "WARNING", raw,
                                                 "Archive path uses backslashes and may unpack inconsistently.",
                                                 "Use forward slashes in ZIP entry names."))
+                    if info.is_dir():
+                        continue
                     if rel in exact_seen:
                         findings.append(Finding("DUPLICATE_PATH", "ERROR", rel,
                                                 "The archive contains the same path more than once.",
