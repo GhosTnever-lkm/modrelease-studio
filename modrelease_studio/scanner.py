@@ -30,9 +30,6 @@ def scan_path(path: str, *, config: dict | None = None) -> ScanReport:
 
 def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
     config = config or {}
-    report = ScanReport(target=str(source.target), profile="default", file_count=len(source.records),
-                        total_bytes=sum(item.size for item in source.records), sha256=source.digest(), files=source.records)
-    report.findings.extend(source.findings)
     max_file_bytes = config.get("max_file_bytes", 2_000_000)
     if (isinstance(max_file_bytes, bool) or not isinstance(max_file_bytes, int)
             or not 1 <= max_file_bytes <= MAX_CONFIGURED_TEXT_FILE_BYTES):
@@ -43,17 +40,21 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
     if not isinstance(required_files_value, list) or any(not isinstance(name, str) or not name.strip() for name in required_files_value):
         raise ValueError("scan.required_files must be a list of non-empty filenames")
     required_files = {name.casefold() for name in required_files_value}
-    file_names = {PurePosixPath(record.path).name.casefold() for record in source.records}
-    for name in sorted(required_files - file_names):
-        report.findings.append(Finding("MISSING_RELEASE_FILE", "WARNING", name,
-                                       f"Recommended release file is missing: {name}"))
-
     required_paths = config.get("required_paths", [])
     if not isinstance(required_paths, list) or any(not isinstance(pattern, str) or not pattern.strip() for pattern in required_paths):
         raise ValueError("scan.required_paths must be a list of non-empty path patterns")
     required_paths_severity = str(config.get("required_paths_severity", "WARNING")).upper()
     if required_paths_severity not in {"ERROR", "WARNING", "INFO"}:
         raise ValueError("scan.required_paths_severity must be ERROR, WARNING, or INFO")
+
+    report = ScanReport(target=str(source.target), profile="default", file_count=len(source.records),
+                        total_bytes=sum(item.size for item in source.records), sha256=source.digest(), files=source.records)
+    report.findings.extend(source.findings)
+    file_names = {PurePosixPath(record.path).name.casefold() for record in source.records}
+    for name in sorted(required_files - file_names):
+        report.findings.append(Finding("MISSING_RELEASE_FILE", "WARNING", name,
+                                       f"Recommended release file is missing: {name}"))
+
     normalized_paths = [record.path.casefold() for record in source.records]
     for pattern in required_paths:
         normalized_pattern = pattern.replace("\\", "/").casefold()

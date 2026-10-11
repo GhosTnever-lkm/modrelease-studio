@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.15 - 2026-10-11
+
+- Validate scan configuration before computing source hashes, avoiding unnecessary full reads on invalid settings.
+- Add regression coverage for early rejection of invalid scan policies.
+- Bump package and CLI version to 0.3.15.
+
 ## 0.3.14 - 2026-10-11
 
 - Cap configured text-file scanning at 16 MiB and reject booleans, floats, strings, and out-of-range limits to preserve bounded memory.

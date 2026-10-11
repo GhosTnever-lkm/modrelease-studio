@@ -11,8 +11,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 from modrelease_studio import __version__, cli
-from modrelease_studio.models import Finding, ScanReport
-from modrelease_studio.scanner import scan_path
+from modrelease_studio.models import Finding, ScanReport, Source
+from modrelease_studio.scanner import scan_path, scan_source
 from modrelease_studio.reports import markdown
 from modrelease_studio.scanner import SECRET_PATTERNS, MAX_CONFIGURED_TEXT_FILE_BYTES
 
@@ -73,6 +73,26 @@ class MarkdownReportEscapingTests(unittest.TestCase):
         self.assertNotIn("<img src=x>", rendered)
         self.assertIn("&lt;img src=x&gt;", rendered)
         self.assertIn("&#124;", rendered)
+
+
+class ConfigValidationOrderTests(unittest.TestCase):
+    def test_invalid_scan_config_fails_before_source_digest(self) -> None:
+        invalid_configs = [
+            {"max_file_bytes": 0},
+            {"required_files": [""]},
+            {"required_paths": [""]},
+            {"required_paths_severity": "CRITICAL"},
+        ]
+
+        class NeverDigestSource(Source):
+            def digest(self) -> str:
+                raise AssertionError("source digest should not run for invalid config")
+
+        for config in invalid_configs:
+            with self.subTest(config=config):
+                source = NeverDigestSource(Path("unused"), [], [], False)
+                with self.assertRaises(ValueError):
+                    scan_source(source, config=config)
 
 
 class ArchivePathSafetyTests(unittest.TestCase):
@@ -286,7 +306,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.14")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.15")
 
 if __name__ == "__main__":
     unittest.main()
