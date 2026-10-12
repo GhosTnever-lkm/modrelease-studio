@@ -549,6 +549,11 @@ class DocumentationMetricTests(unittest.TestCase):
         landing = (root / "docs" / "index.html").read_text(encoding="utf-8")
         self.assertIn(badge, readme)
         self.assertIn(badge, landing)
+        self.assertNotRegex(readme, r"\b\d+-test suite\b")
+        self.assertIn("Configured required files and paths", readme)
+        self.assertIn("обязательные файлы и пути из политики проекта", landing)
+        self.assertNotIn("Missing release notes", readme)
+        self.assertNotIn("release notes", landing.casefold())
 
     def test_checkout_quick_start_uses_module_entrypoint_before_install(self) -> None:
         root = Path(__file__).resolve().parents[1]

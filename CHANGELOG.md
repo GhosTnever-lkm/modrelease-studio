@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.75 - 2026-10-13
+
+- Correct README and landing-page descriptions to match the configured required-file/path checks; the scanner does not infer missing release notes or build versions.
+- Remove a stale fixed test-suite count from the README and extend the existing documentation regression to keep these claims accurate.
+
 ## 0.3.74 - 2026-10-12
 
 - Synchronize the README and product page with the verified ModRelease Gate Action v1.0.58.
