@@ -45,7 +45,10 @@ def _config(path: str | None) -> dict:
         path = str(default)
     with open(path, "rb") as stream:
         data = tomllib.load(stream)
-    return data.get("scan", data)
+    settings = data.get("scan", data)
+    if not isinstance(settings, dict):
+        raise ValueError("configuration [scan] section must be a TOML table")
+    return settings
 
 
 def _scan(args: argparse.Namespace) -> int:

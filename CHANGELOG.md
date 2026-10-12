@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.70 - 2026-10-12
+
+- Return a clear configuration error when `[scan]` is a TOML scalar or array instead of a table, rather than crashing with `AttributeError`.
+- Add a CLI regression test, update the documented test count, and synchronize the ModRelease Gate links to v1.0.55.
+
 ## 0.3.69 - 2026-10-12
 
 - Sync the README and product page with the published ModRelease Gate Action v1.0.54.

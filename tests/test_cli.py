@@ -79,6 +79,17 @@ class CliTests(unittest.TestCase):
         self.assertEqual(result, 2)
         self.assertIn("modrelease:", stderr.getvalue())
 
+    def test_non_table_scan_section_returns_two_with_readable_error(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "invalid-scan-section.toml"
+            config.write_text('scan = "not-a-table"\n', encoding="utf-8")
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                result = cli.main(["scan", "fixture.zip", "--config", str(config)])
+        self.assertEqual(result, 2)
+        self.assertIn("modrelease:", stderr.getvalue())
+        self.assertIn("must be a TOML table", stderr.getvalue())
+
     def test_version_option_prints_package_version(self) -> None:
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout), self.assertRaises(SystemExit) as raised:
