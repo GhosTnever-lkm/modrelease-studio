@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.71 - 2026-10-12
+
+- Correct the ModRelease Gate links and integration guidance to the published v1.0.56 release.
+
 ## 0.3.70 - 2026-10-12
 
 - Return a clear configuration error when `[scan]` is a TOML scalar or array instead of a table, rather than crashing with `AttributeError`.

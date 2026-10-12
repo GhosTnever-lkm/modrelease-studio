@@ -569,8 +569,8 @@ class DocumentationMetricTests(unittest.TestCase):
         landing = (root / "docs" / "index.html").read_text(encoding="utf-8")
         readme = (root / "README.md").read_text(encoding="utf-8")
         self.assertIn(f"v{__version__}", landing)
-        self.assertIn("v1.0.55", landing)
-        self.assertIn("v1.0.55", readme)
+        self.assertIn("v1.0.56", landing)
+        self.assertIn("v1.0.56", readme)
         self.assertNotIn("v0.3.61", landing)
         self.assertNotIn("v1.0.54", landing)
         self.assertNotIn("v1.0.54", readme)
@@ -590,7 +590,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.70")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.71")
 
 if __name__ == "__main__":
     unittest.main()
