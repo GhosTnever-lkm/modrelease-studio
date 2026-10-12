@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.69 - 2026-10-12
+
+- Sync the README and product page with the published ModRelease Gate Action v1.0.54.
+- Keep package metadata, CLI version, install examples, and product page aligned.
+
 ## 0.3.68 - 2026-10-12
 
 - Update the product page and regression check to current ModRelease Gate Action v1.0.53.

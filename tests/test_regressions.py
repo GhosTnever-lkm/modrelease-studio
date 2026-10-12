@@ -567,9 +567,13 @@ class DocumentationMetricTests(unittest.TestCase):
     def test_product_landing_uses_current_scanner_and_action_releases(self) -> None:
         root = Path(__file__).resolve().parents[1]
         landing = (root / "docs" / "index.html").read_text(encoding="utf-8")
+        readme = (root / "README.md").read_text(encoding="utf-8")
         self.assertIn(f"v{__version__}", landing)
-        self.assertIn("v1.0.53", landing)
+        self.assertIn("v1.0.54", landing)
+        self.assertIn("v1.0.54", readme)
         self.assertNotIn("v0.3.61", landing)
+        self.assertNotIn("v1.0.53", landing)
+        self.assertNotIn("v1.0.53", readme)
         self.assertNotIn("v1.0.44", landing)
 
 
@@ -586,7 +590,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.68")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.69")
 
 if __name__ == "__main__":
     unittest.main()

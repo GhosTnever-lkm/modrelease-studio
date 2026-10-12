@@ -50,7 +50,7 @@ modrelease scan ./modpack/part2.zip --json-out part2-check.json
 
 Each ZIP gets its own JSON report (with SHA-256 + findings), so scanning the next archive does not overwrite the previous result.
 
-**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action](https://github.com/GhosTnever-lkm/modrelease-studio-action) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
+**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action v1.0.54](https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.54) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
 
 ## Quick start
 
@@ -97,7 +97,7 @@ steps:
     with:
       python-version: "3.12"
   - name: Install ModRelease Studio
-    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.68"
+    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.69"
   - name: Scan mod
     run: modrelease scan . --sarif-out modrelease.sarif || test $? -eq 1
   - name: Upload findings
@@ -187,7 +187,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.68"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.69"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -199,7 +199,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.68`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.69`.
 
 ## Project-specific release policy
 
