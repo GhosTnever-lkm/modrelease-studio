@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.64 - 2026-10-12
+
+- Declare Python 3.13 support in package classifiers, matching the existing cross-platform CI matrix.
+
 ## 0.3.63 - 2026-10-12
 
 - Fix the modpack example so every ZIP keeps its own JSON report instead of overwriting the previous report.

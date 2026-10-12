@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modrelease-studio"
-version = "0.3.63"
+version = "0.3.64"
 description = "Local-first release preflight for game mods and mod packs"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -19,6 +19,7 @@ classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Quality Assurance",
 ]
 
