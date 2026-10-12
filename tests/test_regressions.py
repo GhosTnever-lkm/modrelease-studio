@@ -540,13 +540,37 @@ class SourceEntryLimitReportingTests(unittest.TestCase):
 
 
 class DocumentationMetricTests(unittest.TestCase):
-    def test_readme_test_badge_matches_discovered_suite_size(self) -> None:
+    def test_documentation_test_badges_match_discovered_suite_size(self) -> None:
         root = Path(__file__).resolve().parents[1]
         suite = unittest.defaultTestLoader.discover(str(root / "tests"))
         test_count = suite.countTestCases()
         badge = f"tests-{test_count}%2F{test_count}%20passing"
         readme = (root / "README.md").read_text(encoding="utf-8")
+        landing = (root / "docs" / "index.html").read_text(encoding="utf-8")
         self.assertIn(badge, readme)
+        self.assertIn(badge, landing)
+
+    def test_modpack_examples_preserve_each_archive_report(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("--json-out part1-check.json", readme)
+        self.assertIn("--json-out part2-check.json", readme)
+        self.assertNotIn("--json-out check.json", readme)
+
+    def test_ci_merge_requirement_is_not_overstated(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("mark the check as required", readme)
+        self.assertIn("branch protection rules or ruleset", readme)
+        self.assertNotIn("blocks merge on release-blocking findings", readme)
+
+    def test_product_landing_uses_current_scanner_and_action_releases(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        landing = (root / "docs" / "index.html").read_text(encoding="utf-8")
+        self.assertIn(f"v{__version__}", landing)
+        self.assertIn("v1.0.48", landing)
+        self.assertNotIn("v0.3.61", landing)
+        self.assertNotIn("v1.0.44", landing)
 
 
 class VersionTests(unittest.TestCase):
@@ -560,7 +584,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.62")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.63")
 
 if __name__ == "__main__":
     unittest.main()

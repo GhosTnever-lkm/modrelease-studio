@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.63 - 2026-10-12
+
+- Fix the modpack example so every ZIP keeps its own JSON report instead of overwriting the previous report.
+- Clarify that blocking merges requires marking the GitHub check as required in branch protection or a ruleset.
+- Refresh the product page to the current scanner and Action releases, and test README/landing-page examples and version badges.
+
 ## 0.3.62 - 2026-10-12
 
 - Detect fine-grained GitHub personal access tokens with the `github_pat_` prefix in release files.

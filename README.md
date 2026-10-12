@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-73%2F73%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-76%2F76%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -44,13 +44,13 @@ A clean report (`Status: READY`) means no blocking findings were detected—not 
 **2. A modpack maintainer screening many ZIPs.** You collect mods from many authors and cannot open every archive. Scan them all with the same command, read one report per ZIP, and only forward the ones that pass:
 
 ```console
-modrelease scan ./modpack/part1.zip --json-out check.json
-modrelease scan ./modpack/part2.zip --json-out check.json
+modrelease scan ./modpack/part1.zip --json-out part1-check.json
+modrelease scan ./modpack/part2.zip --json-out part2-check.json
 ```
 
-The JSON report (with SHA-256 + findings) also makes an audit trail for your collection.
+Each ZIP gets its own JSON report (with SHA-256 + findings), so scanning the next archive does not overwrite the previous result.
 
-**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action](https://github.com/GhosTnever-lkm/modrelease-studio-action) to your mod repository so every pull request runs the preflight and blocks merge on release-blocking findings. Mod authors get feedback in the PR, and no broken build reaches the workshop.
+**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action](https://github.com/GhosTnever-lkm/modrelease-studio-action) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
 
 ## Quick start
 
@@ -97,7 +97,7 @@ steps:
     with:
       python-version: "3.12"
   - name: Install ModRelease Studio
-    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.62"
+    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.63"
   - name: Scan mod
     run: modrelease scan . --sarif-out modrelease.sarif || test $? -eq 1
   - name: Upload findings
@@ -187,7 +187,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.62"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.63"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -199,7 +199,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.62`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.63`.
 
 ## Project-specific release policy
 
@@ -224,7 +224,7 @@ coverage run --source=modrelease_studio -m unittest discover -s tests -v
 coverage report --include="modrelease_studio/*.py" --fail-under=80
 ```
 
-The 73-test suite is run with line coverage; CI enforces at least 80% package coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13. The junction regression uses a safe simulated fixture everywhere and additionally tests a real external junction on Windows.
+The 76-test suite is run with line coverage; CI enforces at least 80% package coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13. The junction regression uses a safe simulated fixture everywhere and additionally tests a real external junction on Windows.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 
