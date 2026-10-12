@@ -21,7 +21,7 @@
     "name": "ModRelease Studio",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Windows, macOS, Linux",
-    "softwareVersion": "0.3.72",
+    "softwareVersion": "0.3.73",
     "license": "https://opensource.org/licenses/MIT",
     "offers": {"@type": "Offer", "price": "0", "priceCurrency": "RUB"},
     "url": "https://ghostnever-lkm.github.io/modrelease-studio/",
@@ -48,7 +48,7 @@
         <h1 id="hero-title">Проверь сборку <em>до игроков</em></h1>
         <p class="lead">ModRelease Studio помогает авторам модов и сборок заранее находить проблемы в папке или ZIP: ошибки упаковки, случайно добавленные секреты и неполные метаданные.</p>
         <div class="actions"><a class="button primary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/latest">Скачать бесплатно ↗</a><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio">Исходный код ↗</a></div>
-        <div class="badges" aria-label="Состояние проекта"><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg" alt="Статус CI ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/releases"><img src="https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver" alt="Последний релиз ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://img.shields.io/badge/tests-77%20test%20cases-blue" alt="77 test cases in suite"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Лицензия MIT"></a></div><div class="facts"><span class="chip">v0.3.72</span><span class="chip">Python 3.11+</span><span class="chip">MIT · бесплатно</span><span class="chip">Файлы остаются локально</span></div>
+        <div class="badges" aria-label="Состояние проекта"><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg" alt="Статус CI ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/releases"><img src="https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver" alt="Последний релиз ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://img.shields.io/badge/tests-78%20test%20cases-blue" alt="78 test cases in suite"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Лицензия MIT"></a></div><div class="facts"><span class="chip">v0.3.73</span><span class="chip">Python 3.11+</span><span class="chip">MIT · бесплатно</span><span class="chip">Файлы остаются локально</span></div>
       </div>
       <figure class="preview"><img src="demo.png" alt="Пример отчёта ModRelease Studio: найдены тестовый секрет, неверный заголовок локализации и отсутствующий supported_version" width="1440" height="870"><figcaption class="caption">Пример на тестовом моде. Найденные сигналы нужно проверить вручную.</figcaption></figure>
     </section>
@@ -78,11 +78,11 @@
       <pre class="code"><code>python -m venv .venv
 # Windows: .venv\Scripts\Activate.ps1
 # macOS / Linux: source .venv/bin/activate
-python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.72"
+python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.73"
 modrelease scan ./my-mod --md-out release-report.md --json-out release-report.json
 modrelease compare ./previous-build ./candidate-build</code></pre>
       <p class="intro" style="margin-top:16px">SARIF можно отправить в GitHub Code Scanning отдельным workflow-шагом. Для этого в вашем workflow потребуется разрешение <code>security-events: write</code>; сам сканер ничего не загружает.</p>
-      <div class="actions"><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio#quick-start">Все инструкции ↗</a><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/tag/v0.3.72">Что нового в v0.3.72 ↗</a></div>
+      <div class="actions"><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio#quick-start">Все инструкции ↗</a><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/tag/v0.3.73">Что нового в v0.3.73 ↗</a></div>
     </section>
 
     <section id="pricing" class="section" aria-labelledby="pricing-title">
