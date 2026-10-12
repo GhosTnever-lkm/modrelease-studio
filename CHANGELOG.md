@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.73 - 2026-10-12
+
+- Fix the checkout quick start to use the Python module entry point before the package is installed.
+- Synchronize the landing page and test-count badges with the 78-test suite.
+
 ## 0.3.72 - 2026-10-12
 
 - Synchronize the README and landing page with the verified ModRelease Gate Action v1.0.57.

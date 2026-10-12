@@ -550,6 +550,13 @@ class DocumentationMetricTests(unittest.TestCase):
         self.assertIn(badge, readme)
         self.assertIn(badge, landing)
 
+    def test_checkout_quick_start_uses_module_entrypoint_before_install(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        readme = (root / "README.md").read_text(encoding="utf-8")
+        self.assertIn("python -m modrelease_studio --version", readme)
+        checkout_example = readme.split("## Quick start", 1)[1].split("## ", 1)[0]
+        self.assertNotIn("\nmodrelease --version", checkout_example)
+
     def test_modpack_examples_preserve_each_archive_report(self) -> None:
         root = Path(__file__).resolve().parents[1]
         readme = (root / "README.md").read_text(encoding="utf-8")
@@ -590,7 +597,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.72")
+        self.assertEqual(output.getvalue().strip(), f"modrelease {__version__}")
 
 if __name__ == "__main__":
     unittest.main()
