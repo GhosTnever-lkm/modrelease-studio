@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-72%2F72%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-73%2F73%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -24,7 +24,7 @@ Every mod release is judged in the first minutes after upload: does it install, 
 ## What it checks
 
 - Folder and ZIP contents, unsafe and non-portable archive paths (including traversal, drive/colon syntax, Windows device names, and trailing dots/spaces), duplicate paths, and case/Unicode-normalization collisions that can behave differently across filesystems. Folder scans do not traverse symlinks or Windows junctions; ZIP scans reject entries that are not regular files.
-- Accidental secrets in common text/config files (private keys, AWS access-key IDs, GitHub and Slack tokens, Discord webhooks, and likely hard-coded API keys). Folder scans prune generated/dependency directories; ZIP scans inspect every archived path, including `.git` and `node_modules`, because all archive contents ship.
+- Accidental secrets in common text/config files (private keys, AWS access-key IDs, classic and fine-grained GitHub tokens, Slack tokens, Discord webhooks, and likely hard-coded API keys). Folder scans prune generated/dependency directories; ZIP scans inspect every archived path, including `.git` and `node_modules`, because all archive contents ship.
 - Paradox Clausewitz `descriptor.mod` metadata and localization YAML issues.
 - Missing release notes, OS-specific junk, and unexpectedly large files.
 - Stable SHA-256 fingerprint of the build, JSON/Markdown reports, and finding changes between two builds. Untrusted control, bidi, and Unicode line/paragraph separators are visibly escaped in reports and terminal comparisons.
@@ -97,7 +97,7 @@ steps:
     with:
       python-version: "3.12"
   - name: Install ModRelease Studio
-    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.61"
+    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.62"
   - name: Scan mod
     run: modrelease scan . --sarif-out modrelease.sarif || test $? -eq 1
   - name: Upload findings
@@ -187,7 +187,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.61"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.62"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -199,7 +199,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.61`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.62`.
 
 ## Project-specific release policy
 
@@ -224,7 +224,7 @@ coverage run --source=modrelease_studio -m unittest discover -s tests -v
 coverage report --include="modrelease_studio/*.py" --fail-under=80
 ```
 
-The 72-test suite is run with line coverage; CI enforces at least 80% package coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13. The junction regression uses a safe simulated fixture everywhere and additionally tests a real external junction on Windows.
+The 73-test suite is run with line coverage; CI enforces at least 80% package coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13. The junction regression uses a safe simulated fixture everywhere and additionally tests a real external junction on Windows.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 

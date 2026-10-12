@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.62 - 2026-10-12
+
+- Detect fine-grained GitHub personal access tokens with the `github_pat_` prefix in release files.
+- Add a regression fixture and update the suite badge and pinned usage examples.
+
 ## 0.3.61 - 2026-10-12
 
 - Sync the product page with ModRelease Gate v1.0.44 and refresh the current release examples to v0.3.61.

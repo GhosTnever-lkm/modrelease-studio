@@ -41,6 +41,12 @@ class SecretPatternTests(unittest.TestCase):
                 report = self.scan_fixture("fixture." + ("pem" if code == "PRIVATE_KEY" else "json" if code.endswith("_JSON") else "txt"), sample)
                 self.assertIn(code.removesuffix("_JSON"), {finding.code for finding in report.findings})
 
+    def test_fine_grained_github_token_format_is_detected_without_echoing(self) -> None:
+        token = b"github_pat_" + b"A" * 70
+        report = self.scan_fixture("settings.txt", b"access_token=" + token)
+        self.assertIn("GITHUB_FINE_GRAINED_TOKEN", {finding.code for finding in report.findings})
+        self.assertNotIn(token.decode(), repr(report.to_dict()))
+
     def test_placeholders_are_not_detected(self) -> None:
         samples = [b"api_key=YOUR_API_KEY_PLACEHOLDER_HERE", b'{"apiKey": "YOUR_API_KEY_PLACEHOLDER_HERE"}', b"token=example"]
         for index, sample in enumerate(samples):
@@ -554,7 +560,7 @@ class VersionTests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.61")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.62")
 
 if __name__ == "__main__":
     unittest.main()
