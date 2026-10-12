@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.66 - 2026-10-12
+
+- Correct the product page and its regression check to reference the current ModRelease Gate Action v1.0.51.
+
 ## 0.3.65 - 2026-10-12
 
 - Add Python 3.14 support to package metadata and CI on Linux, Windows, and macOS; keep the full regression matrix green.
