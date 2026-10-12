@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-76%2F76%20passing-brightgreen)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-76%20test%20cases-blue)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -97,7 +97,7 @@ steps:
     with:
       python-version: "3.12"
   - name: Install ModRelease Studio
-    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.64"
+    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.65"
   - name: Scan mod
     run: modrelease scan . --sarif-out modrelease.sarif || test $? -eq 1
   - name: Upload findings
@@ -187,7 +187,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.64"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.65"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -199,7 +199,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.64`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.65`.
 
 ## Project-specific release policy
 
@@ -224,7 +224,7 @@ coverage run --source=modrelease_studio -m unittest discover -s tests -v
 coverage report --include="modrelease_studio/*.py" --fail-under=80
 ```
 
-The 76-test suite is run with line coverage; CI enforces at least 80% package coverage on Ubuntu with Python 3.11–3.13, plus Windows and macOS with Python 3.13. The junction regression uses a safe simulated fixture everywhere and additionally tests a real external junction on Windows.
+The 76-test suite is run with line coverage; CI enforces at least 80% package coverage on Ubuntu with Python 3.11–3.14, plus Windows and macOS with Python 3.14. The junction regression uses a safe simulated fixture everywhere and additionally tests a real external junction on Windows.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGELOG.md](CHANGELOG.md).
 

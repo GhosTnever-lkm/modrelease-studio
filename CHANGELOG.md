@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.65 - 2026-10-12
+
+- Add Python 3.14 support to package metadata and CI on Linux, Windows, and macOS; keep the full regression matrix green.
+- Label the test badge with the suite size rather than implying platform-dependent skips passed.
+
 ## 0.3.64 - 2026-10-12
 
 - Declare Python 3.13 support in package classifiers, matching the existing cross-platform CI matrix.

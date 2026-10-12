@@ -544,7 +544,7 @@ class DocumentationMetricTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         suite = unittest.defaultTestLoader.discover(str(root / "tests"))
         test_count = suite.countTestCases()
-        badge = f"tests-{test_count}%2F{test_count}%20passing"
+        badge = f"tests-{test_count}%20test%20cases"
         readme = (root / "README.md").read_text(encoding="utf-8")
         landing = (root / "docs" / "index.html").read_text(encoding="utf-8")
         self.assertIn(badge, readme)
@@ -579,13 +579,14 @@ class VersionTests(unittest.TestCase):
         metadata = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
         self.assertEqual(__version__, metadata["project"]["version"])
         self.assertIn("Programming Language :: Python :: 3.13", metadata["project"]["classifiers"])
+        self.assertIn("Programming Language :: Python :: 3.14", metadata["project"]["classifiers"])
 
     def test_cli_prints_installed_version(self) -> None:
         with contextlib.redirect_stdout(io.StringIO()) as output:
             with self.assertRaises(SystemExit) as raised:
                 cli.main(["--version"])
         self.assertEqual(raised.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.64")
+        self.assertEqual(output.getvalue().strip(), "modrelease 0.3.65")
 
 if __name__ == "__main__":
     unittest.main()
