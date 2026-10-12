@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.74 - 2026-10-12
+
+- Synchronize the README and product page with the verified ModRelease Gate Action v1.0.58.
+- Refresh the scanner version pins and correct the changelog guidance.
+- Add a regression assertion so the README and product page stay on the current Action release.
+
 ## 0.3.73 - 2026-10-12
 
 - Fix the checkout quick start to use the Python module entry point before the package is installed.
