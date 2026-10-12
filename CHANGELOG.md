@@ -1,8 +1,13 @@
 # Changelog
 
+## 0.3.68 - 2026-10-12
+
+- Update the product page and regression check to current ModRelease Gate Action v1.0.53.
+- Correct the v0.3.67 changelog wording: package metadata was already aligned; that release refreshed the Gate v1.0.52 page link and its regression check.
+
 ## 0.3.67 - 2026-10-12
 
-- Fix the stale package metadata version after v0.3.66 and add a regression assertion that package metadata stays in sync with the imported version.
+- Refresh the product page and regression assertion to reference the then-current ModRelease Gate Action v1.0.52.
 
 ## 0.3.66 - 2026-10-12
 
