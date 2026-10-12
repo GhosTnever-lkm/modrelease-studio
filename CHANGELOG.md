@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.72 - 2026-10-12
+
+- Synchronize the README and landing page with the verified ModRelease Gate Action v1.0.57.
+- Update the scanner's release pins and displayed version to v0.3.72.
+
 ## 0.3.71 - 2026-10-12
 
 - Correct the ModRelease Gate links and integration guidance to the published v1.0.56 release.
