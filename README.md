@@ -50,7 +50,7 @@ modrelease scan ./modpack/part2.zip --json-out part2-check.json
 
 Each ZIP gets its own JSON report (with SHA-256 + findings), so scanning the next archive does not overwrite the previous result.
 
-**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action v1.0.60](https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.60) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
+**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action v1.0.61](https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.61) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
 
 ## Quick start
 
@@ -230,7 +230,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CHANGEL
 
 ## ☕ Support / Pro Version
 
-ModRelease Studio is free and open source. There is no paid Pro edition yet. If the tool is useful, you can support its development on [Buy Me a Coffee](https://buymeacoffee.com/azizazimov8) or [GitHub Sponsors](https://github.com/sponsors/GhosTnever-lkm).
+ModRelease Studio Core is free and open source. A separate paid Windows application is available as **Paradox Mod Quality Gate Pro**; it combines this scanner with Paradox Mod Workbench in a graphical batch-checking workflow. It is an independent companion product, not a paid build of this CLI. See the [Pro product page and current offer](https://boosty.to/azizazimov/posts/761380dd-5d2d-45d1-ad6d-452b123d11b3) for the current version, contents, price, and delivery terms.
+
+If the free core tool is useful, you can also support its development on [Buy Me a Coffee](https://buymeacoffee.com/azizazimov8) or [GitHub Sponsors](https://github.com/sponsors/GhosTnever-lkm).
 
 You can also send a supported asset to one of these public receive addresses:
 
@@ -246,7 +248,7 @@ You can also send a supported asset to one of these public receive addresses:
 
 - **Core (this repo)** — free, MIT-licensed, run anywhere: `modrelease scan` / `compare`.
 - **ModRelease Gate (GitHub Action)** — free to use in CI: [modrelease-studio-action](https://github.com/GhosTnever-lkm/modrelease-studio-action).
-- **Pro** — planned: custom rule packs, team reporting, and release dashboards. Details will be announced in the repo and on the [landing page](https://ghostnever-lkm.github.io/modrelease-studio/).
+- **Windows Pro companion** — [Paradox Mod Quality Gate Pro](https://boosty.to/azizazimov/posts/761380dd-5d2d-45d1-ad6d-452b123d11b3) is a separate Windows GUI package for batch checks; the free CLI and Gate Action remain available without payment.
 - **Services** — custom checks, release-audit consulting, and setup as a release gate for your mod distribution. Contact us with your case.
 
 ### Contact
