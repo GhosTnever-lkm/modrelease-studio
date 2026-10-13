@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.79 - 2026-10-13
+
+- Synchronize the README and product page with ModRelease Gate Action v1.0.62, Quality Gate v1.0.65 and Windows Pro v1.0.9 while preserving the listed 50 ₽ price.
+- Add regression checks that reject stale ecosystem release links.
+
 ## Documentation follow-up - 2026-10-13
 
 - Update the Windows Pro listing to Pro v1.0.6 and link the current free Paradox Mod Quality Gate v1.0.62 release.
