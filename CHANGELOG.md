@@ -1,3 +1,7 @@
+## 0.3.80 - 2026-10-13
+
+- Replace the removed public Pro ZIP link with its 50 ₽ Boosty purchase page.
+
 # Changelog
 
 ## 0.3.79 - 2026-10-13
