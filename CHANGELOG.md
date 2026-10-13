@@ -4,6 +4,12 @@
 
 - Update the Windows Pro listing to Pro v1.0.6 and link the current free Paradox Mod Quality Gate v1.0.62 release.
 
+## 0.3.78 - 2026-10-13
+
+- Open indexed directory files with a no-follow descriptor and verify file identity so replacements during scanning fail closed.
+- Stop ZIP content decompression and checks when the aggregate uncompressed-size cap is exceeded.
+- Add regressions for file replacement (including replacements during a scan) and oversized archive work bounds.
+
 ## 0.3.77 - 2026-10-13
 
 - Sync the README and product page with ModRelease Gate Action v1.0.60 and update current scanner examples to v0.3.77.

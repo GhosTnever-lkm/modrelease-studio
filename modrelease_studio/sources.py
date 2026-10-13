@@ -30,6 +30,7 @@ class DirectorySource(Source):
     def __init__(self, target: Path):
         findings: list[Finding] = []
         records: list[FileRecord] = []
+        identities: dict[str, tuple[int, int, int, int]] = {}
 
         def on_walk_error(error: OSError) -> None:
             filename = getattr(error, "filename", None)
@@ -79,13 +80,15 @@ class DirectorySource(Source):
                     item = current_path / name
                     rel = item.relative_to(target).as_posix()
                     try:
-                        if item.is_symlink():
+                        metadata = item.stat(follow_symlinks=False)
+                        if stat.S_ISLNK(metadata.st_mode):
                             findings.append(Finding("SYMLINK", "WARNING", rel,
                                                     "Symbolic link is not followed during scanning.",
                                                     "Replace it with a regular file or document why it is required."))
                             continue
-                        if item.is_file():
-                            records.append(FileRecord(rel, item.stat().st_size))
+                        if stat.S_ISREG(metadata.st_mode):
+                            records.append(FileRecord(rel, metadata.st_size))
+                            identities[rel] = _file_identity(metadata)
                             if len(records) > MAX_ENTRIES:
                                 findings.append(Finding("ENTRY_LIMIT", "ERROR", ".",
                                                         f"More than {MAX_ENTRIES} files were found.",
@@ -104,6 +107,18 @@ class DirectorySource(Source):
                                     f"Could not scan directory: {exc}"))
         super().__init__(target=target, records=records, findings=findings, is_zip=False)
         self._record_paths = {record.path for record in records}
+        self._record_identities = identities
+        self._changed_paths: set[str] = set()
+
+    def _mark_changed(self, relative_path: str) -> None:
+        if relative_path in self._changed_paths:
+            return
+        self._changed_paths.add(relative_path)
+        self.findings.append(Finding(
+            "FILE_CHANGED_DURING_SCAN", "ERROR", relative_path,
+            "File identity or metadata changed after the directory was indexed; content checks were skipped.",
+            "Stop modifying the selected folder and run the scan again.",
+        ))
 
     def _safe_record_path(self, relative_path: str) -> Path | None:
         """Return an indexed regular file path without following symlinks."""
@@ -111,28 +126,68 @@ class DirectorySource(Source):
         if (relative_path not in self._record_paths or relative.is_absolute()
                 or not relative.parts or ".." in relative.parts):
             return None
+        expected = self._record_identities.get(relative_path)
         file_path = self.target
         try:
             for part in relative.parts:
                 file_path = file_path / part
                 if file_path.is_symlink() or _is_junction(file_path):
+                    self._mark_changed(relative_path)
                     return None
+            metadata = file_path.stat(follow_symlinks=False)
+            if (expected is None or not stat.S_ISREG(metadata.st_mode)
+                    or _file_identity(metadata) != expected):
+                self._mark_changed(relative_path)
+                return None
             resolved = file_path.resolve(strict=True)
             root = self.target.resolve(strict=True)
             if root not in resolved.parents or not resolved.is_file():
+                self._mark_changed(relative_path)
                 return None
         except (OSError, RuntimeError):
+            self._mark_changed(relative_path)
             return None
         return file_path
 
-    def read(self, relative_path: str, limit: int) -> bytes | None:
+    def _open_indexed_file(self, relative_path: str):
         file_path = self._safe_record_path(relative_path)
         if file_path is None:
             return None
+        expected = self._record_identities[relative_path]
+        flags = os.O_RDONLY
+        flags |= getattr(os, "O_NOFOLLOW", 0)
+        flags |= getattr(os, "O_NONBLOCK", 0)
+        flags |= getattr(os, "O_BINARY", 0)
+        descriptor = None
         try:
-            with file_path.open("rb") as stream:
-                return stream.read(limit + 1)
+            descriptor = os.open(file_path, flags)
+            metadata = os.fstat(descriptor)
+            if not stat.S_ISREG(metadata.st_mode) or _file_identity(metadata) != expected:
+                self._mark_changed(relative_path)
+                return None
+            stream = os.fdopen(descriptor, "rb")
+            descriptor = None
+            return stream
         except (OSError, ValueError):
+            self._mark_changed(relative_path)
+            return None
+        finally:
+            if descriptor is not None:
+                os.close(descriptor)
+
+    def read(self, relative_path: str, limit: int) -> bytes | None:
+        stream = self._open_indexed_file(relative_path)
+        if stream is None:
+            return None
+        try:
+            with stream:
+                content = stream.read(limit + 1)
+                if _file_identity(os.fstat(stream.fileno())) != self._record_identities[relative_path]:
+                    self._mark_changed(relative_path)
+                    return None
+                return content
+        except (OSError, ValueError):
+            self._mark_changed(relative_path)
             return None
 
     def digest(self) -> str:
@@ -142,16 +197,19 @@ class DirectorySource(Source):
         for record in sorted(self.records, key=lambda item: item.path.casefold()):
             hasher.update(record.path.encode("utf-8", "surrogatepass"))
             hasher.update(b"\0")
-            file_path = self._safe_record_path(record.path)
-            if file_path is None:
+            stream = self._open_indexed_file(record.path)
+            if stream is None:
                 hasher.update(b"UNREADABLE")
                 hasher.update(b"\0")
                 continue
             try:
-                with file_path.open("rb") as stream:
+                with stream:
                     while chunk := stream.read(1024 * 1024):
                         hasher.update(chunk)
+                    if _file_identity(os.fstat(stream.fileno())) != self._record_identities[record.path]:
+                        self._mark_changed(record.path)
             except OSError:
+                self._mark_changed(record.path)
                 hasher.update(b"UNREADABLE")
             hasher.update(b"\0")
         return hasher.hexdigest()
@@ -162,6 +220,7 @@ class ZipSource(Source):
         findings: list[Finding] = []
         records: list[FileRecord] = []
         self._index: dict[str, zipfile.ZipInfo] = {}
+        self.contents_available = True
         try:
             with zipfile.ZipFile(target) as archive:
                 infos = archive.infolist()
@@ -231,6 +290,7 @@ class ZipSource(Source):
                                                 "File compression ratio exceeds 1000:1.",
                                                 "Review this file; highly compressed entries can cause extraction problems."))
                 if total_size > MAX_TOTAL_UNCOMPRESSED:
+                    self.contents_available = False
                     findings.append(Finding("ARCHIVE_SIZE_LIMIT", "ERROR", target.name,
                                             "Unpacked archive size exceeds 4 GiB scan limit.",
                                             "Split the release into smaller archives."))
@@ -241,6 +301,8 @@ class ZipSource(Source):
         super().__init__(target=target, records=records, findings=findings, is_zip=True)
 
     def read(self, relative_path: str, limit: int) -> bytes | None:
+        if not self.contents_available:
+            return None
         info = self._index.get(relative_path)
         if info is None:
             return None
@@ -269,3 +331,13 @@ def _sha256_file(path: Path) -> str:
         while chunk := stream.read(1024 * 1024):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _file_identity(metadata: os.stat_result) -> tuple[int, int, int, int]:
+    """Capture stable identity and common in-place-change metadata."""
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_size,
+        getattr(metadata, "st_mtime_ns", int(metadata.st_mtime * 1_000_000_000)),
+    )
