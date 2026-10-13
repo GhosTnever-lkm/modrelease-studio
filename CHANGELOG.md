@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.77 - 2026-10-13
+
+- Sync the README and product page with ModRelease Gate Action v1.0.60 and update current scanner examples to v0.3.77.
+
 ## 0.3.76 - 2026-10-13
 
 - Update the README and product page to the published ModRelease Gate Action v1.0.59; regression checks reject the stale v1.0.58 links.
