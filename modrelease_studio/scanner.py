@@ -82,8 +82,9 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
         else:
             normalized_seen[identity] = record.path
 
+    content_checks_available = getattr(source, "contents_available", True)
     localization_found = False
-    for record in source.records:
+    for record in source.records if content_checks_available else ():
         path = PurePosixPath(record.path)
         folded_parts = {part.casefold() for part in path.parts}
         # A directory scan walks a working tree, where generated/dependency
@@ -121,14 +122,17 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
         if path.suffix.casefold() in {".yml", ".yaml"} and any(part in {"localisation", "localization"} for part in folded_parts):
             localization_found = True
 
-    if localization_found:
+    if localization_found and content_checks_available:
         report.findings.extend(check_paradox_localization(source))
-    for record in source.records:
+    for record in source.records if content_checks_available else ():
         if PurePosixPath(record.path).name.casefold() == "descriptor.mod":
             fields = parse_descriptor(source, record.path)
             if not fields.get("name"):
                 report.findings.append(Finding("DESCRIPTOR_NAME", "WARNING", record.path, "Paradox descriptor is missing a name field."))
             if not fields.get("supported_version"):
                 report.findings.append(Finding("DESCRIPTOR_VERSION", "INFO", record.path, "Paradox descriptor does not declare supported_version."))
+    for finding in source.findings:
+        if finding not in report.findings:
+            report.findings.append(finding)
     report.findings.sort(key=lambda finding: ({"ERROR": 0, "WARNING": 1, "INFO": 2}.get(finding.severity, 3), finding.path or "", finding.code))
     return report
