@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.76 - 2026-10-13
+
+- Update the README and product page to the published ModRelease Gate Action v1.0.59; regression checks reject the stale v1.0.58 links.
+
 ## 0.3.75 - 2026-10-13
 
 - Correct README and landing-page descriptions to match the configured required-file/path checks; the scanner does not infer missing release notes or build versions.
