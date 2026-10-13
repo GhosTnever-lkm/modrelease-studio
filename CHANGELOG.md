@@ -1,5 +1,9 @@
 # Changelog
 
+## Documentation follow-up - 2026-10-13
+
+- Update the Windows Pro listing to Pro v1.0.6 and link the current free Paradox Mod Quality Gate v1.0.62 release.
+
 ## 0.3.77 - 2026-10-13
 
 - Sync the README and product page with ModRelease Gate Action v1.0.60 and update current scanner examples to v0.3.77.
