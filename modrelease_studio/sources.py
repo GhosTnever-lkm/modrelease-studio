@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import errno
 import hashlib
 import os
 import stat
@@ -18,6 +19,16 @@ WINDOWS_RESERVED_BASENAMES = {
     *(f"COM{number}" for number in range(1, 10)),
     *(f"LPT{number}" for number in range(1, 10)),
 }
+
+
+def _safe_os_error_code(error: OSError) -> str:
+    """Return a portable code without embedding the exception's local path."""
+    code = getattr(error, "errno", None)
+    label = errno.errorcode.get(code) if code is not None else None
+    if label:
+        return label
+    winerror = getattr(error, "winerror", None)
+    return f"WINERROR_{winerror}" if winerror is not None else "OS_ERROR"
 
 
 def _is_junction(path: Path) -> bool:
@@ -39,7 +50,7 @@ class DirectorySource(Source):
             except ValueError:
                 relative = "."
             findings.append(Finding("SCAN_DIRECTORY", "ERROR", relative,
-                                    f"Could not scan directory: {error}"))
+                                    f"Could not scan directory ({_safe_os_error_code(error)})."))
 
         try:
             limit_reached = False
@@ -73,7 +84,7 @@ class DirectorySource(Source):
                         # rather than letting os.walk enter an unverified path.
                         directories.remove(name)
                         findings.append(Finding("READ_METADATA", "WARNING", rel,
-                                                f"Could not read file metadata: {exc}",
+                                                f"Could not read file metadata ({_safe_os_error_code(exc)}).",
                                                 "Check file permissions and retry."))
 
                 for name in filenames:
@@ -98,13 +109,13 @@ class DirectorySource(Source):
                                 break
                     except OSError as exc:
                         findings.append(Finding("READ_METADATA", "WARNING", rel,
-                                                f"Could not read file metadata: {exc}",
+                                                f"Could not read file metadata ({_safe_os_error_code(exc)}).",
                                                 "Check file permissions and retry."))
                 if limit_reached:
                     break
         except OSError as exc:
             findings.append(Finding("SCAN_DIRECTORY", "ERROR", ".",
-                                    f"Could not scan directory: {exc}"))
+                                    f"Could not scan directory ({_safe_os_error_code(exc)})."))
         super().__init__(target=target, records=records, findings=findings, is_zip=False)
         self._record_paths = {record.path for record in records}
         self._record_identities = identities
@@ -295,8 +306,9 @@ class ZipSource(Source):
                                             "Unpacked archive size exceeds 4 GiB scan limit.",
                                             "Split the release into smaller archives."))
         except (OSError, zipfile.BadZipFile, zipfile.LargeZipFile) as exc:
+            code = _safe_os_error_code(exc) if isinstance(exc, OSError) else type(exc).__name__
             findings.append(Finding("INVALID_ZIP", "ERROR", target.name,
-                                    f"The file could not be read as a valid ZIP archive: {exc}",
+                                    f"The file could not be read as a valid ZIP archive ({code}).",
                                     "Recreate the archive and open it once in a ZIP utility before release."))
         super().__init__(target=target, records=records, findings=findings, is_zip=True)
 
