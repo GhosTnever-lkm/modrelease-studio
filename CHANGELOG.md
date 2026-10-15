@@ -1,3 +1,7 @@
+## 0.3.81 - 2026-10-15
+
+- Prevent filesystem error details from exposing local absolute paths in JSON, Markdown, and SARIF reports; retain safe OS error codes and relative finding paths.
+
 ## 0.3.80 - 2026-10-13
 
 - Replace the removed public Pro ZIP link with its 50 ₽ Boosty purchase page.
