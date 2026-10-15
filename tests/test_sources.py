@@ -51,6 +51,9 @@ class DirectorySourceSafetyTests(unittest.TestCase):
 
         self.assertIn(("READ_METADATA", "restricted"),
                       {(item.code, item.path) for item in source.findings})
+        metadata_finding = next(item for item in source.findings if item.code == "READ_METADATA")
+        self.assertIn("EACCES", metadata_finding.message)
+        self.assertNotIn(str(root), metadata_finding.message)
         self.assertEqual([record.path for record in source.records], ["inside.txt"])
         self.assertNotIn("SCAN_DIRECTORY", {item.code for item in source.findings})
         self.assertIsNone(source.read("restricted/private-fixture.txt", 1024))
@@ -99,6 +102,8 @@ class DirectorySourceSafetyTests(unittest.TestCase):
         finding = next(item for item in report.findings if item.code == "SCAN_DIRECTORY")
         self.assertEqual(finding.path, "restricted")
         self.assertEqual(finding.severity, "ERROR")
+        self.assertIn("EACCES", finding.message)
+        self.assertNotIn(str(root), finding.message)
         self.assertEqual(report.errors, 1)
 
     def test_read_refuses_symlinked_files_and_directories(self) -> None:
@@ -322,3 +327,14 @@ class ZipSourceTests(unittest.TestCase):
             source = open_source(archive)
             self.assertIn("INVALID_ZIP", {finding.code for finding in source.findings})
             self.assertIsNone(source.read("notes.txt", 10))
+
+    def test_zip_open_error_does_not_leak_absolute_path(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "private-archive.zip"
+            archive.write_bytes(b"fixture")
+            with patch("modrelease_studio.sources.zipfile.ZipFile", side_effect=PermissionError(13, "Permission denied", str(archive))):
+                source = open_source(archive)
+
+            finding = next(item for item in source.findings if item.code == "INVALID_ZIP")
+            self.assertIn("EACCES", finding.message)
+            self.assertNotIn(directory, finding.message)
