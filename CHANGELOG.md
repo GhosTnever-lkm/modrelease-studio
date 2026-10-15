@@ -1,3 +1,7 @@
+## Unreleased
+
+- Synchronize the README and product page with current ModRelease Gate v1.0.63 and Paradox Mod Quality Gate v1.0.66; correct the README test-count badge to 82 cases.
+
 ## 0.3.81 - 2026-10-15
 
 - Prevent filesystem error details from exposing local absolute paths in JSON, Markdown, and SARIF reports; retain safe OS error codes and relative finding paths.
