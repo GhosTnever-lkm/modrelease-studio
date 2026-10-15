@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-81%20test%20cases-blue)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-82%20test%20cases-blue)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -50,7 +50,7 @@ modrelease scan ./modpack/part2.zip --json-out part2-check.json
 
 Each ZIP gets its own JSON report (with SHA-256 + findings), so scanning the next archive does not overwrite the previous result.
 
-**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action v1.0.62](https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.62) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
+**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action v1.0.63](https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.63) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
 
 ## Quick start
 
