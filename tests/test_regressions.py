@@ -91,6 +91,20 @@ class SecretPatternTests(unittest.TestCase):
                                      set(filenames))
                     self.assertEqual(report.status, "REVIEW")
 
+    def test_quoted_aws_secret_key_fields_are_detected_without_echoing_values(self) -> None:
+        secret = b"FAKE" * 10
+        fixtures = (
+            b'{"aws_secret_access_key": "' + secret + b'"}',
+            b"'AWS_SECRET_ACCESS_KEY': '" + secret + b"'",
+        )
+        for sample in fixtures:
+            with self.subTest(sample=sample):
+                report = self.scan_fixture("settings.json", sample)
+                self.assertIn("AWS_SECRET_KEY", {item.code for item in report.findings})
+                self.assertNotIn(secret.decode(), json_report(report) + markdown(report))
+        placeholder = b'{"aws_secret_access_key": "YOUR_' + b"A" * 35 + b'"}'
+        self.assertEqual(self.scan_fixture("template.json", placeholder).errors, 0)
+
     def test_placeholders_are_not_detected(self) -> None:
         samples = [b"api_key=YOUR_API_KEY_PLACEHOLDER_HERE", b'{"apiKey": "YOUR_API_KEY_PLACEHOLDER_HERE"}', b"token=example"]
         for index, sample in enumerate(samples):
@@ -635,8 +649,8 @@ class DocumentationMetricTests(unittest.TestCase):
         self.assertNotIn("v1.0.62", readme)
         self.assertIn("v1.0.66", landing)
         self.assertNotIn("v1.0.65", landing)
-        self.assertIn("tests-84%20test%20cases-blue", readme)
-        self.assertIn("84%20test%20cases", landing)
+        self.assertIn("tests-85%20test%20cases-blue", readme)
+        self.assertIn("85%20test%20cases", landing)
         self.assertIn("Pro v1.0.9", landing)
         self.assertIn("v0.3.81", readme)
         self.assertIn("v0.3.81", landing)
