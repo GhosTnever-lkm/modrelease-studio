@@ -48,6 +48,49 @@ class SecretPatternTests(unittest.TestCase):
         self.assertIn("GITHUB_FINE_GRAINED_TOKEN", {finding.code for finding in report.findings})
         self.assertNotIn(token.decode(), repr(report.to_dict()))
 
+    def test_environment_files_are_checked_in_folder_and_zip_cli_reports(self) -> None:
+        filenames = (".env", ".ENV.production", "config/server.env", "config/.env.local")
+        secret = "FAKE_environment_key_value_123456789"
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory) / "mod"
+            folder.mkdir()
+            archive = Path(directory) / "mod.zip"
+            with zipfile.ZipFile(archive, "w") as bundle:
+                for filename in filenames:
+                    path = folder / filename
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text("api_key=" + secret, encoding="utf-8")
+                    bundle.writestr(filename, "api_key=" + secret)
+            for target in (folder, archive):
+                with self.subTest(source=target.name):
+                    output = io.StringIO()
+                    with contextlib.redirect_stdout(output):
+                        exit_code = cli.main(["scan", str(target), "--json"])
+                    payload = json.loads(output.getvalue())
+                    detected = {item["path"] for item in payload["findings"]
+                                if item["code"] == "GENERIC_API_KEY"}
+                    self.assertEqual(detected, set(filenames))
+                    self.assertEqual(exit_code, 1)
+                    self.assertEqual(payload["status"], "FAIL")
+                    self.assertNotIn(secret, output.getvalue())
+
+    def test_environment_files_over_scan_limit_warn_instead_of_silently_skipping(self) -> None:
+        filenames = (".env", ".env.production", "server.env")
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory) / "mod"
+            folder.mkdir()
+            archive = Path(directory) / "mod.zip"
+            with zipfile.ZipFile(archive, "w") as bundle:
+                for filename in filenames:
+                    (folder / filename).write_text("api_key=FAKE_environment_key_123456", encoding="utf-8")
+                    bundle.writestr(filename, "api_key=FAKE_environment_key_123456")
+            for target in (folder, archive):
+                with self.subTest(source=target.name):
+                    report = scan_path(target, config={"max_file_bytes": 8, "required_files": []})
+                    self.assertEqual({item.path for item in report.findings if item.code == "LARGE_TEXT_FILE"},
+                                     set(filenames))
+                    self.assertEqual(report.status, "REVIEW")
+
     def test_placeholders_are_not_detected(self) -> None:
         samples = [b"api_key=YOUR_API_KEY_PLACEHOLDER_HERE", b'{"apiKey": "YOUR_API_KEY_PLACEHOLDER_HERE"}', b"token=example"]
         for index, sample in enumerate(samples):
@@ -592,8 +635,8 @@ class DocumentationMetricTests(unittest.TestCase):
         self.assertNotIn("v1.0.62", readme)
         self.assertIn("v1.0.66", landing)
         self.assertNotIn("v1.0.65", landing)
-        self.assertIn("tests-82%20test%20cases-blue", readme)
-        self.assertIn("82%20test%20cases", landing)
+        self.assertIn("tests-84%20test%20cases-blue", readme)
+        self.assertIn("84%20test%20cases", landing)
         self.assertIn("Pro v1.0.9", landing)
         self.assertIn("v0.3.81", readme)
         self.assertIn("v0.3.81", landing)
