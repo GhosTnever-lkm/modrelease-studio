@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-82%20test%20cases-blue)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-84%20test%20cases-blue)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -24,7 +24,7 @@ Every mod release is judged in the first minutes after upload: does it install, 
 ## What it checks
 
 - Folder and ZIP contents, unsafe and non-portable archive paths (including traversal, drive/colon syntax, Windows device names, and trailing dots/spaces), duplicate paths, and case/Unicode-normalization collisions that can behave differently across filesystems. Folder scans do not traverse symlinks or Windows junctions; ZIP scans reject entries that are not regular files.
-- Accidental secrets in common text/config files (private keys, AWS access-key IDs, classic and fine-grained GitHub tokens, Slack tokens, Discord webhooks, and likely hard-coded API keys). Folder scans prune generated/dependency directories; ZIP scans inspect every archived path, including `.git` and `node_modules`, because all archive contents ship.
+- Accidental secrets in common text/config files, including `.env`, `.env.*`, and `*.env` (private keys, AWS access-key IDs, classic and fine-grained GitHub tokens, Slack tokens, Discord webhooks, and likely hard-coded API keys). Folder scans prune generated/dependency directories; ZIP scans inspect every archived path, including `.git` and `node_modules`, because all archive contents ship.
 - Paradox Clausewitz `descriptor.mod` metadata and localization YAML issues.
 - Configured required files and paths, OS-specific junk, and unexpectedly large files.
 - Stable SHA-256 fingerprint of the build, JSON/Markdown reports, and finding changes between two builds. Untrusted control, bidi, and Unicode line/paragraph separators are visibly escaped in reports and terminal comparisons.

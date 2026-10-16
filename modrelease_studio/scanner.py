@@ -21,7 +21,12 @@ SECRET_PATTERNS = (
     ("GENERIC_API_KEY", re.compile(rb"(?i)(?:\"(?:api[_-]?key|secret|token)\"|(?:api[_-]?key|secret|token))\s*[:=]\s*[\"']?(?!YOUR_|PLACEHOLDER|EXAMPLE|CHANGEME|XXXX|AAAA)[A-Za-z0-9_./+=-]{12,}[\"']?"), "Possible hard-coded secret found."),
 )
 MAX_CONFIGURED_TEXT_FILE_BYTES = 16 * 1024 * 1024
-TEXT_EXTENSIONS = {".txt", ".yml", ".yaml", ".json", ".cfg", ".ini", ".lua", ".py", ".js", ".ts", ".toml", ".md", ".xml", ".properties", ".pem", ".key"}
+TEXT_EXTENSIONS = {".txt", ".yml", ".yaml", ".json", ".cfg", ".ini", ".lua", ".py", ".js", ".ts", ".toml", ".md", ".xml", ".properties", ".pem", ".key", ".env"}
+
+
+def _is_text_file(path: PurePosixPath) -> bool:
+    name = path.name.casefold()
+    return path.suffix.casefold() in TEXT_EXTENSIONS or name == ".env" or name.startswith(".env.")
 
 
 def scan_path(path: str, *, config: dict | None = None) -> ScanReport:
@@ -96,12 +101,13 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
         if path.name.casefold() in {"thumbs.db", ".ds_store", "desktop.ini"}:
             report.findings.append(Finding("OS_JUNK", "WARNING", record.path, "Operating-system metadata should not be in a release."))
             continue
+        is_text = _is_text_file(path)
         if record.size > max_file_bytes:
-            if path.suffix.casefold() in TEXT_EXTENSIONS:
+            if is_text:
                 report.findings.append(Finding("LARGE_TEXT_FILE", "WARNING", record.path,
                                                f"Text file exceeds configured scan limit ({max_file_bytes} bytes)."))
             continue
-        if path.suffix.casefold() not in TEXT_EXTENSIONS:
+        if not is_text:
             continue
         data = source.read(record.path, max_file_bytes)
         if data is None:
