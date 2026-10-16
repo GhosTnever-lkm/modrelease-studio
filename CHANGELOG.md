@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Include the product page required by the bundled documentation tests, and run the complete test suite from the extracted release archive before publishing it.
+
 ## 0.3.82 - 2026-10-17
 
 - Bundle the README demo image and sample mod; smoke-test the installed archive against its own bundled example.

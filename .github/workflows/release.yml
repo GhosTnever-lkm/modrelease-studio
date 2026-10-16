@@ -23,7 +23,7 @@ jobs:
           archive="ModRelease-Studio-v${version}.zip"
           # Tests create ignored bytecode inside these folders; never ship it.
           find modrelease_studio tests -type d -name __pycache__ -prune -exec rm -rf {} +
-          zip -r "dist-${archive}" modrelease_studio tests README.md CHANGELOG.md CONTRIBUTING.md LICENSE SECURITY.md pyproject.toml modrelease.example.toml docs/demo.png examples/paradox-mod examples/policies/paradox-release.toml examples/policies/paradox-release-report.md
+          zip -r "dist-${archive}" modrelease_studio tests README.md CHANGELOG.md CONTRIBUTING.md LICENSE SECURITY.md pyproject.toml modrelease.example.toml docs/index.html docs/demo.png examples/paradox-mod examples/policies/paradox-release.toml examples/policies/paradox-release-report.md
           if unzip -Z1 "dist-${archive}" | grep -Eq '(^|/)__pycache__/|\.py[co]$'; then
             echo "Release archive contains Python bytecode" >&2
             exit 1
@@ -41,6 +41,12 @@ jobs:
           test -s "$extracted/docs/demo.png"
           python -m venv "$venv"
           "$venv/bin/python" -m pip install --disable-pip-version-check "$extracted"
+          # Run inside the extracted bundle so missing test resources cannot be
+          # supplied accidentally by the checkout used to build the archive.
+          (
+            cd "$extracted"
+            "$venv/bin/python" -m unittest discover -s tests -v
+          )
           actual="$($venv/bin/modrelease --version)"
           test "$actual" = "modrelease $version"
           "$venv/bin/modrelease" scan "$extracted/examples/paradox-mod" \
