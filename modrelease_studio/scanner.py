@@ -13,7 +13,7 @@ from .sources import IGNORED_DIRS, open_source
 SECRET_PATTERNS = (
     ("PRIVATE_KEY", re.compile(rb"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"), "Possible private key found."),
     ("AWS_ACCESS_KEY", re.compile(rb"\bAKIA[0-9A-Z]{16}\b"), "Possible AWS access key found."),
-    ("AWS_SECRET_KEY", re.compile(rb"(?i)aws_secret_access_key\s*[:=]\s*[\"']?(?!YOUR_|PLACEHOLDER|EXAMPLE|CHANGEME|XXXX|AAAA)[A-Za-z0-9/+=]{40}[\"']?"), "Possible AWS secret access key found."),
+    ("AWS_SECRET_KEY", re.compile(rb"(?i)(?:[\"']aws_secret_access_key[\"']|aws_secret_access_key)\s*[:=]\s*[\"']?(?!YOUR_|PLACEHOLDER|EXAMPLE|CHANGEME|XXXX|AAAA)[A-Za-z0-9/+=]{40}[\"']?"), "Possible AWS secret access key found."),
     ("GITHUB_TOKEN", re.compile(rb"\bgh[pousr]_[A-Za-z0-9_]{30,}\b"), "Possible GitHub access token found."),
     ("GITHUB_FINE_GRAINED_TOKEN", re.compile(rb"\bgithub_pat_[A-Za-z0-9_]{20,}\b"), "Possible GitHub fine-grained access token found."),
     ("SLACK_TOKEN", re.compile(rb"\bxox[baprs]-[A-Za-z0-9-]{10,}\b"), "Possible Slack token found."),
