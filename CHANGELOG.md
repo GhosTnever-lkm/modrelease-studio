@@ -1,5 +1,8 @@
-## Unreleased
+# Changelog
 
+## 0.3.82 - 2026-10-17
+
+- Bundle the README demo image and sample mod; smoke-test the installed archive against its own bundled example.
 - Detect AWS secret access keys when the configuration field name is quoted, including JSON and YAML-style entries.
 - Scan environment files (`.env`, `.env.*`, and `*.env`) for accidental secrets in folders and ZIPs; report files above the content-scan limit.
 - Synchronize the README and product page with current ModRelease Gate v1.0.64 and Paradox Mod Quality Gate v1.0.66; correct the README test-count badge to 85 cases.
@@ -11,8 +14,6 @@
 ## 0.3.80 - 2026-10-13
 
 - Replace the removed public Pro ZIP link with its 50 ₽ Boosty purchase page.
-
-# Changelog
 
 ## 0.3.79 - 2026-10-13
 
