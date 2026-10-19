@@ -124,7 +124,6 @@ def scan_source(source: Source, *, config: dict | None = None) -> ScanReport:
         for code, pattern, message in SECRET_PATTERNS:
             if pattern.search(data):
                 report.findings.append(Finding(code, "ERROR", record.path, message))
-                break
         if path.suffix.casefold() in {".yml", ".yaml"} and any(part in {"localisation", "localization"} for part in folded_parts):
             localization_found = True
 
