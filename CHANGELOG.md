@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Update the product page to link the published Paradox Mod Quality Gate v1.0.68 release.
 - Include the product page required by the bundled documentation tests, and run the complete test suite from the extracted release archive before publishing it.
 
 ## 0.3.82 - 2026-10-17
