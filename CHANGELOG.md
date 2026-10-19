@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add a bundled SVG favicon to the product page to avoid a missing-icon browser request.
 - Update the product page to link the published Paradox Mod Quality Gate v1.0.68 release.
 - Include the product page required by the bundled documentation tests, and run the complete test suite from the extracted release archive before publishing it.
 

@@ -598,6 +598,17 @@ class SourceEntryLimitReportingTests(unittest.TestCase):
 
 
 class DocumentationMetricTests(unittest.TestCase):
+    def test_product_landing_declares_a_bundled_favicon(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        landing = (root / "docs" / "index.html").read_text(encoding="utf-8")
+        match = re.search(r'<link\s+rel="icon"\s+href="([^"]+)"\s+type="image/svg\+xml">', landing)
+        self.assertIsNotNone(match)
+        assert match is not None
+        self.assertEqual(match.group(1), "favicon.svg")
+        icon = root / "docs" / match.group(1)
+        self.assertTrue(icon.is_file(), f"favicon asset does not exist: {icon}")
+        self.assertIn("<svg", icon.read_text(encoding="utf-8"))
+
     def test_documentation_test_badges_match_discovered_suite_size(self) -> None:
         root = Path(__file__).resolve().parents[1]
         suite = unittest.defaultTestLoader.discover(str(root / "tests"))
