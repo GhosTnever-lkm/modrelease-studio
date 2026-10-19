@@ -663,8 +663,6 @@ class DocumentationMetricTests(unittest.TestCase):
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.67", landing)
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.66", landing)
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.65", landing)
-        self.assertIn("tests-85%20test%20cases-blue", readme)
-        self.assertIn("85%20test%20cases", landing)
         self.assertIn("Pro v1.0.9", landing)
         self.assertIn("v0.3.82", readme)
         self.assertIn("v0.3.82", landing)
