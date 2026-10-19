@@ -48,6 +48,21 @@ class SecretPatternTests(unittest.TestCase):
         self.assertIn("GITHUB_FINE_GRAINED_TOKEN", {finding.code for finding in report.findings})
         self.assertNotIn(token.decode(), repr(report.to_dict()))
 
+    def test_reports_each_secret_type_found_in_one_file_without_echoing_values(self) -> None:
+        aws_key = b"AKIA" + b"1234567890ABCDEF"
+        slack_token = b"xoxb-123456789012-" + b"FAKEFAKETOKENVALUE"
+        report = self.scan_fixture(
+            "settings.txt",
+            b"aws_access_key_id=" + aws_key + b"\ntoken=" + slack_token,
+        )
+
+        codes = {finding.code for finding in report.findings}
+        self.assertIn("AWS_ACCESS_KEY", codes)
+        self.assertIn("SLACK_TOKEN", codes)
+        serialized = repr(report.to_dict())
+        self.assertNotIn(aws_key.decode(), serialized)
+        self.assertNotIn(slack_token.decode(), serialized)
+
     def test_environment_files_are_checked_in_folder_and_zip_cli_reports(self) -> None:
         filenames = (".env", ".ENV.production", "config/server.env", "config/.env.local")
         secret = "FAKE_environment_key_value_123456789"
