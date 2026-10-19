@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.3.83 - 2026-10-20
+## 0.3.84 - 2026-10-20
 
+- Include the bundled SVG favicon in the release ZIP so the extracted test suite has the product-page asset it checks.
 - Report every detected secret category in a text file instead of stopping after the first match.
 - Add a bundled SVG favicon to the product page to avoid a missing-icon browser request.
 - Update the product page to link the published Paradox Mod Quality Gate v1.0.68 release.
