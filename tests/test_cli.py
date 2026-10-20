@@ -101,6 +101,21 @@ class CliTests(unittest.TestCase):
 
 
 class SarifCliTests(unittest.TestCase):
+    def test_sarif_percent_encodes_literal_backslash_in_posix_filename(self) -> None:
+        report = ScanReport(
+            target="mod",
+            profile="default",
+            findings=[Finding("UNSAFE_PATH", "ERROR", "configs\\legacy.cfg", "Review this path.")],
+        )
+        with tempfile.TemporaryDirectory() as directory, contextlib.chdir(directory):
+            with patch.object(cli, "scan_path", return_value=report), contextlib.redirect_stdout(io.StringIO()):
+                result = cli.main(["scan", "mod", "--sarif-out", "report.sarif"])
+            document = json.loads(Path("report.sarif").read_text(encoding="utf-8"))
+
+        uri = document["runs"][0]["results"][0]["locations"][0]["physicalLocation"]["artifactLocation"]["uri"]
+        self.assertEqual(result, 1)
+        self.assertEqual(uri, "configs%5Clegacy.cfg")
+
     def test_sarif_normalizes_dot_segments_in_relative_path_prefix(self) -> None:
         report = ScanReport(
             target="mod",

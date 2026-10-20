@@ -96,7 +96,11 @@ _NO_FILE_LOCATION = {
 def _artifact_uri(path: str | None) -> str | None:
     if not path:
         return None
-    normalized = path.replace("\\", "/")
+    # FileRecord paths are already normalized to POSIX separators by the
+    # directory and ZIP sources. Preserve any literal backslash: on POSIX it
+    # is a legal filename character and must be percent-encoded, not treated
+    # as a path separator in SARIF.
+    normalized = path
     parts = normalized.split("/")
     if normalized.startswith("/") or any(part in {"", ".", ".."} for part in parts) or (parts and ":" in parts[0]) or normalized == "—":
         return None
