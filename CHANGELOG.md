@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.89 - 2026-10-20
+
+- Report same-language localization keys defined across separate YAML files as warnings, while keeping same-file duplicates as errors and allowing overrides to be reviewed.
+- Add regression coverage confirming language groups stay separate.
+
 ## 0.3.88 - 2026-10-20
 
 - Count traversed directory entries as well as files against the folder-scan entry limit, preventing large empty directory trees from bypassing the bound.

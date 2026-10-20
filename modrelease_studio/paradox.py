@@ -42,6 +42,7 @@ def check_paradox_localization(source: Source) -> list[Finding]:
                                 "Add localized names and descriptions if the mod contains player-facing text."))
         return findings
 
+    seen_keys_by_language: dict[tuple[str, str], str] = {}
     for path in localization_files:
         data = source.read(path, MAX_TEXT_FILE)
         if data is None:
@@ -62,10 +63,12 @@ def check_paradox_localization(source: Source) -> list[Finding]:
             continue
         lines = text.splitlines()
         header = next((line.strip() for line in lines if line.strip() and not line.lstrip().startswith("#")), "")
-        if not re.fullmatch(r"l_[A-Za-z0-9_-]+:", header):
+        header_match = re.fullmatch(r"l_([A-Za-z0-9_-]+):", header)
+        if not header_match:
             findings.append(Finding("LOCALIZATION_HEADER", "ERROR", path,
                                     "First non-comment line is not a language header such as `l_english:`.",
                                     "Put the correct `l_<language>:` header at the beginning of the file."))
+        language = header_match.group(1).casefold() if header_match else None
         keys: set[str] = set()
         for line_no, line in enumerate(lines, 1):
             stripped = line.lstrip()
@@ -79,6 +82,16 @@ def check_paradox_localization(source: Source) -> list[Finding]:
                 findings.append(Finding("DUPLICATE_LOCALIZATION_KEY", "ERROR", f"{path}:{line_no}",
                                         f"Localization key `{key}` appears more than once in this file.",
                                         "Keep one definition for each key in a language file."))
+            elif language is not None:
+                language_key = (language, key)
+                previous_path = seen_keys_by_language.get(language_key)
+                if previous_path is not None:
+                    findings.append(Finding(
+                        "DUPLICATE_LOCALIZATION_KEY", "WARNING", f"{path}:{line_no}",
+                        f"Localization key `{key}` is also defined at {previous_path} for language `{language}`.",
+                        "Check whether this cross-file override is intentional and confirm the game's load order."))
+                else:
+                    seen_keys_by_language[language_key] = f"{path}:{line_no}"
             keys.add(key)
             value = match.group(2) if match.group(2) is not None else match.group(3)
             if not value.strip():

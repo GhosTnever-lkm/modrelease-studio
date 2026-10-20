@@ -66,6 +66,20 @@ class LocalizationChecksTests(unittest.TestCase):
             ["DUPLICATE_LOCALIZATION_KEY", "EMPTY_LOCALIZATION"],
         )
 
+    def test_duplicate_keys_across_files_of_same_language_are_reported(self) -> None:
+        directory, source = self.make_source({
+            "localisation/english/a.yml": b'l_english:\nshared_key:0 "First value"\n',
+            "localisation/english/b.yml": b'l_english:\nshared_key:0 "Second value"\n',
+            "localisation/german/a.yml": b'l_german:\nshared_key:0 "German value"\n',
+        })
+        with directory:
+            findings = check_paradox_localization(source)
+        duplicates = [finding for finding in findings if finding.code == "DUPLICATE_LOCALIZATION_KEY"]
+        self.assertEqual(len(duplicates), 1)
+        self.assertEqual(duplicates[0].severity, "WARNING")
+        self.assertEqual(duplicates[0].path, "localisation/english/b.yml:2")
+        self.assertIn("localisation/english/a.yml:2", duplicates[0].message)
+
     def test_bad_header_and_invalid_utf8_are_reported(self) -> None:
         directory, source = self.make_source({
             "localisation/bad.yml": b"english:\nkey:0 \"text\"\n",
