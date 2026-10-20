@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import re
 import unicodedata
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote_from_bytes
 
 from .models import ScanReport
 
@@ -99,7 +100,7 @@ def _artifact_uri(path: str | None) -> str | None:
     parts = normalized.split("/")
     if normalized.startswith("/") or any(part in {"", ".", ".."} for part in parts) or (parts and ":" in parts[0]) or normalized == "—":
         return None
-    return quote(normalized, safe="/-._~!$&'()*+,;=:@")
+    return quote_from_bytes(os.fsencode(normalized), safe="/-._~!$&'()*+,;=:@")
 
 
 def sarif(report: ScanReport, *, version: str, path_prefix: str = "") -> dict:

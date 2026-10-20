@@ -3,10 +3,12 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import quote_from_bytes
 
 from modrelease_studio import cli
 from modrelease_studio.models import Finding, ScanReport
@@ -135,6 +137,25 @@ class SarifCliTests(unittest.TestCase):
             serialized = Path("report.sarif").read_text(encoding="utf-8")
             self.assertNotIn("private-local-folder", serialized)
             self.assertNotIn("C:\\\\private", serialized)
+
+    def test_sarif_percent_encodes_filesystem_surrogate_paths(self) -> None:
+        unsafe_path = "bad_\udcff_name.txt"
+        report = ScanReport(
+            target="mod",
+            profile="default",
+            findings=[Finding("UNSAFE_PATH", "ERROR", unsafe_path, "Unsupported filename encoding.")],
+        )
+        expected_uri = quote_from_bytes(os.fsencode(unsafe_path), safe="/-._~!$&'()*+,;=:@")
+        with tempfile.TemporaryDirectory() as directory, contextlib.chdir(directory):
+            with patch.object(cli, "scan_path", return_value=report), contextlib.redirect_stdout(io.StringIO()):
+                result = cli.main(["scan", "mod", "--sarif-out", "report.sarif"])
+            document = json.loads(Path("report.sarif").read_text(encoding="utf-8"))
+
+        self.assertEqual(result, 1)
+        self.assertEqual(
+            document["runs"][0]["results"][0]["locations"][0]["physicalLocation"]["artifactLocation"]["uri"],
+            expected_uri,
+        )
 
     def test_sarif_rejects_unsafe_path_prefix(self) -> None:
         for prefix in ("../mods", "/absolute", "C:\\mods"):
