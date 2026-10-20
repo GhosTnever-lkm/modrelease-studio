@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.88 - 2026-10-20
+
+- Count traversed directory entries as well as files against the folder-scan entry limit, preventing large empty directory trees from bypassing the bound.
+- Add a regression test for the directory-only overflow case.
+
 ## Unreleased
 
 ## 0.3.87 - 2026-10-20

@@ -69,6 +69,7 @@ class DirectorySource(Source):
 
         try:
             limit_reached = False
+            entry_count = 0
             for current, directories, filenames in os.walk(
                 target, topdown=True, onerror=on_walk_error, followlinks=False
             ):
@@ -102,6 +103,24 @@ class DirectorySource(Source):
                                                 f"Could not read file metadata ({_safe_os_error_code(exc)}).",
                                                 "Check file permissions and retry."))
 
+                available_entries = sorted(
+                    [(name, True) for name in directories]
+                    + [(name, False) for name in filenames],
+                    key=lambda entry: (entry[0].casefold(), entry[0]),
+                )
+                remaining = MAX_ENTRIES - entry_count
+                if len(available_entries) > remaining:
+                    findings.append(Finding("ENTRY_LIMIT", "ERROR", ".",
+                                            f"More than {MAX_ENTRIES} filesystem entries were found.",
+                                            "Split the release or remove generated build output."))
+                    available_entries = available_entries[:remaining]
+                    limit_reached = True
+                entry_count += len(available_entries)
+                selected_directories = {name for name, is_directory in available_entries if is_directory}
+                selected_files = {name for name, is_directory in available_entries if not is_directory}
+                directories[:] = [name for name in directories if name in selected_directories]
+                filenames = [name for name in filenames if name in selected_files]
+
                 for name in filenames:
                     item = current_path / name
                     rel = item.relative_to(target).as_posix()
@@ -115,13 +134,6 @@ class DirectorySource(Source):
                         if stat.S_ISREG(metadata.st_mode):
                             records.append(FileRecord(rel, metadata.st_size))
                             identities[rel] = _file_identity(metadata)
-                            if len(records) > MAX_ENTRIES:
-                                findings.append(Finding("ENTRY_LIMIT", "ERROR", ".",
-                                                        f"More than {MAX_ENTRIES} files were found.",
-                                                        "Split the release or remove generated build output."))
-                                records = records[:MAX_ENTRIES]
-                                limit_reached = True
-                                break
                     except OSError as exc:
                         findings.append(Finding("READ_METADATA", "WARNING", rel,
                                                 f"Could not read file metadata ({_safe_os_error_code(exc)}).",
