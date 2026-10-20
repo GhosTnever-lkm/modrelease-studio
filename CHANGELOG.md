@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Treat ZIP archives replaced or modified after indexing as blocking `FILE_CHANGED_DURING_SCAN` findings and skip content checks.
+- Add a regression for archive replacement between source indexing and report generation.
+- Update the README and product page test-count badges to reflect the expanded regression suite.
 - Preserve literal backslashes in POSIX filenames when encoding SARIF artifact URIs.
 - Make the test-count regression check compare the published README and page badges directly with the discovered suite size.
 - Update the README and product page to the published ModRelease Gate Action v1.0.71 and Paradox Mod Quality Gate v1.0.74 releases.

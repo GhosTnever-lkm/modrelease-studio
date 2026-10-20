@@ -11,7 +11,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 from modrelease_studio.sources import open_source
-from modrelease_studio.scanner import scan_path
+from modrelease_studio.scanner import scan_path, scan_source
 
 
 class DirectorySourceSafetyTests(unittest.TestCase):
@@ -243,6 +243,27 @@ class DirectorySourceSafetyTests(unittest.TestCase):
 
 
 class ZipSourceTests(unittest.TestCase):
+    def test_replaced_archive_blocks_report_after_indexing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive = Path(directory) / "fixture.zip"
+            replacement = Path(directory) / "replacement.zip"
+            with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_STORED) as output:
+                output.writestr("notes.txt", b"original")
+            source = open_source(archive)
+            with zipfile.ZipFile(replacement, "w", compression=zipfile.ZIP_STORED) as output:
+                output.writestr("notes.txt", b"changed!")
+
+            replacement.replace(archive)
+
+            report = scan_source(source, config={"required_files": []})
+
+            changed = [finding for finding in report.findings if finding.code == "FILE_CHANGED_DURING_SCAN"]
+            self.assertEqual(len(changed), 1)
+            self.assertEqual(changed[0].severity, "ERROR")
+            self.assertEqual(report.status, "FAIL")
+            self.assertFalse(source.contents_available)
+            self.assertNotIn("UNREADABLE_FILE", {finding.code for finding in report.findings})
+
     def test_zip_reads_are_bounded_and_limited_to_indexed_entries(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             archive = Path(directory) / "fixture.zip"

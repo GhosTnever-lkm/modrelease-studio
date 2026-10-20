@@ -259,7 +259,10 @@ class ZipSource(Source):
         records: list[FileRecord] = []
         self._index: dict[str, zipfile.ZipInfo] = {}
         self.contents_available = True
+        self._archive_identity: tuple[int, int, int, int] | None = None
+        self._archive_changed = False
         try:
+            self._archive_identity = _file_identity(target.stat(follow_symlinks=False))
             with zipfile.ZipFile(target) as archive:
                 infos = archive.infolist()
                 if len(infos) > MAX_ENTRIES:
@@ -338,21 +341,61 @@ class ZipSource(Source):
                                     f"The file could not be read as a valid ZIP archive ({code}).",
                                     "Recreate the archive and open it once in a ZIP utility before release."))
         super().__init__(target=target, records=records, findings=findings, is_zip=True)
+        if not self._archive_matches_index():
+            self._mark_archive_changed()
+
+    def _archive_matches_index(self) -> bool:
+        if self._archive_identity is None:
+            return False
+        try:
+            current = _file_identity(self.target.stat(follow_symlinks=False))
+        except OSError:
+            return False
+        return current == self._archive_identity
+
+    def _mark_archive_changed(self) -> None:
+        if self._archive_changed:
+            return
+        self._archive_changed = True
+        self.contents_available = False
+        self.findings.append(Finding(
+            "FILE_CHANGED_DURING_SCAN", "ERROR", self.target.name,
+            "Archive identity or metadata changed after it was indexed; content checks were skipped.",
+            "Stop modifying the selected archive and run the scan again.",
+        ))
 
     def read(self, relative_path: str, limit: int) -> bytes | None:
         if not self.contents_available:
+            return None
+        if not self._archive_matches_index():
+            self._mark_archive_changed()
             return None
         info = self._index.get(relative_path)
         if info is None:
             return None
         try:
             with zipfile.ZipFile(self.target) as archive, archive.open(info) as stream:
-                return stream.read(limit + 1)
+                content = stream.read(limit + 1)
+            if not self._archive_matches_index():
+                self._mark_archive_changed()
+                return None
+            return content
         except (OSError, RuntimeError, zipfile.BadZipFile, zipfile.LargeZipFile, zlib.error):
+            if not self._archive_matches_index():
+                self._mark_archive_changed()
             return None
 
     def digest(self) -> str:
-        return _sha256_file(self.target)
+        if not self._archive_matches_index():
+            self._mark_archive_changed()
+        try:
+            digest = _sha256_file(self.target)
+        except OSError:
+            self._mark_archive_changed()
+            return hashlib.sha256(b"").hexdigest()
+        if not self._archive_matches_index():
+            self._mark_archive_changed()
+        return digest
 
 
 def open_source(target: str | Path) -> Source:
