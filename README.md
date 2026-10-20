@@ -50,7 +50,7 @@ modrelease scan ./modpack/part2.zip --json-out part2-check.json
 
 Each ZIP gets its own JSON report (with SHA-256 + findings), so scanning the next archive does not overwrite the previous result.
 
-**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action release v1.0.69](https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.69) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
+**3. A team adding a release gate to CI.** Add the [ModRelease Gate GitHub Action release v1.0.71](https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.71) to your mod repository so every pull request runs the preflight and reports release-blocking findings as a failed check. To make GitHub prevent merging until that check passes, mark the check as required in the repository's branch protection rules or ruleset. Mod authors then get feedback in the PR before publishing.
 
 ## Quick start
 

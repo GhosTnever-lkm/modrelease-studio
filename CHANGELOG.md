@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Update the README and product page to the published ModRelease Gate Action v1.0.71 and Paradox Mod Quality Gate v1.0.74 releases.
+- Keep regression checks aligned with the current links and reject the older v1.0.69 / v1.0.72 references.
 ## 0.3.89 - 2026-10-20
 
 - Report same-language localization keys defined across separate YAML files as warnings, while keeping same-file duplicates as errors and allowing overrides to be reviewed.
@@ -9,8 +13,6 @@
 
 - Count traversed directory entries as well as files against the folder-scan entry limit, preventing large empty directory trees from bypassing the bound.
 - Add a regression test for the directory-only overflow case.
-
-## Unreleased
 
 ## 0.3.87 - 2026-10-20
 
