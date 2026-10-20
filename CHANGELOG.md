@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.90 - 2026-10-20
+
 - Treat ZIP archives replaced or modified after indexing as blocking `FILE_CHANGED_DURING_SCAN` findings and skip content checks.
 - Add a regression for archive replacement between source indexing and report generation.
 - Update the README and product page test-count badges to reflect the expanded regression suite.
