@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.85 - 2026-10-20
+
+- Encode filesystem paths as SARIF artifact URIs without failing on undecodable filename bytes.
+- Update scanner install examples, product page, and test-count badges for this release.
+
 ## 0.3.84 - 2026-10-20
 
 - Include the bundled SVG favicon in the release ZIP so the extracted test suite has the product-page asset it checks.
