@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+## 0.3.86 - 2026-10-20
+
+- Normalize harmless dot segments in SARIF repository-relative prefixes, including `.` for scans rooted at the checkout.
+- Continue rejecting absolute paths, drive syntax, and parent traversal in SARIF prefixes.
+- Refresh current release pins and test-count badges.
+
 ## 0.3.85 - 2026-10-20
 
 - Encode filesystem paths as SARIF artifact URIs without failing on undecodable filename bytes.
@@ -12,10 +20,6 @@
 - Add a bundled SVG favicon to the product page to avoid a missing-icon browser request.
 - Update the product page to link the published Paradox Mod Quality Gate v1.0.68 release.
 - Include the product page required by the bundled documentation tests, and run the complete test suite from the extracted release archive before publishing it.
-
-## Unreleased
-
-- Point the ModRelease Gate links in the README and product page to the published v1.0.67 Action release.
 
 ## 0.3.82 - 2026-10-17
 
