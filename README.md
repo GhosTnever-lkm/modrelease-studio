@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![Version](https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver)](https://github.com/GhosTnever-lkm/modrelease-studio/releases)
-[![Tests](https://img.shields.io/badge/tests-89%20test%20cases-blue)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
+[![Tests](https://img.shields.io/badge/tests-90%20test%20cases-blue)](https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ModRelease Studio is local-first: your mod files stay on your machine unless you choose to upload the generated report. Reports include the source basename, not its full local path or parent directories. It uses only the Python standard library.
@@ -97,7 +97,7 @@ steps:
     with:
       python-version: "3.12"
   - name: Install ModRelease Studio
-    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.87"
+    run: python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.88"
   - name: Scan mod
     run: modrelease scan . --sarif-out modrelease.sarif || test $? -eq 1
   - name: Upload findings
@@ -160,7 +160,7 @@ max_file_bytes = 2000000
 
 ## Scan limits and completeness
 
-- **Entry count:** folder and ZIP scans index at most 30,000 entries. More entries produce the blocking `ENTRY_LIMIT` finding; entries beyond the limit are not included, so the report is incomplete. Reduce the package and scan again.
+- **Entry count:** folder scans count traversed files and directories (after generated/dependency folders are pruned), and ZIP scans count archive entries; each source indexes at most 30,000 entries. More entries produce the blocking `ENTRY_LIMIT` finding; entries beyond the limit are not included, so the report is incomplete. Reduce the package and scan again.
 - **ZIP unpacked size:** archives whose aggregate uncompressed file size exceeds 4 GiB receive the blocking `ARCHIVE_SIZE_LIMIT` finding. The scanner skips content decompression and content checks for an oversized archive. Split the release archive and rerun the scan.
 - **Text-file content:** the default `max_file_bytes` is 2,000,000 bytes per text file. Larger recognized text files are skipped by content checks and receive `LARGE_TEXT_FILE`; configure a value from 1 byte through 16 MiB when appropriate.
 - **Paradox parsing:** `descriptor.mod` and localization text have a separate 2 MiB parsing ceiling.
@@ -187,7 +187,7 @@ jobs:
           python-version: "3.12"
       - name: Scan mod
         run: |
-          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.87"
+          python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.88"
           modrelease scan . --md-out modrelease-report.md --json-out modrelease-report.json
       - name: Upload report
         if: always()
@@ -199,7 +199,7 @@ jobs:
             modrelease-report.json
 ```
 
-The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.87`.
+The included `.github/workflows/preflight.yml` installs this repository's local project with `python -m pip install .` and runs the tool against the included clean example mod. In a mod repository, use the pinned tagged source shown above; `pip install .` would try to install the mod repository itself. The example is pinned to `v0.3.88`.
 
 ## Project-specific release policy
 

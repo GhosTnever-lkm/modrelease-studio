@@ -222,6 +222,18 @@ class DirectorySourceSafetyTests(unittest.TestCase):
                 self.assertEqual(len(overflow_source.records), 2)
                 self.assertIn("ENTRY_LIMIT", {finding.code for finding in overflow_source.findings})
 
+    def test_directory_entry_limit_counts_empty_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "empty-a").mkdir()
+            (root / "empty-b").mkdir()
+
+            with patch("modrelease_studio.sources.MAX_ENTRIES", 1):
+                source = open_source(root)
+
+        self.assertEqual(source.records, [])
+        self.assertIn("ENTRY_LIMIT", {finding.code for finding in source.findings})
+
     def test_directory_digest_matches_safe_file_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
