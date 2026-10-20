@@ -15,7 +15,7 @@
 
 ## Unreleased
 
-- Point the ModRelease Gate links in the README and product page to the verified v1.0.66 Action tag.
+- Point the ModRelease Gate links in the README and product page to the published v1.0.67 Action release.
 
 ## 0.3.82 - 2026-10-17
 
