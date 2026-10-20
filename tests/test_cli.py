@@ -101,6 +101,21 @@ class CliTests(unittest.TestCase):
 
 
 class SarifCliTests(unittest.TestCase):
+    def test_sarif_normalizes_dot_segments_in_relative_path_prefix(self) -> None:
+        report = ScanReport(
+            target="mod",
+            profile="default",
+            findings=[Finding("TEST", "ERROR", "config.txt", "Check failed.")],
+        )
+        for prefix, expected_uri in ((".", "config.txt"), ("./mods/./my mod/", "mods/my%20mod/config.txt")):
+            with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as directory, contextlib.chdir(directory):
+                with patch.object(cli, "scan_path", return_value=report), contextlib.redirect_stdout(io.StringIO()):
+                    result = cli.main(["scan", "mod", "--sarif-out", "report.sarif", "--sarif-path-prefix", prefix])
+                document = json.loads(Path("report.sarif").read_text(encoding="utf-8"))
+                uri = document["runs"][0]["results"][0]["locations"][0]["physicalLocation"]["artifactLocation"]["uri"]
+                self.assertEqual(result, 1)
+                self.assertEqual(uri, expected_uri)
+
     def test_scan_writes_sarif_with_repo_relative_prefixed_locations(self) -> None:
         with tempfile.TemporaryDirectory() as directory, contextlib.chdir(directory):
             report = ScanReport(
@@ -158,7 +173,7 @@ class SarifCliTests(unittest.TestCase):
         )
 
     def test_sarif_rejects_unsafe_path_prefix(self) -> None:
-        for prefix in ("../mods", "/absolute", "C:\\mods"):
+        for prefix in ("../mods", "./../mods", "/absolute", "/", "\\\\", "//server/share", "C:\\mods"):
             with self.subTest(prefix=prefix), tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / "report.sarif"
                 stderr = io.StringIO()

@@ -103,11 +103,26 @@ def _artifact_uri(path: str | None) -> str | None:
     return quote_from_bytes(os.fsencode(normalized), safe="/-._~!$&'()*+,;=:@")
 
 
+def _normalize_sarif_prefix(path_prefix: str) -> str:
+    """Normalize harmless relative dot segments and reject unsafe prefixes."""
+    normalized = path_prefix.replace("\\", "/")
+    if normalized.startswith("/"):
+        raise ValueError("SARIF path prefix must be repository-relative and cannot contain '..' or drive syntax")
+
+    parts = normalized.split("/")
+    if any(part == ".." for part in parts):
+        raise ValueError("SARIF path prefix must be repository-relative and cannot contain '..' or drive syntax")
+    parts = [part for part in parts if part not in {"", "."}]
+    if parts and ":" in parts[0]:
+        raise ValueError("SARIF path prefix must be repository-relative and cannot contain '..' or drive syntax")
+    return "/".join(parts)
+
+
 def sarif(report: ScanReport, *, version: str, path_prefix: str = "") -> dict:
     """Build a SARIF 2.1.0 report using only repository-relative file paths."""
-    normalized_prefix = path_prefix.replace("\\", "/").rstrip("/")
+    normalized_prefix = _normalize_sarif_prefix(path_prefix)
     prefix = _artifact_uri(normalized_prefix) if normalized_prefix else ""
-    if path_prefix and prefix is None:
+    if prefix is None:
         raise ValueError("SARIF path prefix must be repository-relative and cannot contain '..' or drive syntax")
     prefix = prefix.rstrip("/")
     rule_ids = sorted({item.code for item in report.findings})
