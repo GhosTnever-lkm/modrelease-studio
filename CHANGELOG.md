@@ -10,6 +10,8 @@
 
 ## Unreleased
 
+- Point the ModRelease Gate links in the README and product page to the verified v1.0.66 Action tag.
+
 ## 0.3.82 - 2026-10-17
 
 - Bundle the README demo image and sample mod; smoke-test the installed archive against its own bundled example.
