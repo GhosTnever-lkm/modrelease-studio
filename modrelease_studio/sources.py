@@ -32,9 +32,24 @@ def _safe_os_error_code(error: OSError) -> str:
 
 
 def _is_junction(path: Path) -> bool:
-    """Check for a Windows directory junction when the runtime supports it."""
+    """Check for a Windows directory junction on supported Python versions."""
     check = getattr(path, "is_junction", None)
-    return bool(check()) if check is not None else False
+    if check is not None:
+        return bool(check())
+    if os.name != "nt":
+        return False
+
+    metadata = os.lstat(path)
+    attributes = getattr(metadata, "st_file_attributes", 0)
+    reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    mount_point_tag = getattr(stat, "IO_REPARSE_TAG_MOUNT_POINT", None)
+    return bool(
+        reparse_flag
+        and attributes & reparse_flag
+        and stat.S_ISDIR(metadata.st_mode)
+        and mount_point_tag is not None
+        and getattr(metadata, "st_reparse_tag", None) == mount_point_tag
+    )
 
 
 class DirectorySource(Source):
