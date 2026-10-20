@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.3.87 - 2026-10-20
+
+- Detect Windows junctions on Python 3.11 using the Windows reparse tag when `Path.is_junction()` is unavailable, so scans warn and prune instead of indexing external directory contents.
+
 ## 0.3.86 - 2026-10-20
 
 - Normalize harmless dot segments in SARIF repository-relative prefixes, including `.` for scans rooted at the checkout.

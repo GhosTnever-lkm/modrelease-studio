@@ -30,7 +30,7 @@ class DirectorySourceSafetyTests(unittest.TestCase):
             self.assertEqual([record.path for record in source.records], ["inside.txt"])
             self.assertIsNone(source.read("linked/outside.txt", 1024))
 
-            if os.name == "nt" and hasattr(Path, "is_junction"):
+            if os.name == "nt":
                 self._assert_windows_junction_to_external_directory_is_not_traversed()
 
     def test_junction_status_permission_error_prunes_directory_and_warns(self) -> None:
@@ -76,15 +76,14 @@ class DirectorySourceSafetyTests(unittest.TestCase):
                     capture_output=True,
                     text=True,
                 )
-                self.assertTrue(junction.is_junction())
-
-                source = open_source(root)
+                with patch.object(Path, "is_junction", None, create=True):
+                    source = open_source(root)
 
                 self.assertIn(("JUNCTION", "linked"), {(item.code, item.path) for item in source.findings})
                 self.assertEqual([record.path for record in source.records], ["inside.txt"])
                 self.assertIsNone(source.read("linked/private-fixture.txt", 1024))
             finally:
-                if junction.is_junction():
+                if junction.exists():
                     junction.rmdir()
 
     def test_walk_permission_error_becomes_path_specific_blocking_finding(self) -> None:
