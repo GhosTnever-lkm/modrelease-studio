@@ -7,6 +7,7 @@
 - Normalize harmless dot segments in SARIF repository-relative prefixes, including `.` for scans rooted at the checkout.
 - Continue rejecting absolute paths, drive syntax, and parent traversal in SARIF prefixes.
 - Refresh current release pins and test-count badges.
+- Link the now-published ModRelease Gate v1.0.68 and Paradox Mod Quality Gate v1.0.71 releases from the README and product page.
 
 ## 0.3.85 - 2026-10-20
 
