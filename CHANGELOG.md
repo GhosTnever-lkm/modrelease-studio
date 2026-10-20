@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Preserve literal backslashes in POSIX filenames when encoding SARIF artifact URIs.
+- Make the test-count regression check compare the published README and page badges directly with the discovered suite size.
 - Update the README and product page to the published ModRelease Gate Action v1.0.71 and Paradox Mod Quality Gate v1.0.74 releases.
 - Keep regression checks aligned with the current links and reject the older v1.0.69 / v1.0.72 references.
 ## 0.3.89 - 2026-10-20
