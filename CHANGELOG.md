@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Update the product page link to Paradox Mod Quality Gate v1.0.76 and guard it with the release-link regression.
+
 ## 0.3.90 - 2026-10-20
 
 - Treat ZIP archives replaced or modified after indexing as blocking `FILE_CHANGED_DURING_SCAN` findings and skip content checks.
