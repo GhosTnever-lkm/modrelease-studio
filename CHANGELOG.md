@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Update the product page link to Paradox Mod Quality Gate v1.0.76 and guard it with the release-link regression.
+- Update the product page link to Paradox Mod Quality Gate v1.0.78 and guard it with the release-link regression.
 
 ## 0.3.90 - 2026-10-20
 
