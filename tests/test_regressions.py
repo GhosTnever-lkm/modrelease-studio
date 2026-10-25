@@ -294,12 +294,12 @@ class ConfigValidationOrderTests(unittest.TestCase):
 
 
 class ArchivePathSafetyTests(unittest.TestCase):
-    def test_zip_rejects_empty_filename_instead_of_reporting_ready(self) -> None:
+    def test_zip_rejects_dot_only_name_instead_of_reporting_ready(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             archive_path = Path(directory) / "empty-name.zip"
             with zipfile.ZipFile(archive_path, "w") as archive:
                 archive.writestr("README.md", "Synthetic fixture")
-                archive.writestr("", "api_key=synthetic-secret-value-12345")
+                archive.writestr(".", "api_key=synthetic-secret-value-12345")
             report = scan_path(str(archive_path))
 
         self.assertIn("UNSAFE_PATH", {finding.code for finding in report.findings})
