@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.3.91 - 2026-10-25
+
+- Detect temporary AWS access key IDs (`ASIA…`) as well as long-term `AKIA…` IDs; add a regression that ensures reports do not echo the key.
+- Bump package and product-page metadata to 0.3.91 and update the test-suite count.
 
 - Update the product page link to Paradox Mod Quality Gate v1.0.78 and guard it with the release-link regression.
 
