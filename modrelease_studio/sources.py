@@ -282,7 +282,7 @@ class ZipSource(Source):
                         or part.split(".", 1)[0].upper() in WINDOWS_RESERVED_BASENAMES
                         for part in path.parts
                     )
-                    unsafe = (normalized.startswith("/") or ".." in path.parts
+                    unsafe = (not path.parts or normalized.startswith("/") or ".." in path.parts
                               or any(":" in part for part in path.parts)
                               or "\x00" in raw or windows_nonportable)
                     if unsafe:

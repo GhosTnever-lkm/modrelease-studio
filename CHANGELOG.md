@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.92 - 2026-10-25
+
+- Reject ZIP entries with empty or dot-only names as unsafe paths, so unaddressable entries cannot bypass content scanning or yield a false READY result.
+- Add a regression covering an empty-name entry alongside a normal README.
+- Synchronize the README and product-page links to the verified ModRelease Gate v1.0.73 and Paradox Mod Quality Gate v1.0.79 releases.
+- Bump package and product-page metadata to 0.3.92 and update the test-suite count.
+
 ## 0.3.91 - 2026-10-25
 
 - Detect temporary AWS access key IDs (`ASIA…`) as well as long-term `AKIA…` IDs; add a regression that ensures reports do not echo the key.
