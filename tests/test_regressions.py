@@ -48,6 +48,12 @@ class SecretPatternTests(unittest.TestCase):
         self.assertIn("GITHUB_FINE_GRAINED_TOKEN", {finding.code for finding in report.findings})
         self.assertNotIn(token.decode(), repr(report.to_dict()))
 
+    def test_temporary_aws_access_key_id_is_detected_without_echoing(self) -> None:
+        key = b"ASIA1234567890ABCDEF"
+        report = self.scan_fixture("credentials.env", b"aws_access_key_id=" + key)
+        self.assertIn("AWS_ACCESS_KEY", {finding.code for finding in report.findings})
+        self.assertNotIn(key.decode(), json_report(report) + markdown(report))
+
     def test_reports_each_secret_type_found_in_one_file_without_echoing_values(self) -> None:
         aws_key = b"AKIA" + b"1234567890ABCDEF"
         slack_token = b"xoxb-123456789012-" + b"FAKEFAKETOKENVALUE"
@@ -687,8 +693,8 @@ class DocumentationMetricTests(unittest.TestCase):
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.66", landing)
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.65", landing)
         self.assertIn("Pro v1.0.9", landing)
-        self.assertIn("v0.3.90", readme)
-        self.assertIn("v0.3.90", landing)
+        self.assertIn("v0.3.91", readme)
+        self.assertIn("v0.3.91", landing)
         self.assertNotIn("v0.3.76", landing)
         self.assertNotIn("v0.3.76", readme)
         self.assertNotIn("v1.0.59", landing)
