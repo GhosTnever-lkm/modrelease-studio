@@ -294,6 +294,17 @@ class ConfigValidationOrderTests(unittest.TestCase):
 
 
 class ArchivePathSafetyTests(unittest.TestCase):
+    def test_zip_rejects_dot_only_name_instead_of_reporting_ready(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            archive_path = Path(directory) / "empty-name.zip"
+            with zipfile.ZipFile(archive_path, "w") as archive:
+                archive.writestr("README.md", "Synthetic fixture")
+                archive.writestr(".", "api_key=synthetic-secret-value-12345")
+            report = scan_path(str(archive_path))
+
+        self.assertIn("UNSAFE_PATH", {finding.code for finding in report.findings})
+        self.assertEqual(report.status, "FAIL")
+
     def test_zip_rejects_colon_in_nested_path_component(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             archive_path = Path(directory) / "colon-path.zip"
@@ -673,9 +684,11 @@ class DocumentationMetricTests(unittest.TestCase):
         self.assertIn(f"v{__version__}", landing)
         self.assertIn(f'"softwareVersion": "{__version__}"', landing)
         self.assertIn(f'<span class="chip">v{__version__}</span>', landing)
-        self.assertIn("modrelease-studio-action/releases/tag/v1.0.72", landing)
+        self.assertIn("modrelease-studio-action/releases/tag/v1.0.73", landing)
+        self.assertNotIn("modrelease-studio-action/releases/tag/v1.0.72", landing)
         self.assertNotIn("modrelease-studio-action/releases/tag/v1.0.71", landing)
-        self.assertIn("modrelease-studio-action/releases/tag/v1.0.72", readme)
+        self.assertIn("modrelease-studio-action/releases/tag/v1.0.73", readme)
+        self.assertNotIn("modrelease-studio-action/releases/tag/v1.0.72", readme)
         self.assertNotIn("modrelease-studio-action/releases/tag/v1.0.71", readme)
         self.assertNotIn("modrelease-studio-action/releases/tag/v1.0.69", landing)
         self.assertNotIn("modrelease-studio-action/releases/tag/v1.0.69", readme)
@@ -686,15 +699,16 @@ class DocumentationMetricTests(unittest.TestCase):
         self.assertNotIn("modrelease-studio-action/releases/tag/v1.0.67", readme)
         self.assertNotIn("v1.0.62", landing)
         self.assertNotIn("v1.0.62", readme)
-        self.assertIn("paradox-mod-quality-gate/releases/tag/v1.0.78", landing)
+        self.assertIn("paradox-mod-quality-gate/releases/tag/v1.0.79", landing)
+        self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.78", landing)
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.77", landing)
-        self.assertIn("Бесплатные CLI и GitHub Action v1.0.78", landing)
+        self.assertIn("paradox-mod-quality-gate/releases/tag/v1.0.79", landing)
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.70", landing)
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.66", landing)
         self.assertNotIn("paradox-mod-quality-gate/releases/tag/v1.0.65", landing)
         self.assertIn("Pro v1.0.9", landing)
-        self.assertIn("v0.3.91", readme)
-        self.assertIn("v0.3.91", landing)
+        self.assertIn("v0.3.92", readme)
+        self.assertIn("v0.3.92", landing)
         self.assertNotIn("v0.3.76", landing)
         self.assertNotIn("v0.3.76", readme)
         self.assertNotIn("v1.0.59", landing)

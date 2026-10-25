@@ -22,7 +22,7 @@
     "name": "ModRelease Studio",
     "applicationCategory": "DeveloperApplication",
     "operatingSystem": "Windows, macOS, Linux",
-    "softwareVersion": "0.3.91",
+    "softwareVersion": "0.3.92",
     "license": "https://opensource.org/licenses/MIT",
     "offers": {"@type": "Offer", "price": "0", "priceCurrency": "RUB"},
     "url": "https://ghostnever-lkm.github.io/modrelease-studio/",
@@ -49,7 +49,7 @@
         <h1 id="hero-title">Проверь сборку <em>до игроков</em></h1>
         <p class="lead">ModRelease Studio помогает авторам модов и сборок заранее находить проблемы в папке или ZIP: ошибки упаковки, случайно добавленные секреты и неполные метаданные.</p>
         <div class="actions"><a class="button primary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/latest">Скачать бесплатно ↗</a><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio">Исходный код ↗</a></div>
-        <div class="badges" aria-label="Состояние проекта"><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg" alt="Статус CI ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/releases"><img src="https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver" alt="Последний релиз ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://img.shields.io/badge/tests-94%20test%20cases-blue" alt="94 test cases in suite"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Лицензия MIT"></a></div><div class="facts"><span class="chip">v0.3.91</span><span class="chip">Python 3.11+</span><span class="chip">MIT · бесплатно</span><span class="chip">Файлы остаются локально</span></div>
+        <div class="badges" aria-label="Состояние проекта"><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml/badge.svg" alt="Статус CI ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/releases"><img src="https://img.shields.io/github/v/release/GhosTnever-lkm/modrelease-studio?sort=semver" alt="Последний релиз ModRelease Studio"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/actions/workflows/preflight.yml"><img src="https://img.shields.io/badge/tests-95%20test%20cases-blue" alt="95 test cases in suite"></a><a href="https://github.com/GhosTnever-lkm/modrelease-studio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Лицензия MIT"></a></div><div class="facts"><span class="chip">v0.3.92</span><span class="chip">Python 3.11+</span><span class="chip">MIT · бесплатно</span><span class="chip">Файлы остаются локально</span></div>
       </div>
       <figure class="preview"><img src="demo.png" alt="Пример отчёта ModRelease Studio: найдены тестовый секрет, неверный заголовок локализации и отсутствующий supported_version" width="1440" height="870"><figcaption class="caption">Пример на тестовом моде. Найденные сигналы нужно проверить вручную.</figcaption></figure>
     </section>
@@ -69,7 +69,7 @@
       <div class="grid">
         <article class="card"><span class="step">01 · ПЕРВЫЙ РЕЛИЗ</span><h3>Перед загрузкой мода</h3><p>Проверь папку, найди лишнюю вложенность, пропущенный файл или ошибку в метаданных и просмотри понятный отчёт.</p></article>
         <article class="card"><span class="step">02 · СБОРКА</span><h3>Перед обновлением модпака</h3><p>Просканируй ZIP-файлы единым способом и сравни новую сборку с предыдущей, чтобы заметить неожиданные изменения.</p></article>
-        <article class="card"><span class="step">03 · CI</span><h3>На каждом pull request</h3><p>Подключи <a href="https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.72">ModRelease Gate release v1.0.72</a>: проверка и отчёты появятся рядом с изменениями.</p></article>
+        <article class="card"><span class="step">03 · CI</span><h3>На каждом pull request</h3><p>Подключи <a href="https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.73">ModRelease Gate release v1.0.73</a>: проверка и отчёты появятся рядом с изменениями.</p></article>
       </div>
     </section>
 
@@ -79,11 +79,11 @@
       <pre class="code"><code>python -m venv .venv
 # Windows: .venv\Scripts\Activate.ps1
 # macOS / Linux: source .venv/bin/activate
-python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.91"
+python -m pip install "modrelease-studio @ git+https://github.com/GhosTnever-lkm/modrelease-studio.git@v0.3.92"
 modrelease scan ./my-mod --md-out release-report.md --json-out release-report.json
 modrelease compare ./previous-build ./candidate-build</code></pre>
       <p class="intro" style="margin-top:16px">SARIF можно отправить в GitHub Code Scanning отдельным workflow-шагом. Для этого в вашем workflow потребуется разрешение <code>security-events: write</code>; сам сканер ничего не загружает.</p>
-      <div class="actions"><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio#quick-start">Все инструкции ↗</a><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/tag/v0.3.91">Что нового в v0.3.91 ↗</a></div>
+      <div class="actions"><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio#quick-start">Все инструкции ↗</a><a class="button secondary" href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/tag/v0.3.92">Что нового в v0.3.92 ↗</a></div>
     </section>
 
     <section id="pricing" class="section" aria-labelledby="pricing-title">
@@ -91,8 +91,8 @@ modrelease compare ./previous-build ./candidate-build</code></pre>
       <p class="intro">Бесплатный CLI и GitHub Action доступны всем. Windows Pro — отдельная графическая программа, а не платная версия CLI.</p>
       <div class="pricing">
         <article class="card"><h3>Core</h3><div class="price">0 ₽</div><p>Открытый MIT-инструмент: проверки, сравнение сборок и отчёты Markdown, JSON, SARIF.</p><a href="https://github.com/GhosTnever-lkm/modrelease-studio/releases/latest">Скачать ↗</a></article>
-        <article class="card"><h3>ModRelease Gate</h3><div class="price">0 ₽</div><p>GitHub Action для CI и pull request. Код и инструкция доступны в отдельном репозитории.</p><a href="https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.72">Открыть релиз Gate v1.0.72 ↗</a></article>
-        <article class="card"><h3>Windows Pro</h3><div class="price">50 ₽</div><p>Paradox Mod Quality Gate Pro v1.0.9 — отдельный Windows-интерфейс для пакетной проверки папок и ZIP. Включает бесплатные CLI ModRelease Studio v0.3.78 и Paradox Mod Workbench v0.2.7 с объединёнными HTML, JSON, Markdown и SARIF-отчётами. Бесплатные CLI и GitHub Action остаются доступными отдельно.</p><a href="https://boosty.to/azizazimov/posts/761380dd-5d2d-45d1-ad6d-452b123d11b3">Открыть Pro-набор ↗</a><a href="https://github.com/GhosTnever-lkm/paradox-mod-quality-gate/releases/tag/v1.0.78">Бесплатные CLI и GitHub Action v1.0.78 ↗</a><a href="https://boosty.to/azizazimov/posts/761380dd-5d2d-45d1-ad6d-452b123d11b3">Купить Pro v1.0.9 · 50 ₽ ↗</a></article>
+        <article class="card"><h3>ModRelease Gate</h3><div class="price">0 ₽</div><p>GitHub Action для CI и pull request. Код и инструкция доступны в отдельном репозитории.</p><a href="https://github.com/GhosTnever-lkm/modrelease-studio-action/releases/tag/v1.0.73">Открыть релиз Gate v1.0.73 ↗</a></article>
+        <article class="card"><h3>Windows Pro</h3><div class="price">50 ₽</div><p>Paradox Mod Quality Gate Pro v1.0.9 — отдельный Windows-интерфейс для пакетной проверки папок и ZIP. Включает бесплатные CLI ModRelease Studio v0.3.78 и Paradox Mod Workbench v0.2.7 с объединёнными HTML, JSON, Markdown и SARIF-отчётами. Бесплатные CLI и GitHub Action остаются доступными отдельно.</p><a href="https://boosty.to/azizazimov/posts/761380dd-5d2d-45d1-ad6d-452b123d11b3">Открыть Pro-набор ↗</a><a href="https://github.com/GhosTnever-lkm/paradox-mod-quality-gate/releases/tag/v1.0.79">Бесплатные CLI и GitHub Action v1.0.79 ↗</a><a href="https://boosty.to/azizazimov/posts/761380dd-5d2d-45d1-ad6d-452b123d11b3">Купить Pro v1.0.9 · 50 ₽ ↗</a></article>
       </div>
       <p class="intro" style="margin-top:18px">Если проект уже помог, можно поддержать разработку на <a href="https://boosty.to/azizazimov">Boosty</a> или <a href="https://buymeacoffee.com/azizazimov8">Buy Me a Coffee</a>. Поддержка добровольная и не открывает скрытые функции.</p>
       <p class="intro">Условия и актуальную цену Pro-набора смотри на странице предложения Boosty перед покупкой.</p>
